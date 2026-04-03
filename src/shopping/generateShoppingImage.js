@@ -2,8 +2,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const path  = require('path');
 const fs    = require('fs');
 const axios = require('axios');
-const { subirImagemGithub }  = require('../utils');
-const { fetchProductImage }  = require('../varejo/fetchProductImage');
+const { subirImagemGithub } = require('../utils');
 
 const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
@@ -70,62 +69,44 @@ function wrapLines(ctx, text, maxWidth) {
   return lines;
 }
 
-async function loadProductThumbnail(product, categoriaLabel) {
-  // 1. Tenta URL direta do ScaleSerp com headers de browser
-  if (product.thumbnail) {
-    try {
-      const response = await axios.get(product.thumbnail, {
-        responseType: 'arraybuffer',
-        timeout: 6000,
-        headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-          'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-          'Referer': 'https://www.google.com.br/',
-        },
-      });
-      if (response.data.byteLength > 500) {
-        return await loadImage(Buffer.from(response.data));
-      }
-    } catch { /* fallthrough */ }
-  }
+// ── Emoji da categoria via Twemoji CDN (PNG, funciona no canvas/Linux) ────────
+const CATEGORY_EMOJI_CODE = {
+  'sa[úu]de|farm[áa]cia|rem[ée]dio|vitamina|suplemento': '1f48a',   // 💊
+  'brinqued|pelúcia|boneca':                              '1f9f8',   // 🧸
+  'beb[êe]|matern':                                       '1f476',   // 👶
+  'joia|rel[óo]gio':                                      '1f48d',   // 💍
+  'inform[áa]tica|perif[eé]rico|computador':              '1f4bb',   // 💻
+  'celular|smartphone':                                   '1f4f1',   // 📱
+  'automotiv|moto':                                       '1f697',   // 🚗
+  'esport|lazer|fitness|academia':                        '26bd',    // ⚽
+  'pet|animal':                                           '1f43e',   // 🐾
+  'jardim|ferramenta|constru':                            '1f331',   // 🌱
+  'aliment|comida|bebida|cozinha':                        '1f37d',   // 🍽
+  'moda|roupa|vest|camiseta':                             '1f457',   // 👗
+  'cal[çc]ado|t[êe]nis|sapato':                           '1f45f',   // 👟
+  'eletrodom|geladeira|fog[ãa]o':                         '1f3e0',   // 🏠
+  'tv|televi|monitor':                                    '1f4fa',   // 📺
+  'livr':                                                 '1f4da',   // 📚
+  'beleza|cosm[eé]tic|perfume|maquiagem':                 '1f484',   // 💄
+};
 
-  // 2. Fallback: Unsplash → Wikimedia Commons
-  // Traduz termos PT→EN pois o Unsplash é majoritariamente em inglês
-  const enTitle = translateToEn(product.title);
-  const shortEn = enTitle.split(' ').slice(0, 3).join(' ');
-  for (const query of [shortEn, enTitle, product.title.split(' ').slice(0, 3).join(' ')]) {
-    try {
-      const imageUrl = await fetchProductImage(query, categoriaLabel);
-      if (imageUrl) return await loadImage(imageUrl);
-    } catch { /* fallthrough */ }
+function getCategoryEmojiCode(label = '') {
+  const l = label.toLowerCase();
+  for (const [pattern, code] of Object.entries(CATEGORY_EMOJI_CODE)) {
+    if (new RegExp(pattern).test(l)) return code;
   }
-
-  return null;
+  return '1f6d2'; // 🛒 padrão
 }
 
-// Tradução simples de termos PT→EN para melhorar buscas no Unsplash
-function translateToEn(title) {
-  const map = {
-    'vitamina': 'vitamin', 'suplemento': 'supplement', 'proteína': 'protein', 'proteina': 'protein',
-    'termômetro': 'thermometer', 'termometro': 'thermometer', 'medidor': 'meter',
-    'brinquedo': 'toy', 'boneca': 'doll', 'carrinho': 'toy car', 'pelúcia': 'plush toy',
-    'celular': 'smartphone', 'notebook': 'laptop', 'computador': 'computer', 'teclado': 'keyboard',
-    'televisão': 'television', 'televisao': 'television', 'monitor': 'monitor',
-    'geladeira': 'refrigerator', 'fogão': 'stove', 'fogao': 'stove', 'micro-ondas': 'microwave',
-    'roupa': 'clothing', 'camiseta': 'shirt', 'calça': 'pants', 'calca': 'pants',
-    'tênis': 'sneakers', 'tenis': 'sneakers', 'sapato': 'shoes', 'sandália': 'sandal',
-    'relógio': 'watch', 'relogio': 'watch', 'joia': 'jewelry', 'anel': 'ring', 'colar': 'necklace',
-    'livro': 'book', 'cadeira': 'chair', 'mesa': 'table', 'sofá': 'sofa', 'sofa': 'sofa',
-    'perfume': 'perfume', 'maquiagem': 'makeup', 'creme': 'cream', 'shampoo': 'shampoo',
-    'câmera': 'camera', 'camera': 'camera', 'fone': 'headphone', 'headset': 'headset',
-    'panela': 'pan', 'frigideira': 'frying pan', 'liquidificador': 'blender',
-    'colchão': 'mattress', 'colchao': 'mattress', 'travesseiro': 'pillow',
-    'mochila': 'backpack', 'bolsa': 'bag', 'mala': 'suitcase',
-    'ração': 'pet food', 'racao': 'pet food',
-    'bicicleta': 'bicycle', 'patins': 'skates', 'skate': 'skateboard',
-  };
-  const words = title.toLowerCase().split(/\s+/);
-  return words.map(w => map[w] || w).join(' ');
+async function loadCategoryEmoji(categoriaLabel) {
+  const code = getCategoryEmojiCode(categoriaLabel);
+  const url  = `https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/${code}.png`;
+  try {
+    const { data } = await axios.get(url, { responseType: 'arraybuffer', timeout: 6000 });
+    return await loadImage(Buffer.from(data));
+  } catch {
+    return null;
+  }
 }
 
 // ── Feed 1080×1080 ───────────────────────────────────────────────────────────
@@ -189,12 +170,16 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
   ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
   let cardY = titleBottom + 28;
 
+  // ── Pré-carrega emoji da categoria (uma vez para todos os cards) ──────────
+  const catLabel  = shoppingData.categoria?.label || '';
+  const emojiImg  = await loadCategoryEmoji(catLabel);
+
   // ── Cards de produtos ─────────────────────────────────────────────────────
   const products = (shoppingData.products || []).slice(0, 4);
   const cardH    = 148;
   const cardGap  = 16;
-  const THUMB_W  = 100;
-  const THUMB_H  = 100;
+  const ICON_W   = 84;
+  const ICON_H   = 84;
 
   for (const [i, product] of products.entries()) {
     const cx = PAD;
@@ -216,29 +201,19 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
     ctx.textAlign = 'left';
     ctx.fillText(`#${i + 1}`, cx + 18, cy + 52);
 
-    // Thumbnail
-    const thumbX = cx + 80;
-    const thumbY = cy + (cardH - THUMB_H) / 2;
-    const thumb  = await loadProductThumbnail(product, shoppingData.categoria?.label || '');
-    if (thumb) {
-      ctx.save();
-      drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 8);
-      ctx.clip();
-      const scale = Math.min(THUMB_W / thumb.width, THUMB_H / thumb.height);
-      const dw = thumb.width * scale;
-      const dh = thumb.height * scale;
-      const dx = thumbX + (THUMB_W - dw) / 2;
-      const dy = thumbY + (THUMB_H - dh) / 2;
-      ctx.drawImage(thumb, dx, dy, dw, dh);
-      ctx.restore();
-    } else {
-      drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 8);
-      ctx.fillStyle = 'rgba(255,255,255,0.04)';
-      ctx.fill();
+    // Ícone da categoria (emoji Twemoji)
+    const iconX = cx + 80;
+    const iconY = cy + (cardH - ICON_H) / 2;
+    drawRoundRect(ctx, iconX, iconY, ICON_W, ICON_H, 10);
+    ctx.fillStyle = 'rgba(255,215,0,0.08)';
+    ctx.fill();
+    if (emojiImg) {
+      const pad = 10;
+      ctx.drawImage(emojiImg, iconX + pad, iconY + pad, ICON_W - pad * 2, ICON_H - pad * 2);
     }
 
     // Texto do produto
-    const textX = thumbX + THUMB_W + 16;
+    const textX = iconX + ICON_W + 16;
     const maxTextW = cw - (textX - cx) - 16;
 
     ctx.fillStyle = WHITE;
@@ -365,12 +340,16 @@ async function generateShoppingStoryImage(shoppingData, articleTitle = '') {
   ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
   let cardY = titleBottom + 36;
 
+  // ── Pré-carrega emoji da categoria ────────────────────────────────────────
+  const catLabelS  = shoppingData.categoria?.label || '';
+  const emojiImgS  = await loadCategoryEmoji(catLabelS);
+
   // ── Cards de top 3 produtos ───────────────────────────────────────────────
   const products = (shoppingData.products || []).slice(0, 3);
   const cardH    = 200;
   const cardGap  = 24;
-  const THUMB_W  = 130;
-  const THUMB_H  = 130;
+  const ICON_WS  = 110;
+  const ICON_HS  = 110;
 
   for (const [i, product] of products.entries()) {
     const cx = PAD;
@@ -391,29 +370,19 @@ async function generateShoppingStoryImage(shoppingData, articleTitle = '') {
     ctx.textAlign = 'left';
     ctx.fillText(`#${i + 1}`, cx + 20, cy + 74);
 
-    // Thumbnail
-    const thumbX = cx + 110;
-    const thumbY = cy + (cardH - THUMB_H) / 2;
-    const thumb  = await loadProductThumbnail(product, shoppingData.categoria?.label || '');
-    if (thumb) {
-      ctx.save();
-      drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 10);
-      ctx.clip();
-      const scale = Math.min(THUMB_W / thumb.width, THUMB_H / thumb.height);
-      const dw = thumb.width * scale;
-      const dh = thumb.height * scale;
-      const dx = thumbX + (THUMB_W - dw) / 2;
-      const dy = thumbY + (THUMB_H - dh) / 2;
-      ctx.drawImage(thumb, dx, dy, dw, dh);
-      ctx.restore();
-    } else {
-      drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 10);
-      ctx.fillStyle = 'rgba(255,255,255,0.04)';
-      ctx.fill();
+    // Ícone da categoria
+    const iconX = cx + 110;
+    const iconY = cy + (cardH - ICON_HS) / 2;
+    drawRoundRect(ctx, iconX, iconY, ICON_WS, ICON_HS, 12);
+    ctx.fillStyle = 'rgba(255,215,0,0.08)';
+    ctx.fill();
+    if (emojiImgS) {
+      const pad = 12;
+      ctx.drawImage(emojiImgS, iconX + pad, iconY + pad, ICON_WS - pad * 2, ICON_HS - pad * 2);
     }
 
     // Texto
-    const textX = thumbX + THUMB_W + 20;
+    const textX = iconX + ICON_WS + 20;
 
     ctx.fillStyle = WHITE;
     ctx.font      = 'bold 28px DejaVu Sans';
