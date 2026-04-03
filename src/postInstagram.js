@@ -45,16 +45,17 @@ async function publicarStory(imagePath, linkUrl) {
     return { postId: 'test-mode-story', mediaUrl: imageUrl };
   }
 
+  const platformData = { contentType: 'story' };
+  if (linkUrl) platformData.linkUrl = linkUrl;
+
   const payload = {
-    platforms: [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }],
+    platforms: [{
+      platform: 'instagram',
+      accountId: process.env.ZERNIO_ACCOUNT_ID,
+      platformSpecificData: platformData,
+    }],
     content: '',
     mediaItems: [{ type: 'image', url: imageUrl }],
-    platformSpecificData: {
-      instagram: {
-        contentType: 'story',
-        ...(linkUrl ? { linkUrl } : {}),
-      },
-    },
     publishNow: true,
   };
 

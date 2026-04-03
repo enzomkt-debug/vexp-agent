@@ -12,7 +12,7 @@ const SUBTITLE_COLOR = '#cccccc';
 const WIDTH = 1080;
 const HEIGHT = 1080;
 const STORY_WIDTH = 1080;
-const STORY_HEIGHT = 1350; // 4:5 — máximo aceito pelo Instagram via Zernio
+const STORY_HEIGHT = 1920; // 9:16 — formato nativo de Story
 
 const STOPWORDS = new Set([
   'de','da','do','dos','das','no','na','nos','nas','e','com','para','que',
@@ -187,36 +187,40 @@ async function gerarStory(news) {
 
   await drawBackground(ctx, STORY_WIDTH, STORY_HEIGHT, news.title, 0.85, 'portrait');
 
-  // Accent bars
-  ctx.fillStyle = ACCENT_COLOR;
-  ctx.fillRect(0, 0, STORY_WIDTH, 14);
-  ctx.fillRect(0, STORY_HEIGHT - 14, STORY_WIDTH, 14);
-
   const CX = STORY_WIDTH / 2;
 
-  // Handle label — top center
+  // Safe zones: top UI ~270px, bottom UI ~320px
+  // Usable area: y=270 to y=1600
+  const SAFE_TOP = 270;
+  const SAFE_BOTTOM = 1600;
+
+  // Accent line just inside safe zone (top)
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.fillRect(60, SAFE_TOP, STORY_WIDTH - 120, 4);
+
+  // Handle label
   ctx.fillStyle = ACCENT_COLOR;
   ctx.font = 'bold 44px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('@vendaexponencial', CX, 120);
+  ctx.fillText('@vendaexponencial', CX, SAFE_TOP + 70);
 
-  // Badge — centered
+  // Badge
   ctx.font = 'bold 26px sans-serif';
   const badgeText = '⚡ ECOMMERCE NEWS';
   const badgeW = 24 + ctx.measureText(badgeText).width + 24;
   const badgeX = CX - badgeW / 2;
   ctx.fillStyle = ACCENT_COLOR;
   ctx.beginPath();
-  ctx.roundRect(badgeX, 150, badgeW, 52, 26);
+  ctx.roundRect(badgeX, SAFE_TOP + 90, badgeW, 52, 26);
   ctx.fill();
   ctx.fillStyle = '#000000';
-  ctx.fillText(badgeText, CX, 186);
+  ctx.fillText(badgeText, CX, SAFE_TOP + 126);
 
   // Divider
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
-  ctx.fillRect(80, 230, STORY_WIDTH - 160, 2);
+  ctx.fillRect(80, SAFE_TOP + 170, STORY_WIDTH - 160, 2);
 
-  // Title — large, centered, middle of canvas
+  // Title — centered in the middle of the safe area
   const title = news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title;
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 68px sans-serif';
@@ -239,7 +243,8 @@ async function gerarStory(news) {
   if (line.trim()) lines.push(line.trim());
 
   const totalTitleH = lines.length * lineH;
-  const titleStartY = (STORY_HEIGHT - totalTitleH) / 2 - 60;
+  const contentMidY = (SAFE_TOP + SAFE_BOTTOM) / 2;
+  const titleStartY = contentMidY - totalTitleH / 2;
   lines.forEach((l, i) => ctx.fillText(l, CX, titleStartY + i * lineH));
 
   const afterTitle = titleStartY + totalTitleH + 40;
@@ -248,7 +253,7 @@ async function gerarStory(news) {
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
   ctx.fillRect(80, afterTitle, STORY_WIDTH - 160, 2);
 
-  // Source chip — centered
+  // Source chip
   const sourceLabel = `📰  ${news.source}`;
   ctx.font = '30px sans-serif';
   const srcChipW = Math.min(24 + ctx.measureText(sourceLabel).width + 24, STORY_WIDTH - 120);
@@ -260,15 +265,19 @@ async function gerarStory(news) {
   ctx.fillStyle = SUBTITLE_COLOR;
   ctx.fillText(sourceLabel, CX, afterTitle + 57);
 
-  // CTA — bottom
-  const ctaY = STORY_HEIGHT - 140;
+  // CTA — just inside safe zone (bottom)
+  const ctaY = SAFE_BOTTOM - 110;
   ctx.fillStyle = ACCENT_COLOR;
   ctx.fillRect(80, ctaY - 20, STORY_WIDTH - 160, 3);
   ctx.fillStyle = 'rgba(255, 215, 0, 0.10)';
-  ctx.fillRect(0, ctaY - 10, STORY_WIDTH, 100);
+  ctx.fillRect(0, ctaY - 10, STORY_WIDTH, 110);
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 34px sans-serif';
   ctx.fillText('Leia o artigo completo — link na bio 👆', CX, ctaY + 52);
+
+  // Accent line just inside safe zone (bottom)
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.fillRect(60, SAFE_BOTTOM - 4, STORY_WIDTH - 120, 4);
 
   const filename = `story_${Date.now()}.png`;
   const filepath = path.join(ASSETS_DIR, filename);
