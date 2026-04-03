@@ -19,14 +19,20 @@ async function postToInstagram({ imagePath, caption }) {
     publishNow: true,
   };
 
-  const { data } = await axios.post('https://zernio.com/api/v1/posts', payload, {
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${process.env.ZERNIO_API_KEY}`,
-    },
-  });
+  let res;
+  try {
+    res = await axios.post('https://zernio.com/api/v1/posts', payload, {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${process.env.ZERNIO_API_KEY}`,
+      },
+    });
+  } catch (err) {
+    const detail = err.response?.data ? JSON.stringify(err.response.data) : err.message;
+    throw new Error(`Zernio ${err.response?.status ?? ''}: ${detail}`);
+  }
 
-  return { postId: data.id || data.post_id, mediaUrl: imageUrl };
+  return { postId: res.data.id || res.data.post_id, mediaUrl: imageUrl };
 }
 
 module.exports = { postToInstagram };

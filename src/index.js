@@ -121,3 +121,5 @@ console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horári
 if (process.env.RUN_ON_START === 'true') {
   runPost();
 }
+
+module.exports = { runPost };
