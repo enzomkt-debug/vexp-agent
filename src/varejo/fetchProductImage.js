@@ -2,12 +2,8 @@ const axios = require('axios');
 
 const WIKI_API = 'https://commons.wikimedia.org/w/api.php';
 const WIKI_HEADERS = { 'User-Agent': 'vexp-agent/1.0 (ecommerce-trends-bot)' };
+const UNSPLASH_KEY = process.env.UNSPLASH_ACCESS_KEY;
 
-/**
- * Busca imagem do produto via Wikimedia Commons (gratuito, sem API key).
- * Aceita keyword do produto e opcionalmente o label da categoria para refinar.
- * Retorna URL da imagem ou null se não encontrar.
- */
 async function fetchProductImage(keyword, categoriaLabel = '') {
   // Remove ruído e palavras PT-BR genéricas
   const clean = keyword
@@ -15,27 +11,54 @@ async function fetchProductImage(keyword, categoriaLabel = '') {
     .replace(/\s+/g, ' ')
     .trim();
 
-  // Sufixo de contexto baseado na categoria (melhora resultados do Commons)
   const categoryHint = getCategoryHint(categoriaLabel);
 
   try {
-    const base   = clean;
-    const brand  = clean.split(' ')[0];          // só a marca/modelo
-    const short  = clean.split(' ').slice(0, 2).join(' '); // marca + modelo
+    const base  = clean;
+    const short = clean.split(' ').slice(0, 2).join(' ');
+    const brand = clean.split(' ')[0];
 
-    // Ordem de tentativas: mais específico → mais genérico
+    // 1. Tenta Unsplash (qualidade superior)
+    if (UNSPLASH_KEY) {
+      const attempts = [
+        `${base} ${categoryHint}`.trim(),
+        `${short} ${categoryHint}`.trim(),
+        `${brand} ${categoryHint}`.trim(),
+      ];
+      for (const query of attempts) {
+        const url = await searchUnsplashImage(query);
+        if (url) return url;
+      }
+    }
+
+    // 2. Fallback: Wikimedia Commons
     const attempts = [
-      `${base} ${categoryHint}`.trim(),          // ex: "Nike Pegasus Turbo shoe"
-      `${short} ${categoryHint}`.trim(),          // ex: "Nike Pegasus shoe"
-      `${base}`,                                  // ex: "Nike Pegasus Turbo"
-      `${brand} ${categoryHint}`.trim(),          // ex: "Nike shoe"
+      `${base} ${categoryHint}`.trim(),
+      `${short} ${categoryHint}`.trim(),
+      `${base}`,
+      `${brand} ${categoryHint}`.trim(),
     ];
-
     for (const query of attempts) {
       const url = await searchCommonsImage(query);
       if (url) return url;
     }
+
     return null;
+  } catch {
+    return null;
+  }
+}
+
+async function searchUnsplashImage(query) {
+  try {
+    const { data } = await axios.get('https://api.unsplash.com/search/photos', {
+      params: { query, per_page: 5, orientation: 'squarish' },
+      headers: { Authorization: `Client-ID ${UNSPLASH_KEY}` },
+      timeout: 8000,
+    });
+    const results = data?.results || [];
+    if (!results.length) return null;
+    return results[0].urls?.regular || null;
   } catch {
     return null;
   }
