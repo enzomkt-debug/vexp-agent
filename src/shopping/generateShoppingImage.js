@@ -1,6 +1,7 @@
 const { createCanvas, loadImage, registerFont } = require('canvas');
-const path = require('path');
-const fs   = require('fs');
+const path  = require('path');
+const fs    = require('fs');
+const axios = require('axios');
 const { subirImagemGithub } = require('../utils');
 
 const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
@@ -71,7 +72,16 @@ function wrapLines(ctx, text, maxWidth) {
 async function tryLoadThumbnail(url) {
   if (!url) return null;
   try {
-    return await loadImage(url);
+    const response = await axios.get(url, {
+      responseType: 'arraybuffer',
+      timeout: 8000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+        'Referer': 'https://www.google.com.br/',
+      },
+    });
+    return await loadImage(Buffer.from(response.data));
   } catch {
     return null;
   }
@@ -139,11 +149,11 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
   let cardY = titleBottom + 28;
 
   // ── Cards de produtos ─────────────────────────────────────────────────────
-  const products = (shoppingData.products || []).slice(0, Math.min(5, 5));
-  const cardH    = 130;
-  const cardGap  = 14;
-  const THUMB_W  = 90;
-  const THUMB_H  = 90;
+  const products = (shoppingData.products || []).slice(0, 4);
+  const cardH    = 148;
+  const cardGap  = 16;
+  const THUMB_W  = 100;
+  const THUMB_H  = 100;
 
   for (const [i, product] of products.entries()) {
     const cx = PAD;

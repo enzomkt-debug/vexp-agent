@@ -65,7 +65,7 @@ async function fetchShoppingData(categoria) {
 
   const products = deduped
     .sort((a, b) => a.position - b.position)
-    .slice(0, 5);
+    .slice(0, 4);
 
   return {
     categoria,
