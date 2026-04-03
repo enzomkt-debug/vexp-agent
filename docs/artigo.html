@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artigo — Venda Exponencial</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      border-bottom: 2px solid #FFD700;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: #0a0a0a;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #FFD700;
+      letter-spacing: -0.5px;
+    }
+
+    .logo span { color: #fff; font-weight: 400; }
+
+    .btn-instagram {
+      background: #FFD700;
+      color: #000;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 10px 20px;
+      border-radius: 999px;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-instagram:hover { opacity: 0.85; }
+
+    /* ARTICLE */
+    .article-wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #FFD700;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 32px;
+      transition: opacity 0.2s;
+    }
+
+    .back-btn:hover { opacity: 0.75; }
+
+    .article-img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 16px;
+      display: block;
+      margin-bottom: 36px;
+      background: #1a1a1a;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .fonte-badge {
+      background: #FFD700;
+      color: #000;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-text {
+      color: #555;
+      font-size: 0.85rem;
+    }
+
+    h1.article-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.25;
+      margin-bottom: 32px;
+      color: #fff;
+    }
+
+    .article-body {
+      color: #ccc;
+      line-height: 1.8;
+      font-size: 1.05rem;
+    }
+
+    .article-body p {
+      margin-bottom: 20px;
+    }
+
+    .article-body strong, .article-body b {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .article-body h1, .article-body h2, .article-body h3 {
+      color: #FFD700;
+      margin: 32px 0 12px;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .article-body ul, .article-body ol {
+      margin: 0 0 20px 24px;
+    }
+
+    .article-body li { margin-bottom: 8px; }
+
+    /* DIVIDER */
+    .divider {
+      border: none;
+      border-top: 1px solid #1e1e1e;
+      margin: 48px 0;
+    }
+
+    /* CTA */
+    .cta-box {
+      background: #111;
+      border: 1px solid #FFD700;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      margin-top: 48px;
+    }
+
+    .cta-box p {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 16px;
+    }
+
+    .cta-box p em {
+      color: #FFD700;
+      font-style: normal;
+    }
+
+    .cta-box small {
+      display: block;
+      color: #555;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      background: #FFD700;
+      color: #000;
+      font-weight: 700;
+      padding: 12px 24px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.85; }
+
+    .btn-outline {
+      background: transparent;
+      color: #FFD700;
+      border: 1px solid #FFD700;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-outline:hover { background: #FFD700; color: #000; }
+
+    /* STATE */
+    .state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #555;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #222;
+      border-top-color: #FFD700;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid #1a1a1a;
+      padding: 30px 40px;
+      text-align: center;
+      color: #444;
+      font-size: 0.85rem;
+    }
+
+    footer a { color: #FFD700; text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media (max-width: 600px) {
+      header { padding: 16px 20px; }
+      .logo { font-size: 1.2rem; }
+      .article-wrap { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Venda <span>Exponencial</span></div>
+  <a class="btn-instagram" href="https://instagram.com/vendaexponencial" target="_blank" rel="noopener">
+    ⚡ Seguir no Instagram
+  </a>
+</header>
+
+<main class="article-wrap" id="content">
+  <div class="state">
+    <div class="spinner"></div>
+    <p>Carregando artigo...</p>
+  </div>
+</main>
+
+<footer>
+  <p>
+    Feito com ⚡ por
+    <a href="https://instagram.com/vendaexponencial" target="_blank" rel="noopener">@vendaexponencial</a>
+    &nbsp;·&nbsp; Conteúdo gerado automaticamente por IA
+  </p>
+</footer>
+
+<script>
+  const SUPABASE_URL = 'https://dizkzzxquztoeqtjkcib.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpemt6enhxdXp0b2VxdGprY2liIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMTYyMzcsImV4cCI6MjA5MDc5MjIzN30.9FslqZBkneQWzpiv6CyASardK_8hoRjzvaaqovdtNAA';
+
+  const { createClient } = supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  function formatDate(iso) {
+    if (!iso) return '';
+    return new Date(iso).toLocaleDateString('pt-BR', {
+      day: '2-digit', month: 'long', year: 'numeric'
+    });
+  }
+
+  function markdownToHtml(text) {
+    if (!text) return '';
+    return text
+      // Headers
+      .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+      .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+      .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+      // Bold
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      // Italic
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      // Line breaks to paragraphs
+      .split(/\n{2,}/)
+      .map(block => block.trim())
+      .filter(Boolean)
+      .map(block => /^<h[123]>/.test(block) ? block : `<p>${block.replace(/\n/g, '<br>')}</p>`)
+      .join('\n');
+  }
+
+  async function loadArtigo() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const content = document.getElementById('content');
+
+    if (!id) {
+      content.innerHTML = `<div class="state"><p style="font-size:2rem">⚠️</p><p style="margin-top:12px">ID do artigo não informado.</p><a class="back-btn" href="index.html" style="justify-content:center;margin-top:20px">← Voltar</a></div>`;
+      return;
+    }
+
+    const { data, error } = await sb
+      .from('noticias')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
+      content.innerHTML = `<div class="state"><p style="font-size:2rem">📭</p><p style="margin-top:12px">Artigo não encontrado.</p><a class="back-btn" href="index.html" style="justify-content:center;margin-top:20px">← Voltar</a></div>`;
+      return;
+    }
+
+    document.title = `${data.titulo} — Venda Exponencial`;
+
+    const imgHTML = data.imagem_github
+      ? `<img class="article-img" src="${data.imagem_github}" alt="${data.titulo}" onerror="this.style.display='none'">`
+      : '';
+
+    const artigoHTML = markdownToHtml(data.artigo_completo);
+
+    const igURL = 'https://instagram.com/vendaexponencial';
+
+    content.innerHTML = `
+      <a class="back-btn" href="index.html">← Voltar para notícias</a>
+
+      ${imgHTML}
+
+      <div class="article-meta">
+        <span class="fonte-badge">${data.fonte || 'Notícia'}</span>
+        <span class="data-text">${formatDate(data.publicado_em)}</span>
+      </div>
+
+      <h1 class="article-title">${data.titulo}</h1>
+
+      <div class="article-body">${artigoHTML}</div>
+
+      <hr class="divider">
+
+      <div class="cta-box">
+        <p>Siga <em>@vendaexponencial</em> para mais conteúdo sobre vendas digitais</p>
+        <small>Notícias, análises e estratégias para quem vende online no Brasil</small>
+        <div class="cta-actions">
+          <a class="btn-primary" href="${igURL}" target="_blank" rel="noopener">⚡ Seguir no Instagram</a>
+          <a class="btn-outline" href="index.html">← Ver mais notícias</a>
+        </div>
+      </div>
+    `;
+  }
+
+  loadArtigo();
+</script>
+</body>
+</html>
