@@ -37,6 +37,14 @@
   }
   </script>
 
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y08K3ESSW7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-Y08K3ESSW7', { send_page_view: true });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -434,8 +442,21 @@
     clearTimeout(searchTimer);
     searchTimer = setTimeout(() => {
       searchQuery = e.target.value;
+      if (searchQuery.length > 2) gtag('event', 'search', { search_term: searchQuery });
       applyFilters();
     }, 260);
+  });
+
+  // Eventos de filtro
+  document.querySelectorAll('.filter-btn[data-tipo]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.tipo) gtag('event', 'filter_tipo', { filter_value: btn.dataset.tipo });
+    });
+  });
+  document.querySelectorAll('.filter-btn[data-periodo]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.periodo) gtag('event', 'filter_periodo', { filter_value: btn.dataset.periodo });
+    });
   });
 
   // Load more

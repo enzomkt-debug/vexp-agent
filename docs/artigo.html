@@ -6,6 +6,14 @@
   <!-- Meta tags preenchidas dinamicamente via JS -->
   <title>Artigo — Venda Exponencial</title>
   <meta name="robots" content="index, follow" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y08K3ESSW7"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-Y08K3ESSW7', { send_page_view: true });
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -250,6 +258,9 @@
     injectMeta({ title: data.titulo, description: desc, image: data.imagem_github, slug: data.slug || data.id, pubDate: data.publicado_em });
     injectJsonLd(data);
 
+    // Evento: artigo lido
+    gtag('event', 'article_view', { article_title: data.titulo, article_source: data.fonte || 'Notícia' });
+
     const imgHTML = data.imagem_github
       ? `<img class="article-img" src="${data.imagem_github}" alt="${data.titulo}" onerror="this.style.display='none'">`
       : '';
@@ -305,6 +316,7 @@
   }
 
   function copyLink(btn) {
+    gtag('event', 'share', { method: 'copy_link', content_type: 'article' });
     navigator.clipboard.writeText(window.location.href).then(() => {
       btn.classList.add('copied');
       btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Copiado!';
@@ -314,6 +326,25 @@
       }, 2500);
     });
   }
+
+  // Rastreamento de scroll de leitura (50% e 100%)
+  const scrollMilestones = new Set();
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('content');
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const total = el.offsetHeight;
+    const scrolled = window.scrollY + window.innerHeight - el.offsetTop;
+    const pct = Math.round((scrolled / total) * 100);
+    if (pct >= 50 && !scrollMilestones.has(50)) {
+      scrollMilestones.add(50);
+      gtag('event', 'article_scroll', { scroll_depth: '50%' });
+    }
+    if (pct >= 100 && !scrollMilestones.has(100)) {
+      scrollMilestones.add(100);
+      gtag('event', 'article_scroll', { scroll_depth: '100%' });
+    }
+  }, { passive: true });
 
   loadArtigo();
 </script>
