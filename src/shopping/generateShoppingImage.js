@@ -109,27 +109,35 @@ async function loadCategoryEmoji(categoriaLabel) {
   }
 }
 
-// Extrai og:image da página do produto — retorna a imagem real do lojista
+// Extrai og:image da página do produto lendo apenas o <head> via stream
 async function fetchProductOgImage(link) {
   if (!link || !link.startsWith('http')) return null;
-  try {
-    const { data } = await axios.get(link, {
-      timeout: 7000,
-      responseType: 'text',
+  return new Promise((resolve) => {
+    axios.get(link, {
+      timeout: 8000,
+      responseType: 'stream',
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml',
       },
       maxRedirects: 3,
-      // Lê apenas os primeiros 30KB para encontrar as meta tags no <head>
-      maxContentLength: 30000,
-    });
-    const match = data.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-               || data.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-    return match ? match[1] : null;
-  } catch {
-    return null;
-  }
+    }).then(({ data: stream }) => {
+      let buf = '';
+      stream.on('data', (chunk) => {
+        buf += chunk.toString('utf8');
+        // Para de ler depois do </head> — og:image sempre está no <head>
+        if (buf.includes('</head>') || buf.length > 80000) {
+          stream.destroy();
+        }
+      });
+      stream.on('close', () => {
+        const match = buf.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+                   || buf.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+        resolve(match ? match[1] : null);
+      });
+      stream.on('error', () => resolve(null));
+    }).catch(() => resolve(null));
+  });
 }
 
 // Carrega imagem real do produto: og:image da página → emoji da categoria
