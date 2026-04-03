@@ -51,6 +51,10 @@ async function runShopping() {
   const shoppingData = await fetchShoppingData(categoria);
   console.log(`[shopping] Produtos coletados: ${shoppingData.products.length}`);
 
+  if (!shoppingData.products.length) {
+    throw new Error(`[shopping] Nenhum produto encontrado para "${categoria.label}" no Google Shopping.`);
+  }
+
   // 3. Gerar artigo e legenda em paralelo
   const [artigo, caption] = await Promise.all([
     generateShoppingArticle(shoppingData),
