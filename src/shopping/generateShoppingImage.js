@@ -140,21 +140,43 @@ async function fetchProductOgImage(link) {
   });
 }
 
-// Carrega imagem real do produto: og:image da página → emoji da categoria
+const BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+  'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+  'Referer': 'https://www.google.com.br/',
+};
+
+async function tryLoadUrl(url) {
+  try {
+    const { data } = await axios.get(url, {
+      responseType: 'arraybuffer',
+      timeout: 6000,
+      headers: BROWSER_HEADERS,
+    });
+    if (data.byteLength > 500) return await loadImage(Buffer.from(data));
+  } catch { /* fallthrough */ }
+  return null;
+}
+
+// Carrega imagem real do produto:
+// 1. Thumbnail do ScaleSerp (encrypted-tbn do Google Shopping)
+// 2. og:image da página do lojista
+// 3. Emoji da categoria (fallback garantido)
 async function loadProductImage(product, emojiImg) {
-  // 1. Tenta og:image da página do produto
+  // 1. URL direta do ScaleSerp
+  if (product.thumbnail) {
+    const img = await tryLoadUrl(product.thumbnail);
+    if (img) return { img, isEmoji: false };
+  }
+
+  // 2. og:image da página do lojista
   const ogUrl = await fetchProductOgImage(product.link);
   if (ogUrl) {
-    try {
-      const { data } = await axios.get(ogUrl, {
-        responseType: 'arraybuffer',
-        timeout: 6000,
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-      });
-      if (data.byteLength > 500) return { img: await loadImage(Buffer.from(data)), isEmoji: false };
-    } catch { /* fallthrough */ }
+    const img = await tryLoadUrl(ogUrl);
+    if (img) return { img, isEmoji: false };
   }
-  // 2. Fallback: emoji da categoria (já carregado)
+
+  // 3. Emoji da categoria
   return { img: emojiImg, isEmoji: true };
 }
 
