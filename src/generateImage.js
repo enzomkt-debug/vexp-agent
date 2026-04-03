@@ -14,25 +14,55 @@ const HEIGHT = 1080;
 const STORY_WIDTH = 1080;
 const STORY_HEIGHT = 1350; // 4:5 — máximo aceito pelo Instagram via Zernio
 
-async function extractOgImage(url) {
+const STOPWORDS = new Set([
+  'de','da','do','dos','das','no','na','nos','nas','e','com','para','que',
+  'em','um','uma','o','a','os','as','por','se','ao','ou','mas','é','são',
+  'foi','ser','ter','mais','seu','sua','seus','suas','pelo','pela',
+]);
+
+function extrairKeywords(titulo) {
+  const palavras = titulo
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 2 && !STOPWORDS.has(w));
+
+  return palavras.slice(0, 3).join(' ') || 'ecommerce business digital';
+}
+
+async function buscarImagemUnsplash(titulo, orientation = 'landscape') {
+  const key = process.env.UNSPLASH_ACCESS_KEY;
+  if (!key) return null;
+
+  const query = extrairKeywords(titulo);
+
   try {
-    const { data: html } = await axios.get(url, {
+    const { data } = await axios.get('https://api.unsplash.com/photos/random', {
+      params: { query, orientation, client_id: key },
       timeout: 8000,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vexp-agent/1.0)' },
     });
-    const match = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
-      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
-    return match ? match[1] : null;
+    return data?.urls?.regular || null;
   } catch {
-    return null;
+    // Fallback com query genérica
+    try {
+      const { data } = await axios.get('https://api.unsplash.com/photos/random', {
+        params: { query: 'ecommerce business digital', orientation, client_id: key },
+        timeout: 8000,
+      });
+      return data?.urls?.regular || null;
+    } catch {
+      return null;
+    }
   }
 }
 
-async function loadBackground(ogImageUrl) {
+async function loadBackground(imageUrl) {
   try {
-    const response = await axios.get(ogImageUrl, {
+    const response = await axios.get(imageUrl, {
       responseType: 'arraybuffer',
-      timeout: 8000,
+      timeout: 10000,
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vexp-agent/1.0)' },
     });
     return await loadImage(Buffer.from(response.data));
@@ -59,21 +89,21 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   return posY;
 }
 
-async function drawBackground(ctx, w, h, link, overlayAlpha) {
-  let usedOgImage = false;
-  if (link) {
-    const ogUrl = await extractOgImage(link);
-    if (ogUrl) {
-      const bgImage = await loadBackground(ogUrl);
-      if (bgImage) {
-        ctx.drawImage(bgImage, 0, 0, w, h);
-        ctx.fillStyle = `rgba(0, 0, 0, ${overlayAlpha})`;
-        ctx.fillRect(0, 0, w, h);
-        usedOgImage = true;
-      }
+async function drawBackground(ctx, w, h, titulo, overlayAlpha, orientation = 'landscape') {
+  let usedPhoto = false;
+
+  const imageUrl = await buscarImagemUnsplash(titulo, orientation);
+  if (imageUrl) {
+    const bgImage = await loadBackground(imageUrl);
+    if (bgImage) {
+      ctx.drawImage(bgImage, 0, 0, w, h);
+      ctx.fillStyle = `rgba(0, 0, 0, ${overlayAlpha})`;
+      ctx.fillRect(0, 0, w, h);
+      usedPhoto = true;
     }
   }
-  if (!usedOgImage) {
+
+  if (!usedPhoto) {
     ctx.fillStyle = '#0a0a0a';
     ctx.fillRect(0, 0, w, h);
     ctx.beginPath();
@@ -91,7 +121,7 @@ async function generateImage(news) {
   const canvas = createCanvas(WIDTH, HEIGHT);
   const ctx = canvas.getContext('2d');
 
-  await drawBackground(ctx, WIDTH, HEIGHT, news.link, 0.75);
+  await drawBackground(ctx, WIDTH, HEIGHT, news.title, 0.75, 'landscape');
 
   // Accent bars
   ctx.fillStyle = ACCENT_COLOR;
@@ -155,7 +185,7 @@ async function gerarStory(news) {
   const canvas = createCanvas(STORY_WIDTH, STORY_HEIGHT);
   const ctx = canvas.getContext('2d');
 
-  await drawBackground(ctx, STORY_WIDTH, STORY_HEIGHT, news.link, 0.85);
+  await drawBackground(ctx, STORY_WIDTH, STORY_HEIGHT, news.title, 0.85, 'portrait');
 
   // Accent bars
   ctx.fillStyle = ACCENT_COLOR;
@@ -192,7 +222,6 @@ async function gerarStory(news) {
   ctx.font = 'bold 68px sans-serif';
   ctx.textAlign = 'center';
 
-  // Measure and wrap centered
   const words = title.split(' ');
   const maxW = STORY_WIDTH - 120;
   const lineH = 86;
