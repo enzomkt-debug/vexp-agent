@@ -114,7 +114,8 @@ async function insertAffiliateLinks(articleText, productLinks) {
 Sua tarefa: inserir os links de afiliado de forma NATURAL e CONTEXTUAL no texto do artigo. Cada link deve ser inserido onde o produto ou termo já é mencionado organicamente no texto, transformando o texto existente em um hiperlink markdown: [texto](url).
 
 REGRAS:
-- Insira no máximo 3 links
+- Insira no máximo 3 links no total
+- Cada link deve aparecer UMA ÚNICA VEZ no artigo, na primeira menção relevante
 - Insira APENAS onde o produto é mencionado naturalmente no texto — nunca force uma menção
 - Não adicione frases novas, não altere o conteúdo, não adicione notas ou avisos
 - Se um produto não for mencionado no artigo, não insira o link
