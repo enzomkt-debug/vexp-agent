@@ -112,10 +112,11 @@ async function generateImage(news) {
   // Category badge
   ctx.fillStyle = ACCENT_COLOR;
   ctx.beginPath();
-  ctx.roundRect(60, 110, 220, 44, 22);
+  ctx.roundRect(60, 110, 270, 44, 22);
   ctx.fill();
   ctx.fillStyle = '#000000';
-  ctx.font = 'bold 22px sans-serif';
+  ctx.font = 'bold 21px sans-serif';
+  ctx.textAlign = 'left';
   ctx.fillText('⚡ ECOMMERCE NEWS', 80, 139);
 
   // Divider
@@ -145,16 +146,6 @@ async function generateImage(news) {
     ctx.font = '30px sans-serif';
     wrapText(ctx, snippet + '...', 60, lastY + 180, WIDTH - 120, 42);
   }
-
-  // Bottom CTA bar
-  ctx.fillStyle = ACCENT_COLOR;
-  ctx.fillRect(60, HEIGHT - 140, WIDTH - 120, 3);
-  ctx.fillStyle = 'rgba(255, 215, 0, 0.10)';
-  ctx.fillRect(60, HEIGHT - 130, WIDTH - 120, 80);
-  ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 30px sans-serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('🚀  Siga para mais novidades de ecommerce e vendas digitais', WIDTH / 2, HEIGHT - 82);
 
   // Save to disk
   const filename = `post_${Date.now()}.png`;
