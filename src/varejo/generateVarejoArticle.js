@@ -117,10 +117,7 @@ async function generateVarejoCaption(trendData) {
 ${destaques.length ? `Termos com crescimento acima do esperado: ${destaques.join(', ')}` : `Interesse de busca: ${mainTerm.avgInterest}/100`}
 Tom: direto, menciona um produto ou modelo específico, surpreende o leitor com um dado não-óbvio. Evite generalizações.
 
-Retorne SOMENTE a legenda + hashtags:
-[texto da legenda]
-
-#vendaexponencial #ecommerce #varejo #tendencias #vendasdigitais`;
+Retorne SOMENTE a legenda + hashtags. As hashtags devem ser relevantes ao conteúdo específico: categoria, produtos citados, marcas, tendência. Sempre inclua #vendaexponencial. As demais devem ser dinâmicas — nunca um conjunto fixo genérico. Use 5 a 8 hashtags no total.`;
 
   const message = await client.messages.create({
     model:      'claude-sonnet-4-6',

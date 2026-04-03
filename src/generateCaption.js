@@ -11,7 +11,7 @@ Com base na notícia abaixo, crie uma legenda para o Instagram que:
 - Seja envolvente e gere curiosidade
 - Use 2 a 3 emojis relevantes
 - Inclua uma chamada para ação curta (ex: "Salva esse post!", "Comenta o que achou!")
-- Termine com os hashtags: #vendaexponencial #ecommerce #vendasdigitais #marketingdigital #empreendedorismo
+- Termine com 5 a 8 hashtags relevantes ao conteúdo específico da notícia (produto, mercado, tema, plataforma citada etc.). Sempre inclua #vendaexponencial. As demais devem ser dinâmicas e relacionadas ao assunto — nunca um conjunto fixo genérico
 
 IMPORTANTE: Priorize notícias factuais sobre o mercado (tendências, dados, mudanças de comportamento, novidades de plataformas). Se a notícia for puramente um post de blog de uma empresa falando sobre si mesma, serviço próprio ou conteúdo patrocinado/autopromocional, recuse com a mensagem exata: "IRRELEVANTE"
 
