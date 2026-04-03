@@ -16,6 +16,9 @@ async function fetchShoppingResults(keyword) {
       timeout: 15000,
     });
 
+    console.log(`[fetchShopping] Campos retornados: ${Object.keys(data).join(', ')}`);
+    console.log(`[fetchShopping] shopping_results: ${data.shopping_results?.length ?? 'ausente'}`);
+
     return (data.shopping_results || []).map((item) => ({
       title:     item.title      || '',
       price:     item.price      || null,
