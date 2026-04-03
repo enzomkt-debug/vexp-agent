@@ -1,11 +1,70 @@
 // Busca dados de tendência do Google Trends para uma categoria específica.
 // Usa google-trends-api (não oficial) como fonte principal,
-// com fallback para DataForSEO se credenciais disponíveis.
+// com fallback para SerpAPI ou DataForSEO se credenciais disponíveis.
 
+const axios = require('axios');
 const { fetchInterestOverTime, fetchRelatedQueries, fetchRelatedTopics } = require('../trendSources/googleTrendsUnofficial');
 const { fetchTrendsDataForSEO } = require('../trendSources/dataForSEO');
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// ── SerpAPI helpers ──────────────────────────────────────────────────────────
+async function serpApiRequest(params) {
+  const { data } = await axios.get('https://serpapi.com/search.json', {
+    params: { ...params, api_key: process.env.SERPAPI_KEY },
+    timeout: 15000,
+  });
+  return data;
+}
+
+async function fetchInterestOverTimeSerpApi(keywords, { dateFrom, dateTo }) {
+  const date = `${dateFrom} ${dateTo}`;
+  const results = [];
+
+  for (const kw of keywords) {
+    try {
+      const data = await serpApiRequest({ engine: 'google_trends', q: kw, geo: 'BR', hl: 'pt-BR', date, data_type: 'TIMESERIES' });
+      const timeline = data.interest_over_time?.timeline_data || [];
+      if (!timeline.length) continue;
+
+      const values = timeline.map((t) => t.values?.[0]?.extracted_value ?? 0).filter((v) => v > 0);
+      const avgInterest  = values.length ? Math.round(values.reduce((a, b) => a + b, 0) / values.length) : 0;
+      const peakInterest = values.length ? Math.max(...values) : 0;
+      results.push({ keyword: kw, avgInterest, peakInterest, weeklyData: timeline });
+      await delay(500);
+    } catch (err) {
+      console.warn(`[SerpAPI] Falha para "${kw}": ${err.message}`);
+    }
+  }
+
+  return results.sort((a, b) => b.avgInterest - a.avgInterest);
+}
+
+async function fetchRelatedQueriesSerpApi(keyword, { dateFrom, dateTo }) {
+  const date = `${dateFrom} ${dateTo}`;
+  try {
+    const data = await serpApiRequest({ engine: 'google_trends', q: keyword, geo: 'BR', hl: 'pt-BR', date, data_type: 'RELATED_QUERIES' });
+    const related = data.related_queries || {};
+    const mapItems = (items) => (items || []).map((i) => ({ keyword: i.query, value: i.extracted_value ?? i.value ?? 0 }));
+    return { rising: mapItems(related.rising?.queries), top: mapItems(related.default?.queries) };
+  } catch (err) {
+    console.warn(`[SerpAPI] Related queries falhou para "${keyword}": ${err.message}`);
+    return { rising: [], top: [] };
+  }
+}
+
+async function fetchRelatedTopicsSerpApi(keyword, { dateFrom, dateTo }) {
+  const date = `${dateFrom} ${dateTo}`;
+  try {
+    const data = await serpApiRequest({ engine: 'google_trends', q: keyword, geo: 'BR', hl: 'pt-BR', date, data_type: 'RELATED_TOPICS' });
+    const related = data.related_topics || {};
+    const mapItems = (items) => (items || []).map((i) => ({ keyword: i.topic?.title ?? i.title, value: i.extracted_value ?? 0 }));
+    return { rising: mapItems(related.rising?.topics), top: mapItems(related.default?.topics) };
+  } catch (err) {
+    console.warn(`[SerpAPI] Related topics falhou para "${keyword}": ${err.message}`);
+    return { rising: [], top: [] };
+  }
+}
 
 function buildPeriod90Days() {
   const end   = new Date();
@@ -49,9 +108,16 @@ async function fetchVarejoTrends(categoria) {
     }
   }
 
-  // ── Fallback: google-trends-api ──
+  // ── Fallback 1: google-trends-api ──
   if (!trendTerms.length) {
     trendTerms = await fetchInterestOverTime(categoria.keywords, optsInterest);
+  }
+
+  // ── Fallback 2: SerpAPI ──
+  if (!trendTerms.length && process.env.SERPAPI_KEY) {
+    console.log('[fetchVarejoTrends] Tentando SerpAPI...');
+    trendTerms = await fetchInterestOverTimeSerpApi(categoria.keywords, { dateFrom: period.dateFrom, dateTo: period.dateTo });
+    if (trendTerms.length) source = 'SerpAPI';
   }
 
   if (!trendTerms.length) {
@@ -61,9 +127,14 @@ async function fetchVarejoTrends(categoria) {
   // Busca queries e tópicos relacionados para o termo principal
   await delay(1200);
   const mainKeyword = trendTerms[0].keyword;
+  const useSerpApi  = source === 'SerpAPI';
   const [relatedQueries, relatedTopics] = await Promise.all([
-    fetchRelatedQueries(mainKeyword, optsRelated),
-    fetchRelatedTopics(mainKeyword, optsRelated),
+    useSerpApi
+      ? fetchRelatedQueriesSerpApi(mainKeyword, { dateFrom: period.dateFrom, dateTo: period.dateTo })
+      : fetchRelatedQueries(mainKeyword, optsRelated),
+    useSerpApi
+      ? fetchRelatedTopicsSerpApi(mainKeyword, { dateFrom: period.dateFrom, dateTo: period.dateTo })
+      : fetchRelatedTopics(mainKeyword, optsRelated),
   ]);
 
   // ── Rising queries: o que cresceu ACIMA DO ESPERADO (o dado não-óbvio) ──
@@ -83,7 +154,9 @@ async function fetchVarejoTrends(categoria) {
   if (risingTerms.length > 0) {
     await delay(1200);
     try {
-      const drill = await fetchRelatedQueries(risingTerms[0].keyword, optsRelated);
+      const drill = useSerpApi
+        ? await fetchRelatedQueriesSerpApi(risingTerms[0].keyword, { dateFrom: period.dateFrom, dateTo: period.dateTo })
+        : await fetchRelatedQueries(risingTerms[0].keyword, optsRelated);
       secondLevelRising = (drill.rising || [])
         .filter((q) => q.keyword)
         .slice(0, 4)
@@ -99,7 +172,9 @@ async function fetchVarejoTrends(categoria) {
   if (kwsToFetch.length >= 2) {
     await delay(1200);
     try {
-      risingTrends = await fetchInterestOverTime(kwsToFetch, optsInterest);
+      risingTrends = useSerpApi
+        ? await fetchInterestOverTimeSerpApi(kwsToFetch, { dateFrom: period.dateFrom, dateTo: period.dateTo })
+        : await fetchInterestOverTime(kwsToFetch, optsInterest);
     } catch (err) {
       console.warn(`[fetchVarejoTrends] Falha ao buscar interesse dos rising terms: ${err.message}`);
     }
