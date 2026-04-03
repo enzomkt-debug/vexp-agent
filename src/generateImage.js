@@ -109,15 +109,18 @@ async function generateImage(news) {
   ctx.textAlign = 'left';
   ctx.fillText('@vendaexponencial', 60, 80);
 
-  // Category badge
-  ctx.fillStyle = ACCENT_COLOR;
-  ctx.beginPath();
-  ctx.roundRect(60, 110, 285, 44, 22);
-  ctx.fill();
-  ctx.fillStyle = '#000000';
+  // Category badge — dynamic width
   ctx.font = 'bold 21px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('⚡ ECOMMERCE NEWS', 80, 139);
+  const badgeText = '⚡ ECOMMERCE NEWS';
+  const badgeTextW = ctx.measureText(badgeText).width;
+  const badgeW = 20 + badgeTextW + 20; // pad-left + text + pad-right
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.beginPath();
+  ctx.roundRect(60, 110, badgeW, 44, 22);
+  ctx.fill();
+  ctx.fillStyle = '#000000';
+  ctx.fillText(badgeText, 80, 139);
 
   // Divider
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
@@ -130,14 +133,17 @@ async function generateImage(news) {
   ctx.textAlign = 'left';
   const lastY = wrapText(ctx, title, 60, 280, WIDTH - 120, 74);
 
-  // Source chip
+  // Source chip — dynamic width
+  const sourceLabel = `📰  ${news.source}`;
+  ctx.font = '26px sans-serif';
+  const sourceTextW = ctx.measureText(sourceLabel).width;
+  const sourceChipW = Math.min(20 + sourceTextW + 20, WIDTH - 120); // cap at canvas width
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
   ctx.beginPath();
-  ctx.roundRect(60, lastY + 60, 300, 48, 24);
+  ctx.roundRect(60, lastY + 60, sourceChipW, 48, 24);
   ctx.fill();
   ctx.fillStyle = SUBTITLE_COLOR;
-  ctx.font = '26px sans-serif';
-  ctx.fillText(`📰  ${news.source}`, 80, lastY + 92);
+  ctx.fillText(sourceLabel, 80, lastY + 92);
 
   // Summary snippet
   if (news.summary) {

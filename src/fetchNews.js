@@ -30,19 +30,40 @@ function isRelevant(item) {
   return RELEVANCE_KEYWORDS.some((kw) => text.includes(kw));
 }
 
+function extractGoogleNewsSource(rawTitle) {
+  // Google News titles end with " - Source Name"
+  const parts = rawTitle.split(' - ');
+  if (parts.length >= 2) return parts[parts.length - 1].trim();
+  return null;
+}
+
+function cleanGoogleNewsTitle(rawTitle) {
+  const parts = rawTitle.split(' - ');
+  if (parts.length >= 2) return parts.slice(0, -1).join(' - ').trim();
+  return rawTitle;
+}
+
 async function fetchLatestNews() {
   const allItems = [];
 
   for (const feedUrl of RSS_FEEDS) {
+    const isGoogleNews = feedUrl.includes('news.google.com');
     try {
       const feed = await parser.parseURL(feedUrl);
-      const items = (feed.items || []).slice(0, 10).map((item) => ({
-        title: item.title || '',
-        link: item.link || '',
-        summary: item.contentSnippet || item.content || '',
-        source: feed.title || feedUrl,
-        pubDate: item.pubDate || new Date().toISOString(),
-      }));
+      const items = (feed.items || []).slice(0, 10).map((item) => {
+        const rawTitle = item.title || '';
+        const title  = isGoogleNews ? cleanGoogleNewsTitle(rawTitle) : rawTitle;
+        const source = isGoogleNews
+          ? (extractGoogleNewsSource(rawTitle) || feed.title || feedUrl)
+          : (feed.title || feedUrl);
+        return {
+          title,
+          link:    item.link || '',
+          summary: item.contentSnippet || item.content || '',
+          source,
+          pubDate: item.pubDate || new Date().toISOString(),
+        };
+      });
 
       const relevant = items.filter(isRelevant);
       if (relevant.length === 0) {
