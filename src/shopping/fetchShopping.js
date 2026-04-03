@@ -6,28 +6,27 @@ async function fetchShoppingResults(keyword) {
   try {
     const { data } = await axios.get('https://api.scaleserp.com/search', {
       params: {
-        q:       keyword,
-        tbm:     'shop',
-        gl:      'br',
-        hl:      'pt-br',
-        num:     10,
-        api_key: process.env.SCALESERP_KEY,
+        q:             keyword,
+        search_type:   'shopping',
+        gl:            'br',
+        hl:            'pt-br',
+        location:      'Brazil',
+        google_domain: 'google.com.br',
+        num:           10,
+        api_key:       process.env.SCALESERP_KEY,
       },
       timeout: 15000,
     });
 
-    console.log(`[fetchShopping] Campos retornados: ${Object.keys(data).join(', ')}`);
-    console.log(`[fetchShopping] shopping_results: ${data.shopping_results?.length ?? 'ausente'}`);
-
     return (data.shopping_results || []).map((item) => ({
-      title:     item.title      || '',
-      price:     item.price      || null,
-      rating:    item.rating     || null,
-      reviews:   item.reviews    || null,
-      source:    item.source     || null,
-      thumbnail: item.thumbnail  || null,
-      link:      item.link       || null,
-      position:  item.position   || 999,
+      title:     item.title                          || '',
+      price:     item.price                          || null,
+      rating:    item.rating                         || null,
+      reviews:   item.reviews                        || null,
+      source:    item.merchant || item.source        || null,
+      thumbnail: item.image   || item.thumbnail      || null,
+      link:      item.link                           || null,
+      position:  item.position                       || 999,
     }));
   } catch (err) {
     console.warn(`[fetchShopping] Erro ao buscar "${keyword}": ${err.message}`);
