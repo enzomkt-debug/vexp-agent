@@ -1,7 +1,18 @@
 require('dotenv').config();
 const Anthropic = require('@anthropic-ai/sdk');
+const { addAffiliateLinks } = require('./amazonAfiliados');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+
+// Extrai 2-3 termos de produto do título da notícia para busca na Amazon
+function extractKeywords(news) {
+  const stopWords = new Set(['de','do','da','dos','das','em','no','na','nos','nas','com','para','por','que','como','mais','uma','um','os','as','ao','às']);
+  return news.title
+    .replace(/[^a-zA-ZÀ-ú\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()))
+    .slice(0, 3);
+}
 
 async function generateArticle(news) {
   const prompt = `Você é um jornalista experiente de negócios conversando com um empreendedor brasileiro. Escreve para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais.
@@ -40,7 +51,9 @@ URL: ${news.link}`;
     messages: [{ role: 'user', content: prompt }],
   });
 
-  return message.content[0].text.trim();
+  const artigo = message.content[0].text.trim();
+  const keywords = extractKeywords(news);
+  return addAffiliateLinks(artigo, keywords);
 }
 
 module.exports = { generateArticle };

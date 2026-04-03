@@ -1,5 +1,6 @@
 require('dotenv').config();
 const Anthropic = require('@anthropic-ai/sdk');
+const { addAffiliateLinks } = require('../amazonAfiliados');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -102,7 +103,9 @@ IMPORTANTE: Se os dados de termos específicos estiverem ausentes, não invente 
     messages:   [{ role: 'user', content: prompt }],
   });
 
-  return message.content[0].text.trim();
+  const artigo = message.content[0].text.trim();
+  const keywords = (specificTrends || []).slice(0, 3).map(t => t.keyword).filter(Boolean);
+  return addAffiliateLinks(artigo, keywords);
 }
 
 async function generateVarejoCaption(trendData) {
