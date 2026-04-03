@@ -7,6 +7,9 @@ const RSS_FEEDS = [
   'https://marketingdeconteudo.com/feed/',
   'https://www.agendor.com.br/blog/feed/',
   'https://meetime.com.br/blog/feed/',
+  'https://news.google.com/rss/search?q=ecommerce+OR+"vendas+online"+OR+"loja+virtual"&hl=pt-BR&gl=BR&ceid=BR:pt',
+  'https://news.google.com/rss/search?q=marketing+digital+OR+"trafego+pago"+OR+"conversao"&hl=pt-BR&gl=BR&ceid=BR:pt',
+  'https://news.google.com/rss/search?q=marketplace+OR+"varejo+digital"+OR+faturamento&hl=pt-BR&gl=BR&ceid=BR:pt',
 ];
 
 const RELEVANCE_KEYWORDS = [
