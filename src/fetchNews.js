@@ -15,7 +15,14 @@ const RELEVANCE_KEYWORDS = [
   'receita', 'faturamento', 'varejo', 'marketplace',
 ];
 
+const BLOCKED_DOMAINS = [
+  'olhardigital.com.br',
+  'tecmundo.com.br',
+  'canaltech.com.br',
+];
+
 function isRelevant(item) {
+  if (BLOCKED_DOMAINS.some((domain) => (item.link || '').includes(domain))) return false;
   const text = `${item.title} ${item.summary}`.toLowerCase();
   return RELEVANCE_KEYWORDS.some((kw) => text.includes(kw));
 }

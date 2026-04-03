@@ -17,6 +17,7 @@ async function runPost() {
   console.log(`\n[${new Date().toISOString()}] Iniciando ciclo de postagem... TEST_MODE=${TEST_MODE}`);
 
   let news;
+  let caption;
   try {
     const items = await fetchLatestNews();
     if (!items.length) {
@@ -26,34 +27,30 @@ async function runPost() {
 
     for (const item of items) {
       const alreadyPosted = !TEST_MODE && (await wasPostedToday(item.title));
-      if (!alreadyPosted) {
-        news = item;
-        break;
+      if (alreadyPosted) continue;
+
+      const candidate = await generateCaption(item);
+      if (candidate.trim() === 'IRRELEVANTE') {
+        console.warn(`[runPost] Notícia rejeitada pelo Claude (autopromocional): "${item.title}"`);
+        continue;
       }
+
+      news = item;
+      caption = candidate;
+      break;
     }
 
     if (!news) {
-      console.warn('[runPost] Todas as notícias já foram postadas hoje.');
+      console.warn('[runPost] Nenhuma notícia adequada encontrada.');
       return;
     }
   } catch (err) {
-    console.error('[runPost] Erro ao buscar notícias:', err.message);
+    console.error('[runPost] Erro ao buscar/filtrar notícias:', err.message);
     return;
   }
 
   console.log(`[runPost] Notícia selecionada: "${news.title}"`);
-
-  let caption;
-  try {
-    caption = await generateCaption(news);
-    console.log('[runPost] Legenda gerada com sucesso.');
-  } catch (err) {
-    console.error('[runPost] Erro ao gerar legenda:', err.message);
-    if (!TEST_MODE) {
-      await logPost({ title: news.title, source: news.source, status: 'error', error: `caption: ${err.message}` });
-    }
-    return;
-  }
+  console.log('[runPost] Legenda gerada com sucesso.');
 
   let imageResult;
   try {

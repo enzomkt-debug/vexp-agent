@@ -13,12 +13,14 @@ Com base na notícia abaixo, crie uma legenda para o Instagram que:
 - Inclua uma chamada para ação curta (ex: "Salva esse post!", "Comenta o que achou!")
 - Termine com os hashtags: #vendaexponencial #ecommerce #vendasdigitais #marketingdigital #empreendedorismo
 
+IMPORTANTE: Priorize notícias factuais sobre o mercado (tendências, dados, mudanças de comportamento, novidades de plataformas). Se a notícia for puramente um post de blog de uma empresa falando sobre si mesma, serviço próprio ou conteúdo patrocinado/autopromocional, recuse com a mensagem exata: "IRRELEVANTE"
+
 Notícia:
 Título: ${news.title}
 Resumo: ${news.summary}
 Fonte: ${news.source}
 
-Retorne SOMENTE a legenda pronta, sem explicações.`;
+Retorne SOMENTE a legenda pronta, sem explicações. Se recusar, retorne apenas "IRRELEVANTE".`;
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
