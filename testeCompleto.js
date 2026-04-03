@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const { fetchLatestNews } = require('./src/fetchNews');
 const { generateCaption } = require('./src/generateCaption');
+const { generateArticle } = require('./src/generateArticle');
 const { generateImage } = require('./src/generateImage');
 const { postToInstagram } = require('./src/postInstagram');
 
@@ -40,16 +41,21 @@ const { postToInstagram } = require('./src/postInstagram');
   console.log(`      Fonte:  ${news.source}\n`);
 
   // 2. Legenda já gerada no loop acima
-  console.log('[2/4] Legenda gerada com Claude...');
+  console.log('[2/5] Legenda gerada com Claude...');
   console.log(`      Legenda:\n${caption}\n`);
 
-  // 3. Gerar imagem
-  console.log('[3/4] Gerando card visual...');
+  // 3. Gerar artigo completo
+  console.log('[3/5] Gerando artigo completo com Claude...');
+  const artigo = await generateArticle(news);
+  console.log(`      Artigo (primeiros 300 chars):\n${artigo.slice(0, 300)}...\n`);
+
+  // 4. Gerar imagem
+  console.log('[4/5] Gerando card visual...');
   const imageResult = await generateImage(news);
   console.log(`      Salvo em: ${imageResult.filepath}\n`);
 
-  // 4. Simular postagem (bloqueada por TEST_MODE)
-  console.log('[4/4] Simulando postagem no Instagram (TEST_MODE — sem publicação real)...');
+  // 5. Simular postagem (bloqueada por TEST_MODE)
+  console.log('[5/5] Simulando postagem no Instagram (TEST_MODE — sem publicação real)...');
   const postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
   console.log(`      postId:   ${postResult.postId}`);
   console.log(`      imageUrl: ${postResult.mediaUrl}\n`);
