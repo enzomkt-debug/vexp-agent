@@ -118,6 +118,84 @@
     .card-btn { margin-top: 16px; display: inline-block; background: transparent; border: 1px solid #FFD700; color: #FFD700; font-size: 0.8rem; font-weight: 600; padding: 8px 16px; border-radius: 999px; text-align: center; transition: background 0.2s, color 0.2s; }
     .card:hover .card-btn { background: #FFD700; color: #000; }
 
+    /* ── Search + Filters ── */
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px 28px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #555;
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 999px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 10px 16px 10px 40px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #search:focus { border-color: #FFD700; }
+    #search::placeholder { color: #555; }
+    .filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .filter-btn {
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid #333;
+      color: #666;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: #FFD700; color: #FFD700; }
+    .filter-btn.active { background: #FFD700; color: #000; border-color: #FFD700; }
+    .results-info {
+      font-size: 0.8rem;
+      color: #444;
+      white-space: nowrap;
+    }
+    .load-more-wrap { text-align: center; padding: 12px 0 48px; }
+    .btn-load-more {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid #333;
+      color: #666;
+      padding: 12px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-load-more:hover { border-color: #FFD700; color: #FFD700; }
+
     .state { text-align: center; padding: 80px 20px; color: #555; }
     .state .spinner { width: 40px; height: 40px; border: 3px solid #222; border-top-color: #FFD700; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -147,6 +225,17 @@
   <p>Conteúdo atualizado automaticamente para quem vende online no Brasil</p>
 </section>
 
+<div class="controls">
+  <div class="search-wrap">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="search" type="text" placeholder="Buscar por título ou fonte…" autocomplete="off" />
+  </div>
+  <div class="filters" id="filters">
+    <button class="filter-btn active" data-fonte="">Todas</button>
+  </div>
+  <span class="results-info" id="results-info"></span>
+</div>
+
 <section class="grid-section">
   <div id="grid" class="grid">
     <div class="state" id="loading" style="grid-column:1/-1">
@@ -154,13 +243,15 @@
       <p>Carregando notícias...</p>
     </div>
   </div>
+  <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+    <button class="btn-load-more" id="load-more-btn">Carregar mais notícias</button>
+  </div>
 </section>
 
 <footer>
   <p>
-    Feito com ⚡ por
+    Curadoria e análise por
     <a href="https://instagram.com/vendaexponencial" target="_blank" rel="noopener">@vendaexponencial</a>
-    &nbsp;·&nbsp; Conteúdo gerado automaticamente por IA
     &nbsp;·&nbsp; <a href="sitemap.xml">Sitemap</a>
   </p>
 </footer>
@@ -169,9 +260,16 @@
   const SUPABASE_URL = 'https://dizkzzxquztoeqtjkcib.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRpemt6enhxdXp0b2VxdGprY2liIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyMTYyMzcsImV4cCI6MjA5MDc5MjIzN30.9FslqZBkneQWzpiv6CyASardK_8hoRjzvaaqovdtNAA';
   const BASE_URL = 'https://vendaexponencial.com.br';
+  const PAGE_SIZE = 12;
 
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  let allNoticias = [];
+  let filtered    = [];
+  let page        = 0;
+  let activeFonte = '';
+  let searchQuery = '';
 
   function formatDate(iso) {
     if (!iso) return '';
@@ -188,7 +286,6 @@
       ? `<img class="card-img" src="${n.imagem_github}" alt="${n.titulo}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
       : '';
     const placeholder = `<div class="card-img-placeholder" ${n.imagem_github ? 'style="display:none"' : ''}>📰</div>`;
-
     return `
       <a class="card" href="${href}">
         ${img}${placeholder}
@@ -203,14 +300,70 @@
       </a>`;
   }
 
+  function buildFilters() {
+    const fontes = [...new Set(allNoticias.map(n => n.fonte).filter(Boolean))].sort();
+    const wrap = document.getElementById('filters');
+    wrap.innerHTML = `<button class="filter-btn active" data-fonte="">Todas</button>`;
+    fontes.forEach(f => {
+      const b = document.createElement('button');
+      b.className = 'filter-btn';
+      b.dataset.fonte = f;
+      b.textContent = f;
+      wrap.appendChild(b);
+    });
+    wrap.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activeFonte = btn.dataset.fonte;
+        wrap.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        page = 0;
+        applyFilters();
+      });
+    });
+  }
+
+  function applyFilters() {
+    const q = searchQuery.toLowerCase().trim();
+    filtered = allNoticias.filter(n => {
+      const matchFonte  = !activeFonte || n.fonte === activeFonte;
+      const matchSearch = !q || (n.titulo && n.titulo.toLowerCase().includes(q))
+                               || (n.fonte  && n.fonte.toLowerCase().includes(q));
+      return matchFonte && matchSearch;
+    });
+    page = 0;
+    renderGrid();
+  }
+
+  function renderGrid() {
+    const grid     = document.getElementById('grid');
+    const info     = document.getElementById('results-info');
+    const loadWrap = document.getElementById('load-more-wrap');
+    const slice    = filtered.slice(0, (page + 1) * PAGE_SIZE);
+
+    info.textContent = filtered.length ? `${filtered.length} artigo${filtered.length !== 1 ? 's' : ''}` : '';
+
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div class="state" style="grid-column:1/-1">
+        <p style="font-size:2rem">🔍</p>
+        <p style="margin-top:12px">Nenhum resultado encontrado.</p>
+      </div>`;
+      loadWrap.style.display = 'none';
+      return;
+    }
+
+    grid.innerHTML = slice.map(cardHTML).join('');
+    loadWrap.style.display = (page + 1) * PAGE_SIZE < filtered.length ? 'block' : 'none';
+  }
+
   async function loadNoticias() {
+    const grid = document.getElementById('grid');
+    grid.innerHTML = `<div class="state" style="grid-column:1/-1"><div class="spinner"></div><p>Carregando notícias...</p></div>`;
+
     const { data, error } = await sb
       .from('noticias')
       .select('id, titulo, slug, fonte, imagem_github, publicado_em')
       .order('publicado_em', { ascending: false })
-      .limit(20);
-
-    const grid = document.getElementById('grid');
+      .limit(500);
 
     if (error || !data || data.length === 0) {
       grid.innerHTML = `<div class="state" style="grid-column:1/-1">
@@ -220,8 +373,27 @@
       return;
     }
 
-    grid.innerHTML = data.map(cardHTML).join('');
+    allNoticias = data;
+    filtered    = data;
+    buildFilters();
+    renderGrid();
   }
+
+  // Search com debounce
+  let searchTimer;
+  document.getElementById('search').addEventListener('input', e => {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      searchQuery = e.target.value;
+      applyFilters();
+    }, 260);
+  });
+
+  // Load more
+  document.getElementById('load-more-btn').addEventListener('click', () => {
+    page++;
+    renderGrid();
+  });
 
   loadNoticias();
 </script>
