@@ -286,10 +286,10 @@ const VAREJO_SCHEDULE = '0 18 * * *';
 cron.schedule(VAREJO_SCHEDULE, runVarejoPost, { timezone: 'UTC' });
 console.log(`[cron] Agendado (varejo): ${VAREJO_SCHEDULE} UTC`);
 
-// Post diário de shopping: 20:00 UTC = 17:00 BRT
-const SHOPPING_SCHEDULE = '0 20 * * *';
-cron.schedule(SHOPPING_SCHEDULE, runShoppingPost, { timezone: 'UTC' });
-console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
+// Post diário de shopping: pausado até Amazon API ser aprovada
+// const SHOPPING_SCHEDULE = '0 20 * * *';
+// cron.schedule(SHOPPING_SCHEDULE, runShoppingPost, { timezone: 'UTC' });
+// console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 
 console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);
 
