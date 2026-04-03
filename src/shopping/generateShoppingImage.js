@@ -204,12 +204,31 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
     titleBottom = 142 + 54 + displayed.length * lineH + 14;
     ctx.fillStyle = GOLD;
     ctx.fillRect(PAD, titleBottom, 70, 4);
-    titleBottom += 20;
+    titleBottom += 16;
   }
 
+  // ── Badge da categoria abaixo do título ───────────────────────────────────
+  const catText = (shoppingData.categoria.label || '').toUpperCase();
+  ctx.font = 'bold 20px DejaVu Sans';
+  const catW  = ctx.measureText(catText).width + 36;
+  const catBH = 34;
+  drawRoundRect(ctx, PAD, titleBottom, catW, catBH, catBH / 2);
+  ctx.fillStyle = 'rgba(255,215,0,0.15)';
+  ctx.fill();
+  drawRoundRect(ctx, PAD, titleBottom, catW, catBH, catBH / 2);
+  ctx.strokeStyle = GOLD;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.fillStyle = GOLD;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(catText, PAD + 18, titleBottom + catBH / 2);
+  ctx.textBaseline = 'alphabetic';
+  titleBottom += catBH + 16;
+
   ctx.fillStyle = 'rgba(255,255,255,0.08)';
-  ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
-  let cardY = titleBottom + 28;
+  ctx.fillRect(PAD, titleBottom, W - PAD * 2, 1);
+  let cardY = titleBottom + 20;
 
   // ── Pré-carrega imagens em paralelo (og:image ou emoji fallback) ───────────
   const catLabel  = shoppingData.categoria?.label || '';
@@ -285,26 +304,6 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
 
     cardY += cardH + cardGap;
   }
-
-  // ── Badge da categoria no rodapé ──────────────────────────────────────────
-  const catText = (shoppingData.categoria.label || '').toUpperCase();
-  ctx.font = 'bold 22px DejaVu Sans';
-  const catW = ctx.measureText(catText).width + 40;
-  const catBH = 38;
-  const catX  = PAD;
-  const catY  = H - PAD - catBH;
-  drawRoundRect(ctx, catX, catY, catW, catBH, catBH / 2);
-  ctx.fillStyle = 'rgba(255,215,0,0.15)';
-  ctx.fill();
-  drawRoundRect(ctx, catX, catY, catW, catBH, catBH / 2);
-  ctx.strokeStyle = GOLD;
-  ctx.lineWidth = 1;
-  ctx.stroke();
-  ctx.fillStyle = GOLD;
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(catText, catX + 20, catY + catBH / 2);
-  ctx.textBaseline = 'alphabetic';
 
   // Borda inferior dourada
   ctx.fillStyle = GOLD;
