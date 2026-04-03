@@ -90,10 +90,10 @@ async function loadProductThumbnail(product, categoriaLabel) {
   }
 
   // 2. Fallback: Unsplash → Wikimedia Commons
-  // Usa título simplificado (3 primeiras palavras) para evitar títulos longos em PT-BR
-  // que dificilmente retornam resultado no Unsplash/Wikimedia
-  const shortTitle = product.title.split(' ').slice(0, 3).join(' ');
-  for (const query of [shortTitle, product.title]) {
+  // Traduz termos PT→EN pois o Unsplash é majoritariamente em inglês
+  const enTitle = translateToEn(product.title);
+  const shortEn = enTitle.split(' ').slice(0, 3).join(' ');
+  for (const query of [shortEn, enTitle, product.title.split(' ').slice(0, 3).join(' ')]) {
     try {
       const imageUrl = await fetchProductImage(query, categoriaLabel);
       if (imageUrl) return await loadImage(imageUrl);
@@ -101,6 +101,31 @@ async function loadProductThumbnail(product, categoriaLabel) {
   }
 
   return null;
+}
+
+// Tradução simples de termos PT→EN para melhorar buscas no Unsplash
+function translateToEn(title) {
+  const map = {
+    'vitamina': 'vitamin', 'suplemento': 'supplement', 'proteína': 'protein', 'proteina': 'protein',
+    'termômetro': 'thermometer', 'termometro': 'thermometer', 'medidor': 'meter',
+    'brinquedo': 'toy', 'boneca': 'doll', 'carrinho': 'toy car', 'pelúcia': 'plush toy',
+    'celular': 'smartphone', 'notebook': 'laptop', 'computador': 'computer', 'teclado': 'keyboard',
+    'televisão': 'television', 'televisao': 'television', 'monitor': 'monitor',
+    'geladeira': 'refrigerator', 'fogão': 'stove', 'fogao': 'stove', 'micro-ondas': 'microwave',
+    'roupa': 'clothing', 'camiseta': 'shirt', 'calça': 'pants', 'calca': 'pants',
+    'tênis': 'sneakers', 'tenis': 'sneakers', 'sapato': 'shoes', 'sandália': 'sandal',
+    'relógio': 'watch', 'relogio': 'watch', 'joia': 'jewelry', 'anel': 'ring', 'colar': 'necklace',
+    'livro': 'book', 'cadeira': 'chair', 'mesa': 'table', 'sofá': 'sofa', 'sofa': 'sofa',
+    'perfume': 'perfume', 'maquiagem': 'makeup', 'creme': 'cream', 'shampoo': 'shampoo',
+    'câmera': 'camera', 'camera': 'camera', 'fone': 'headphone', 'headset': 'headset',
+    'panela': 'pan', 'frigideira': 'frying pan', 'liquidificador': 'blender',
+    'colchão': 'mattress', 'colchao': 'mattress', 'travesseiro': 'pillow',
+    'mochila': 'backpack', 'bolsa': 'bag', 'mala': 'suitcase',
+    'ração': 'pet food', 'racao': 'pet food',
+    'bicicleta': 'bicycle', 'patins': 'skates', 'skate': 'skateboard',
+  };
+  const words = title.toLowerCase().split(/\s+/);
+  return words.map(w => map[w] || w).join(' ');
 }
 
 // ── Feed 1080×1080 ───────────────────────────────────────────────────────────
