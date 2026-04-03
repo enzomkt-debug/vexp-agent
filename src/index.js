@@ -3,9 +3,10 @@ const cron = require('node-cron');
 const fs = require('fs');
 const { fetchLatestNews } = require('./fetchNews');
 const { generateCaption } = require('./generateCaption');
+const { generateArticle } = require('./generateArticle');
 const { generateImage } = require('./generateImage');
 const { postToInstagram } = require('./postInstagram');
-const { logPost, wasPostedToday } = require('./supabaseClient');
+const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClient');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 
@@ -16,8 +17,8 @@ const SCHEDULE_TIMES = ['0 12 * * *', '0 16 * * *', '0 21 * * *'];
 async function runPost() {
   console.log(`\n[${new Date().toISOString()}] Iniciando ciclo de postagem... TEST_MODE=${TEST_MODE}`);
 
-  let news;
-  let caption;
+  // 1. Buscar e filtrar notícias
+  let news, caption;
   try {
     const items = await fetchLatestNews();
     if (!items.length) {
@@ -26,12 +27,16 @@ async function runPost() {
     }
 
     for (const item of items) {
-      const alreadyPosted = !TEST_MODE && (await wasPostedToday(item.title));
-      if (alreadyPosted) continue;
+      // Dedup por URL (Supabase)
+      if (!TEST_MODE && item.link && await jaPostadoHoje(item.link)) {
+        console.log(`[runPost] Já postada hoje: "${item.title}"`);
+        continue;
+      }
 
+      // Filtro de qualidade via Claude
       const candidate = await generateCaption(item);
       if (candidate.trim() === 'IRRELEVANTE') {
-        console.warn(`[runPost] Notícia rejeitada pelo Claude (autopromocional): "${item.title}"`);
+        console.warn(`[runPost] Rejeitada (autopromocional): "${item.title}"`);
         continue;
       }
 
@@ -50,60 +55,62 @@ async function runPost() {
   }
 
   console.log(`[runPost] Notícia selecionada: "${news.title}"`);
-  console.log('[runPost] Legenda gerada com sucesso.');
 
+  // 2. Gerar artigo completo
+  let artigo;
+  try {
+    artigo = await generateArticle(news);
+    console.log('[runPost] Artigo gerado com sucesso.');
+  } catch (err) {
+    console.error('[runPost] Erro ao gerar artigo:', err.message);
+    artigo = null;
+  }
+
+  // 3. Gerar imagem
   let imageResult;
   try {
     imageResult = await generateImage(news);
     console.log(`[runPost] Imagem gerada: ${imageResult.filename}`);
   } catch (err) {
     console.error('[runPost] Erro ao gerar imagem:', err.message);
-    if (!TEST_MODE) {
-      await logPost({ title: news.title, source: news.source, caption, status: 'error', error: `image: ${err.message}` });
-    }
     return;
   }
 
+  // 4. Publicar no Instagram (sobe imagem ao GitHub internamente)
   let postResult;
   try {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
-    if (!TEST_MODE) {
-      console.log(`[runPost] Post publicado! ID: ${postResult.postId}`);
-    }
+    if (!TEST_MODE) console.log(`[runPost] Post publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runPost] Erro ao publicar no Instagram:', err.message);
-    if (!TEST_MODE) {
-      await logPost({
-        title: news.title,
-        source: news.source,
-        caption,
-        imageUrl: imageResult.filepath,
-        status: 'error',
-        error: `post: ${err.message}`,
-      });
-    }
     return;
   }
 
+  // 5. Salvar no Supabase
   if (!TEST_MODE) {
-    await logPost({
-      title: news.title,
-      source: news.source,
-      imageUrl: postResult.mediaUrl,
-      caption,
-      status: 'success',
-    });
+    try {
+      const registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      news.link,
+        imagem_url:        null,
+        imagem_github:     postResult.mediaUrl,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+    } catch (err) {
+      console.error('[runPost] Erro ao salvar no Supabase:', err.message);
+    }
   }
 
-  // Clean up local image file
-  try {
-    fs.unlinkSync(imageResult.filepath);
-  } catch (_) {}
+  // Clean up local image
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
 
   console.log('[runPost] Ciclo concluído com sucesso.');
 }
 
-// Register all cron jobs
+// Register cron jobs
 for (const schedule of SCHEDULE_TIMES) {
   cron.schedule(schedule, runPost, { timezone: 'UTC' });
   console.log(`[cron] Agendado: ${schedule} UTC`);
