@@ -4,24 +4,35 @@ const Anthropic = require('@anthropic-ai/sdk');
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 async function generateArticle(news) {
-  const prompt = `Você é um jornalista especializado em ecommerce e vendas digitais para o mercado brasileiro, escrevendo para o blog do @vendaexponencial.
+  const prompt = `Você é um jornalista experiente de negócios conversando com um empreendedor brasileiro. Escreve para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais.
 
-Com base na notícia abaixo, escreva um artigo completo em português brasileiro com 600 a 800 palavras, estruturado assim:
+Com base na notícia abaixo, escreva um artigo em português brasileiro com 600 a 800 palavras.
 
-1. **Introdução contextual** — situe o leitor no cenário atual do ecommerce/vendas digitais
-2. **Desenvolvimento** — aprofunde os dados, fatos e análise da notícia
-3. **Impacto para quem vende online no Brasil** — explique o que isso muda na prática para lojistas, afiliados e empreendedores digitais
-4. **Conclusão com CTA** — encerre com uma chamada para seguir @vendaexponencial para mais conteúdo sobre vendas digitais
+ESTILO DE ESCRITA:
+- NUNCA use travessão (—) ou hífen como pontuação estilística no meio de frases
+- NUNCA use bullet points ou listas com hífen
+- NUNCA comece frases com "Vale ressaltar que", "É importante destacar", "Cabe mencionar", "Em suma", "Em conclusão", "Nesse sentido", "Sendo assim"
+- NUNCA use expressões genéricas como "no mundo atual", "nos dias de hoje", "cada vez mais", "é fundamental", "é essencial"
+- NUNCA use estrutura previsível de introdução, desenvolvimento e conclusão de forma mecânica
+- USE frases curtas e diretas alternadas com frases mais longas
+- USE exemplos concretos e números específicos quando disponíveis na notícia
+- Varie o ritmo do texto: parágrafos curtos de impacto intercalados com análises mais detalhadas
+- Prefira verbos ativos a passivos
+- Cite dados e fontes de forma natural no texto, não como referência acadêmica
 
-Use linguagem acessível, tom consultivo e direto. Evite jargões desnecessários. Use subtítulos em negrito para separar as seções.
+ESTRUTURA (aplique com naturalidade, sem rigidez):
+- Abertura que prende a atenção com o dado ou fato mais impactante da notícia
+- Contexto e análise dos dados com voz própria
+- O que isso muda na prática para lojistas, afiliados e empreendedores digitais no Brasil
+- Encerramento com chamada para seguir @vendaexponencial
+
+Use subtítulos em negrito (**Subtítulo**) para separar blocos de texto. Retorne SOMENTE o artigo pronto, sem comentários.
 
 Notícia:
 Título: ${news.title}
 Resumo: ${news.summary}
 Fonte: ${news.source}
-URL: ${news.link}
-
-Retorne SOMENTE o artigo pronto, sem comentários adicionais.`;
+URL: ${news.link}`;
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
