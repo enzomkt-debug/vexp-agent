@@ -7,6 +7,8 @@ const { generateArticle } = require('./generateArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClient');
+const { runTrendIntelligence } = require('./trendIntelligence');
+const { runVarejo }            = require('./varejo/index');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
@@ -126,16 +128,190 @@ async function runPost() {
   console.log('[runPost] Ciclo concluído com sucesso.');
 }
 
-// Register cron jobs
-for (const schedule of SCHEDULE_TIMES) {
-  cron.schedule(schedule, runPost, { timezone: 'UTC' });
-  console.log(`[cron] Agendado: ${schedule} UTC`);
+async function runVarejoPost() {
+  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo VAREJO... TEST_MODE=${TEST_MODE}`);
+
+  // 1. Lógica de varejo: escolhe categoria, busca trends, gera artigo + caption
+  let varejoResult;
+  try {
+    varejoResult = await runVarejo();
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao executar varejo:', err.message);
+    return;
+  }
+
+  const { news, caption, artigo, categoria, refYear, mesNome } = varejoResult;
+  console.log(`[runVarejoPost] Categoria: "${categoria.label}" | Ref: ${mesNome}/${refYear}`);
+
+  // 2. Gerar imagens feed + story em paralelo
+  let imageResult, storyResult;
+  try {
+    [imageResult, storyResult] = await Promise.all([
+      generateImage(news),
+      gerarStory(news),
+    ]);
+    console.log(`[runVarejoPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao gerar imagens:', err.message);
+    return;
+  }
+
+  // 3. Publicar feed
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao publicar feed:', err.message);
+    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+    return;
+  }
+
+  // 4. Salvar no Supabase (url_original contém a chave de dedup)
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      news.link,
+        imagem_url:        null,
+        imagem_github:     postResult.mediaUrl,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runVarejoPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runVarejoPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  // 5. Publicar story
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    if (!TEST_MODE) console.log(`[runVarejoPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao publicar story:', err.message);
+  }
+
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+
+  console.log('[runVarejoPost] Ciclo de varejo concluído.');
 }
 
-console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT)...`);
+// Register cron jobs — pipeline principal
+for (const schedule of SCHEDULE_TIMES) {
+  cron.schedule(schedule, runPost, { timezone: 'UTC' });
+  console.log(`[cron] Agendado (news): ${schedule} UTC`);
+}
+
+// Post diário de varejo: 18:00 UTC = 15:00 BRT
+const VAREJO_SCHEDULE = '0 18 * * *';
+cron.schedule(VAREJO_SCHEDULE, runVarejoPost, { timezone: 'UTC' });
+console.log(`[cron] Agendado (varejo): ${VAREJO_SCHEDULE} UTC`);
+
+console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);
 
 if (process.env.RUN_ON_START === 'true') {
   runPost();
 }
 
-module.exports = { runPost };
+async function runTrendPost() {
+  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo de TREND POST... TEST_MODE=${TEST_MODE}`);
+
+  // 1. Coleta de tendências + cruzamento com notícias + geração de artigo
+  let trendResult;
+  try {
+    trendResult = await runTrendIntelligence();
+  } catch (err) {
+    console.error('[runTrendPost] Erro no trendIntelligence:', err.message);
+    return;
+  }
+
+  // Monta um objeto news-like para reusar o pipeline de imagem/post
+  const news = trendResult.matchedNews[0] || {
+    title:   trendResult.trendTerm,
+    source:  'Google Trends',
+    summary: '',
+    link:    '',
+  };
+  const artigo = trendResult.article;
+
+  // 2. Gerar legenda
+  let caption;
+  try {
+    caption = await generateCaption({
+      ...news,
+      title: `Tendência: ${trendResult.trendTerm} (interesse ${trendResult.trendScore}/100 em abril/2025)`,
+    });
+    if (caption.trim() === 'IRRELEVANTE') caption = `📈 ${trendResult.trendTerm} foi um dos termos mais buscados no ecommerce em abril de 2025.\n\n#vendaexponencial #ecommerce #tendencias`;
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao gerar caption:', err.message);
+    caption = `📈 ${trendResult.trendTerm}\n\n#vendaexponencial #ecommerce`;
+  }
+
+  // 3. Gerar imagens feed + story
+  let imageResult, storyResult;
+  try {
+    [imageResult, storyResult] = await Promise.all([
+      generateImage(news),
+      gerarStory(news),
+    ]);
+    console.log(`[runTrendPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao gerar imagens:', err.message);
+    return;
+  }
+
+  // 4. Publicar feed
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    if (!TEST_MODE) console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao publicar feed:', err.message);
+    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+    return;
+  }
+
+  // 5. Salvar no Supabase
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      news.link || null,
+        imagem_url:        null,
+        imagem_github:     postResult.mediaUrl,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runTrendPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runTrendPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  // 6. Publicar story
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    if (!TEST_MODE) console.log(`[runTrendPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao publicar story:', err.message);
+  }
+
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+
+  console.log('[runTrendPost] Ciclo de tendência concluído.');
+}
+
+module.exports = { runPost, runTrendPost, runVarejoPost };
