@@ -6,9 +6,25 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
+function gerarSlug(titulo) {
+  return titulo
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')   // remove acentos
+    .replace(/[^a-z0-9\s-]/g, '')      // remove caracteres especiais
+    .trim()
+    .replace(/\s+/g, '-')              // espaços → hífens
+    .replace(/-+/g, '-')               // hífens duplos → simples
+    .slice(0, 80)
+    .replace(/-$/, '');                // remove hífen final
+}
+
 async function salvarNoticia({ titulo, fonte, url_original, imagem_url, imagem_github, legenda_instagram, artigo_completo }) {
+  const slug = gerarSlug(titulo);
+
   const { data, error } = await supabase.from('noticias').insert([{
     titulo,
+    slug,
     fonte,
     url_original,
     imagem_url:         imagem_url || null,
@@ -57,4 +73,4 @@ async function jaPostadoHoje(url_original) {
   return data && data.length > 0;
 }
 
-module.exports = { supabase, salvarNoticia, marcarPostado, buscarUltimasNoticias, jaPostadoHoje };
+module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, buscarUltimasNoticias, jaPostadoHoje };
