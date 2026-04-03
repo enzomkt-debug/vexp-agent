@@ -2,7 +2,8 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const path  = require('path');
 const fs    = require('fs');
 const axios = require('axios');
-const { subirImagemGithub } = require('../utils');
+const { subirImagemGithub }  = require('../utils');
+const { fetchProductImage }  = require('../varejo/fetchProductImage');
 
 const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
@@ -69,25 +70,32 @@ function wrapLines(ctx, text, maxWidth) {
   return lines;
 }
 
-async function tryLoadThumbnail(url) {
-  if (!url) { console.log('[thumb] URL nula'); return null; }
-  try {
-    console.log(`[thumb] Carregando: ${url.slice(0, 80)}...`);
-    const response = await axios.get(url, {
-      responseType: 'arraybuffer',
-      timeout: 8000,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
-        'Referer': 'https://www.google.com.br/',
-      },
-    });
-    console.log(`[thumb] OK status=${response.status} bytes=${response.data.byteLength}`);
-    return await loadImage(Buffer.from(response.data));
-  } catch (err) {
-    console.warn(`[thumb] FALHOU: ${err.message}`);
-    return null;
+async function loadProductThumbnail(product, categoriaLabel) {
+  // 1. Tenta URL direta do ScaleSerp com headers de browser
+  if (product.thumbnail) {
+    try {
+      const response = await axios.get(product.thumbnail, {
+        responseType: 'arraybuffer',
+        timeout: 6000,
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+          'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
+          'Referer': 'https://www.google.com.br/',
+        },
+      });
+      if (response.data.byteLength > 500) {
+        return await loadImage(Buffer.from(response.data));
+      }
+    } catch { /* fallthrough */ }
   }
+
+  // 2. Fallback: Unsplash → Wikimedia Commons pelo título do produto
+  try {
+    const imageUrl = await fetchProductImage(product.title, categoriaLabel);
+    if (imageUrl) return await loadImage(imageUrl);
+  } catch { /* fallthrough */ }
+
+  return null;
 }
 
 // ── Feed 1080×1080 ───────────────────────────────────────────────────────────
@@ -181,7 +189,7 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
     // Thumbnail
     const thumbX = cx + 80;
     const thumbY = cy + (cardH - THUMB_H) / 2;
-    const thumb  = await tryLoadThumbnail(product.thumbnail);
+    const thumb  = await loadProductThumbnail(product, shoppingData.categoria?.label || '');
     if (thumb) {
       ctx.save();
       drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 8);
@@ -356,7 +364,7 @@ async function generateShoppingStoryImage(shoppingData, articleTitle = '') {
     // Thumbnail
     const thumbX = cx + 110;
     const thumbY = cy + (cardH - THUMB_H) / 2;
-    const thumb  = await tryLoadThumbnail(product.thumbnail);
+    const thumb  = await loadProductThumbnail(product, shoppingData.categoria?.label || '');
     if (thumb) {
       ctx.save();
       drawRoundRect(ctx, thumbX, thumbY, THUMB_W, THUMB_H, 10);

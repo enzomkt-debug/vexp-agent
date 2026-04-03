@@ -18,22 +18,15 @@ async function fetchShoppingResults(keyword) {
       timeout: 15000,
     });
 
-    const results = data.shopping_results || [];
-    if (results.length) {
-      const sample = results[0];
-      console.log(`[fetchShopping] Campos do item[0]:`, Object.keys(sample));
-      console.log(`[fetchShopping] image="${sample.image}" thumbnail="${sample.thumbnail}" image_url="${sample.image_url}" thumbnail_url="${sample.thumbnail_url}"`);
-    }
-
-    return results.map((item) => ({
-      title:     item.title                                                              || '',
-      price:     item.price                                                              || null,
-      rating:    item.rating                                                             || null,
-      reviews:   item.reviews                                                            || null,
-      source:    item.merchant || item.source                                            || null,
-      thumbnail: item.image || item.thumbnail || item.image_url || item.thumbnail_url   || null,
-      link:      item.link                                                               || null,
-      position:  item.position                                                           || 999,
+    return (data.shopping_results || []).map((item) => ({
+      title:     item.title                                                            || '',
+      price:     item.price                                                            || null,
+      rating:    item.rating                                                           || null,
+      reviews:   item.reviews                                                          || null,
+      source:    item.merchant || item.source                                          || null,
+      thumbnail: item.image || item.thumbnail || item.image_url || item.thumbnail_url  || null,
+      link:      item.link                                                             || null,
+      position:  item.position                                                         || 999,
     }));
   } catch (err) {
     console.warn(`[fetchShopping] Erro ao buscar "${keyword}": ${err.message}`);
