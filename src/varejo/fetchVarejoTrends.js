@@ -8,10 +8,10 @@ const { fetchTrendsDataForSEO } = require('../trendSources/dataForSEO');
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// ── SerpAPI helpers ──────────────────────────────────────────────────────────
+// ── ScaleSerp helpers ────────────────────────────────────────────────────────
 async function serpApiRequest(params) {
-  const { data } = await axios.get('https://serpapi.com/search.json', {
-    params: { ...params, api_key: process.env.SERPAPI_KEY },
+  const { data } = await axios.get('https://api.scaleserp.com/search', {
+    params: { ...params, api_key: process.env.SCALESERP_KEY },
     timeout: 15000,
   });
   return data;
@@ -33,7 +33,7 @@ async function fetchInterestOverTimeSerpApi(keywords, { dateFrom, dateTo }) {
       results.push({ keyword: kw, avgInterest, peakInterest, weeklyData: timeline });
       await delay(500);
     } catch (err) {
-      console.warn(`[SerpAPI] Falha para "${kw}": ${err.message}`);
+      console.warn(`[ScaleSerp] Falha para "${kw}": ${err.message}`);
     }
   }
 
@@ -48,7 +48,7 @@ async function fetchRelatedQueriesSerpApi(keyword, { dateFrom, dateTo }) {
     const mapItems = (items) => (items || []).map((i) => ({ keyword: i.query, value: i.extracted_value ?? i.value ?? 0 }));
     return { rising: mapItems(related.rising?.queries), top: mapItems(related.default?.queries) };
   } catch (err) {
-    console.warn(`[SerpAPI] Related queries falhou para "${keyword}": ${err.message}`);
+    console.warn(`[ScaleSerp] Related queries falhou para "${keyword}": ${err.message}`);
     return { rising: [], top: [] };
   }
 }
@@ -61,7 +61,7 @@ async function fetchRelatedTopicsSerpApi(keyword, { dateFrom, dateTo }) {
     const mapItems = (items) => (items || []).map((i) => ({ keyword: i.topic?.title ?? i.title, value: i.extracted_value ?? 0 }));
     return { rising: mapItems(related.rising?.topics), top: mapItems(related.default?.topics) };
   } catch (err) {
-    console.warn(`[SerpAPI] Related topics falhou para "${keyword}": ${err.message}`);
+    console.warn(`[ScaleSerp] Related topics falhou para "${keyword}": ${err.message}`);
     return { rising: [], top: [] };
   }
 }
@@ -114,7 +114,7 @@ async function fetchVarejoTrends(categoria) {
   }
 
   // ── Fallback 2: SerpAPI ──
-  if (!trendTerms.length && process.env.SERPAPI_KEY) {
+  if (!trendTerms.length && process.env.SCALESERP_KEY) {
     console.log('[fetchVarejoTrends] Tentando SerpAPI...');
     trendTerms = await fetchInterestOverTimeSerpApi(categoria.keywords, { dateFrom: period.dateFrom, dateTo: period.dateTo });
     if (trendTerms.length) source = 'SerpAPI';
