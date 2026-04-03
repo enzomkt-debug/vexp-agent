@@ -70,8 +70,9 @@ function wrapLines(ctx, text, maxWidth) {
 }
 
 async function tryLoadThumbnail(url) {
-  if (!url) return null;
+  if (!url) { console.log('[thumb] URL nula'); return null; }
   try {
+    console.log(`[thumb] Carregando: ${url.slice(0, 80)}...`);
     const response = await axios.get(url, {
       responseType: 'arraybuffer',
       timeout: 8000,
@@ -81,8 +82,10 @@ async function tryLoadThumbnail(url) {
         'Referer': 'https://www.google.com.br/',
       },
     });
+    console.log(`[thumb] OK status=${response.status} bytes=${response.data.byteLength}`);
     return await loadImage(Buffer.from(response.data));
-  } catch {
+  } catch (err) {
+    console.warn(`[thumb] FALHOU: ${err.message}`);
     return null;
   }
 }
