@@ -10,6 +10,8 @@ const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClien
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
+const { runShopping } = require('./shopping/index');
+const { generateShoppingFeedImage, generateShoppingStoryImage } = require('./shopping/generateShoppingImage');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
@@ -200,6 +202,79 @@ async function runVarejoPost() {
   console.log('[runVarejoPost] Ciclo de varejo concluído.');
 }
 
+async function runShoppingPost() {
+  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo SHOPPING... TEST_MODE=${TEST_MODE}`);
+
+  // 1. Lógica de shopping: escolhe categoria, busca produtos, gera artigo + caption
+  let shoppingResult;
+  try {
+    shoppingResult = await runShopping();
+  } catch (err) {
+    console.error('[runShoppingPost] Erro ao executar shopping:', err.message);
+    return;
+  }
+
+  const { news, caption, artigo, categoria } = shoppingResult;
+  console.log(`[runShoppingPost] Categoria: "${categoria.label}"`);
+
+  // 2. Gerar imagens com template exclusivo de shopping
+  let imageResult, storyResult;
+  try {
+    [imageResult, storyResult] = await Promise.all([
+      generateShoppingFeedImage(shoppingResult.shoppingData, shoppingResult.news.title),
+      generateShoppingStoryImage(shoppingResult.shoppingData, shoppingResult.news.title),
+    ]);
+    console.log(`[runShoppingPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
+  } catch (err) {
+    console.error('[runShoppingPost] Erro ao gerar imagens:', err.message);
+    return;
+  }
+
+  // 3. Salvar no Supabase (independente do Instagram)
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      news.link,
+        imagem_url:        null,
+        imagem_github:     imageResult.githubUrl || null,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runShoppingPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runShoppingPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  // 4. Publicar feed
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
+  }
+
+  // 5. Publicar story
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    if (!TEST_MODE) console.log(`[runShoppingPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runShoppingPost] Erro ao publicar story:', err.message);
+  }
+
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+
+  console.log('[runShoppingPost] Ciclo de shopping concluído.');
+}
+
 // Register cron jobs — pipeline principal
 for (const schedule of SCHEDULE_TIMES) {
   cron.schedule(schedule, runPost, { timezone: 'UTC' });
@@ -211,6 +286,11 @@ const VAREJO_SCHEDULE = '0 18 * * *';
 cron.schedule(VAREJO_SCHEDULE, runVarejoPost, { timezone: 'UTC' });
 console.log(`[cron] Agendado (varejo): ${VAREJO_SCHEDULE} UTC`);
 
+// Post diário de shopping: 20:00 UTC = 17:00 BRT
+const SHOPPING_SCHEDULE = '0 20 * * *';
+cron.schedule(SHOPPING_SCHEDULE, runShoppingPost, { timezone: 'UTC' });
+console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
+
 console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);
 
 if (process.env.RUN_ON_START === 'true') {
@@ -219,6 +299,10 @@ if (process.env.RUN_ON_START === 'true') {
 
 if (process.env.RUN_VAREJO_ON_START === 'true') {
   runVarejoPost();
+}
+
+if (process.env.RUN_SHOPPING_ON_START === 'true') {
+  runShoppingPost();
 }
 
 async function runTrendPost() {
@@ -315,4 +399,4 @@ async function runTrendPost() {
   console.log('[runTrendPost] Ciclo de tendência concluído.');
 }
 
-module.exports = { runPost, runTrendPost, runVarejoPost };
+module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost };
