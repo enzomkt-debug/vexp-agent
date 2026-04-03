@@ -12,6 +12,7 @@ async function fetchShoppingResults(keyword) {
         hl:            'pt-br',
         location:      'Brazil',
         google_domain: 'google.com.br',
+        sort_by:       'review_score',
         num:           10,
         api_key:       process.env.SCALESERP_KEY,
       },
@@ -44,7 +45,7 @@ function titlesAreSimilar(a, b) {
 }
 
 async function fetchShoppingData(categoria) {
-  const keywords = (categoria.keywords || []).slice(0, 2);
+  const keywords = (categoria.keywords || []).slice(0, 1);
   const allResults = [];
 
   for (let i = 0; i < keywords.length; i++) {
