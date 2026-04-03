@@ -13,9 +13,9 @@ async function postToInstagram({ imagePath, caption }) {
   }
 
   const payload = {
-    platforms: ['instagram'],
-    caption,
-    imageUrl,
+    platforms: [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }],
+    content: caption,
+    mediaItems: [{ type: 'image', url: imageUrl }],
     publishNow: true,
   };
 
@@ -32,7 +32,7 @@ async function postToInstagram({ imagePath, caption }) {
     throw new Error(`Zernio ${err.response?.status ?? ''}: ${detail}`);
   }
 
-  return { postId: res.data.id || res.data.post_id, mediaUrl: imageUrl };
+  return { postId: res.data.post?._id || res.data.id || res.data.post_id, mediaUrl: imageUrl };
 }
 
 module.exports = { postToInstagram };
