@@ -109,6 +109,47 @@ async function loadCategoryEmoji(categoriaLabel) {
   }
 }
 
+// Extrai og:image da página do produto — retorna a imagem real do lojista
+async function fetchProductOgImage(link) {
+  if (!link || !link.startsWith('http')) return null;
+  try {
+    const { data } = await axios.get(link, {
+      timeout: 7000,
+      responseType: 'text',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml',
+      },
+      maxRedirects: 3,
+      // Lê apenas os primeiros 30KB para encontrar as meta tags no <head>
+      maxContentLength: 30000,
+    });
+    const match = data.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+               || data.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+// Carrega imagem real do produto: og:image da página → emoji da categoria
+async function loadProductImage(product, emojiImg) {
+  // 1. Tenta og:image da página do produto
+  const ogUrl = await fetchProductOgImage(product.link);
+  if (ogUrl) {
+    try {
+      const { data } = await axios.get(ogUrl, {
+        responseType: 'arraybuffer',
+        timeout: 6000,
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      if (data.byteLength > 500) return { img: await loadImage(Buffer.from(data)), isEmoji: false };
+    } catch { /* fallthrough */ }
+  }
+  // 2. Fallback: emoji da categoria (já carregado)
+  return { img: emojiImg, isEmoji: true };
+}
+
 // ── Feed 1080×1080 ───────────────────────────────────────────────────────────
 async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
   const W = 1080, H = 1080;
@@ -170,12 +211,13 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
   ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
   let cardY = titleBottom + 28;
 
-  // ── Pré-carrega emoji da categoria (uma vez para todos os cards) ──────────
+  // ── Pré-carrega imagens em paralelo (og:image ou emoji fallback) ───────────
   const catLabel  = shoppingData.categoria?.label || '';
   const emojiImg  = await loadCategoryEmoji(catLabel);
+  const products  = (shoppingData.products || []).slice(0, 4);
+  const prodImgs  = await Promise.all(products.map(p => loadProductImage(p, emojiImg)));
 
   // ── Cards de produtos ─────────────────────────────────────────────────────
-  const products = (shoppingData.products || []).slice(0, 4);
   const cardH    = 148;
   const cardGap  = 16;
   const ICON_W   = 84;
@@ -201,15 +243,27 @@ async function generateShoppingFeedImage(shoppingData, articleTitle = '') {
     ctx.textAlign = 'left';
     ctx.fillText(`#${i + 1}`, cx + 18, cy + 52);
 
-    // Ícone da categoria (emoji Twemoji)
+    // Imagem do produto (og:image) ou emoji da categoria como fallback
     const iconX = cx + 80;
     const iconY = cy + (cardH - ICON_H) / 2;
+    const { img: prodImg, isEmoji } = prodImgs[i];
     drawRoundRect(ctx, iconX, iconY, ICON_W, ICON_H, 10);
     ctx.fillStyle = 'rgba(255,215,0,0.08)';
     ctx.fill();
-    if (emojiImg) {
-      const pad = 10;
-      ctx.drawImage(emojiImg, iconX + pad, iconY + pad, ICON_W - pad * 2, ICON_H - pad * 2);
+    if (prodImg) {
+      ctx.save();
+      drawRoundRect(ctx, iconX, iconY, ICON_W, ICON_H, 10);
+      ctx.clip();
+      if (isEmoji) {
+        const pad = 10;
+        ctx.drawImage(prodImg, iconX + pad, iconY + pad, ICON_W - pad * 2, ICON_H - pad * 2);
+      } else {
+        const scale = Math.max(ICON_W / prodImg.width, ICON_H / prodImg.height);
+        const dw = prodImg.width * scale;
+        const dh = prodImg.height * scale;
+        ctx.drawImage(prodImg, iconX + (ICON_W - dw) / 2, iconY + (ICON_H - dh) / 2, dw, dh);
+      }
+      ctx.restore();
     }
 
     // Texto do produto
@@ -340,12 +394,14 @@ async function generateShoppingStoryImage(shoppingData, articleTitle = '') {
   ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
   let cardY = titleBottom + 36;
 
-  // ── Pré-carrega emoji da categoria ────────────────────────────────────────
+  // ── Pré-carrega imagens em paralelo ─────────────────────────────────────
   const catLabelS  = shoppingData.categoria?.label || '';
   const emojiImgS  = await loadCategoryEmoji(catLabelS);
+  const productsS  = (shoppingData.products || []).slice(0, 3);
+  const prodImgsS  = await Promise.all(productsS.map(p => loadProductImage(p, emojiImgS)));
 
   // ── Cards de top 3 produtos ───────────────────────────────────────────────
-  const products = (shoppingData.products || []).slice(0, 3);
+  const products = productsS;
   const cardH    = 200;
   const cardGap  = 24;
   const ICON_WS  = 110;
@@ -370,15 +426,27 @@ async function generateShoppingStoryImage(shoppingData, articleTitle = '') {
     ctx.textAlign = 'left';
     ctx.fillText(`#${i + 1}`, cx + 20, cy + 74);
 
-    // Ícone da categoria
+    // Imagem do produto ou emoji fallback
     const iconX = cx + 110;
     const iconY = cy + (cardH - ICON_HS) / 2;
+    const { img: prodImgS, isEmoji: isEmojiS } = prodImgsS[i];
     drawRoundRect(ctx, iconX, iconY, ICON_WS, ICON_HS, 12);
     ctx.fillStyle = 'rgba(255,215,0,0.08)';
     ctx.fill();
-    if (emojiImgS) {
-      const pad = 12;
-      ctx.drawImage(emojiImgS, iconX + pad, iconY + pad, ICON_WS - pad * 2, ICON_HS - pad * 2);
+    if (prodImgS) {
+      ctx.save();
+      drawRoundRect(ctx, iconX, iconY, ICON_WS, ICON_HS, 12);
+      ctx.clip();
+      if (isEmojiS) {
+        const pad = 12;
+        ctx.drawImage(prodImgS, iconX + pad, iconY + pad, ICON_WS - pad * 2, ICON_HS - pad * 2);
+      } else {
+        const scale = Math.max(ICON_WS / prodImgS.width, ICON_HS / prodImgS.height);
+        const dw = prodImgS.width * scale;
+        const dh = prodImgS.height * scale;
+        ctx.drawImage(prodImgS, iconX + (ICON_WS - dw) / 2, iconY + (ICON_HS - dh) / 2, dw, dh);
+      }
+      ctx.restore();
     }
 
     // Texto
