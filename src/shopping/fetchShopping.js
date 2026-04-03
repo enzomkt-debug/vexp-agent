@@ -12,7 +12,6 @@ async function fetchShoppingResults(keyword) {
         hl:            'pt-br',
         location:      'Brazil',
         google_domain: 'google.com.br',
-        sort_by:       'review_score',
         num:           10,
         api_key:       process.env.SCALESERP_KEY,
       },
