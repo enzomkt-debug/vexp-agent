@@ -1,10 +1,14 @@
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const axios = require('axios');
 const path = require('path');
 const fs = require('fs');
 
+const FONTS_DIR  = path.join(__dirname, '..', 'fonts');
 const ASSETS_DIR = path.join(__dirname, '..', 'assets');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR, { recursive: true });
+
+registerFont(path.join(FONTS_DIR, 'DejaVuSans.ttf'),      { family: 'DejaVu Sans' });
+registerFont(path.join(FONTS_DIR, 'DejaVuSans-Bold.ttf'), { family: 'DejaVu Sans', weight: 'bold' });
 
 const ACCENT_COLOR = '#FFD700';
 const TEXT_COLOR = '#ffffff';
@@ -130,12 +134,12 @@ async function generateImage(news) {
 
   // Handle label
   ctx.fillStyle = ACCENT_COLOR;
-  ctx.font = 'bold 34px sans-serif';
+  ctx.font = 'bold 34px DejaVu Sans';
   ctx.textAlign = 'left';
   ctx.fillText('@vendaexponencial', 60, 80);
 
   // Category badge — dynamic width
-  ctx.font = 'bold 21px sans-serif';
+  ctx.font = 'bold 21px DejaVu Sans';
   const badgeText = '⚡ ECOMMERCE NEWS';
   const badgeW = 20 + ctx.measureText(badgeText).width + 20;
   ctx.fillStyle = ACCENT_COLOR;
@@ -152,13 +156,13 @@ async function generateImage(news) {
   // Title
   const title = news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title;
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 58px sans-serif';
+  ctx.font = 'bold 58px DejaVu Sans';
   ctx.textAlign = 'left';
   const lastY = wrapText(ctx, title, 60, 280, WIDTH - 120, 74);
 
   // Source chip — dynamic width
   const sourceLabel = `📰  ${news.source}`;
-  ctx.font = '26px sans-serif';
+  ctx.font = '26px DejaVu Sans';
   const sourceChipW = Math.min(20 + ctx.measureText(sourceLabel).width + 20, WIDTH - 120);
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
   ctx.beginPath();
@@ -171,7 +175,7 @@ async function generateImage(news) {
   if (news.summary) {
     const snippet = news.summary.replace(/(<([^>]+)>)/gi, '').slice(0, 180);
     ctx.fillStyle = SUBTITLE_COLOR;
-    ctx.font = '30px sans-serif';
+    ctx.font = '30px DejaVu Sans';
     wrapText(ctx, snippet + '...', 60, lastY + 180, WIDTH - 120, 42);
   }
 
@@ -200,12 +204,12 @@ async function gerarStory(news) {
 
   // Handle label
   ctx.fillStyle = ACCENT_COLOR;
-  ctx.font = 'bold 44px sans-serif';
+  ctx.font = 'bold 44px DejaVu Sans';
   ctx.textAlign = 'center';
   ctx.fillText('@vendaexponencial', CX, SAFE_TOP + 70);
 
   // Badge
-  ctx.font = 'bold 26px sans-serif';
+  ctx.font = 'bold 26px DejaVu Sans';
   const badgeText = '⚡ ECOMMERCE NEWS';
   const badgeW = 24 + ctx.measureText(badgeText).width + 24;
   const badgeX = CX - badgeW / 2;
@@ -223,7 +227,7 @@ async function gerarStory(news) {
   // Title — centered in the middle of the safe area
   const title = news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title;
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 68px sans-serif';
+  ctx.font = 'bold 68px DejaVu Sans';
   ctx.textAlign = 'center';
 
   const words = title.split(' ');
@@ -255,7 +259,7 @@ async function gerarStory(news) {
 
   // Source chip
   const sourceLabel = `📰  ${news.source}`;
-  ctx.font = '30px sans-serif';
+  ctx.font = '30px DejaVu Sans';
   const srcChipW = Math.min(24 + ctx.measureText(sourceLabel).width + 24, STORY_WIDTH - 120);
   const srcChipX = CX - srcChipW / 2;
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
@@ -272,7 +276,7 @@ async function gerarStory(news) {
   ctx.fillStyle = 'rgba(255, 215, 0, 0.10)';
   ctx.fillRect(0, ctaY - 10, STORY_WIDTH, 110);
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 34px sans-serif';
+  ctx.font = 'bold 34px DejaVu Sans';
   ctx.fillText('Leia o artigo completo — link na bio 👆', CX, ctaY + 52);
 
   // Accent line just inside safe zone (bottom)

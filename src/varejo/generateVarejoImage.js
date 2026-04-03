@@ -1,10 +1,14 @@
-const { createCanvas, loadImage } = require('canvas');
+const { createCanvas, loadImage, registerFont } = require('canvas');
 const path = require('path');
 const fs   = require('fs');
 const { fetchProductImage } = require('./fetchProductImage');
 
+const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR, { recursive: true });
+
+registerFont(path.join(FONTS_DIR, 'DejaVuSans.ttf'),      { family: 'DejaVu Sans' });
+registerFont(path.join(FONTS_DIR, 'DejaVuSans-Bold.ttf'), { family: 'DejaVu Sans', weight: 'bold' });
 
 const DARK_BG     = '#FFD700';
 const WHITE       = '#0c0c0c';
@@ -68,7 +72,7 @@ function drawDataBar(ctx, x, y, barMaxW, label, value, pct) {
   const barFill = Math.max(0.05, Math.min(1, pct)) * barMaxW;
 
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.font      = '19px sans-serif';
+  ctx.font      = '19px DejaVu Sans';
   ctx.textAlign = 'left';
   ctx.fillText(truncate(label, 26), x, y);
 
@@ -84,7 +88,7 @@ function drawDataBar(ctx, x, y, barMaxW, label, value, pct) {
   ctx.fill();
 
   ctx.fillStyle = 'rgba(0,0,0,0.55)';
-  ctx.font      = '19px sans-serif';
+  ctx.font      = '19px DejaVu Sans';
   ctx.textAlign = 'right';
   ctx.fillText(value, x + barMaxW, y);
 }
@@ -155,7 +159,7 @@ async function drawImgContain(ctx, imgUrl, x, y, w, h, radius = 20) {
 
 /** Badge de categoria: fundo preto sólido, texto gold */
 function drawCategoryBadge(ctx, text, x, y, align = 'left') {
-  ctx.font = 'bold 26px sans-serif';
+  ctx.font = 'bold 26px DejaVu Sans';
   const textW  = ctx.measureText(text).width;
   const padH   = 14, padV = 14;
   const badgeW = textW + padH * 2;
@@ -194,11 +198,11 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
 
   // ── Handle ────────────────────────────────────────────────────────────────
   ctx.fillStyle = '#0c0c0c';
-  ctx.font      = 'bold 30px sans-serif';
+  ctx.font      = 'bold 30px DejaVu Sans';
   ctx.textAlign = 'left';
   ctx.fillText('@vendaexponencial', PAD, 62);
 
-  ctx.font = 'bold 22px sans-serif';
+  ctx.font = 'bold 22px DejaVu Sans';
   const subText = '📊  TENDÊNCIAS DO VAREJO';
   const subW    = ctx.measureText(subText).width + 36;
   drawRoundRect(ctx, PAD, 76, subW, 36, 18);
@@ -214,7 +218,7 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
   // ── TÍTULO — hero (full width) ────────────────────────────────────────────
   let titleBottom = 142;
   if (articleTitle) {
-    ctx.font = 'bold 50px sans-serif';
+    ctx.font = 'bold 50px DejaVu Sans';
     const titleLines = wrapLines(ctx, articleTitle, W - PAD * 2);
     const lineH      = 66;
     const maxLines   = 3;
@@ -262,16 +266,16 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
-    ctx.font      = 'bold 96px sans-serif';
+    ctx.font      = 'bold 96px DejaVu Sans';
     ctx.textAlign = 'left';
     ctx.fillText(heroPct, PAD, leftY + 96);
 
     ctx.fillStyle = WHITE;
-    ctx.font      = 'bold 34px sans-serif';
+    ctx.font      = 'bold 34px DejaVu Sans';
     ctx.fillText(truncate(topTerm.keyword, 18), PAD, leftY + 148);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '22px sans-serif';
+    ctx.font      = '22px DejaVu Sans';
     ctx.fillText('nas buscas', PAD, leftY + 180);
     ctx.fillText('últimos 90 dias', PAD, leftY + 206);
 
@@ -284,7 +288,7 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
     ctx.fillRect(PAD, leftY + 8, leftW, 1);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '18px sans-serif';
+    ctx.font      = '18px DejaVu Sans';
     ctx.textAlign = 'left';
     ctx.fillText('TAMBÉM EM ALTA', PAD, leftY + 28);
 
@@ -341,11 +345,11 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
 
   // ── Handle ────────────────────────────────────────────────────────────────
   ctx.fillStyle = '#0c0c0c';
-  ctx.font      = 'bold 36px sans-serif';
+  ctx.font      = 'bold 36px DejaVu Sans';
   ctx.textAlign = 'center';
   ctx.fillText('@vendaexponencial', CX, SAFE_TOP + 54);
 
-  ctx.font = 'bold 21px sans-serif';
+  ctx.font = 'bold 21px DejaVu Sans';
   const subText = '📊  TENDÊNCIAS DO VAREJO';
   const subW    = ctx.measureText(subText).width + 40;
   drawRoundRect(ctx, CX - subW / 2, SAFE_TOP + 66, subW, 40, 20);
@@ -360,7 +364,7 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
   // ── TÍTULO ────────────────────────────────────────────────────────────────
   let titleBottom = SAFE_TOP + 138;
   if (articleTitle) {
-    ctx.font = 'bold 48px sans-serif';
+    ctx.font = 'bold 48px DejaVu Sans';
     const titleLines = wrapLines(ctx, articleTitle, W - PAD * 2);
     const lineH      = 62;
     const maxLines   = 3;
@@ -409,7 +413,7 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
-    ctx.font      = 'bold 110px sans-serif';
+    ctx.font      = 'bold 110px DejaVu Sans';
     ctx.textAlign = 'center';
     ctx.fillText(heroPct, CX, dataY + 110);
 
@@ -418,11 +422,11 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
     ctx.fillRect(CX - numW / 2, dataY + 124, numW, 5);
 
     ctx.fillStyle = WHITE;
-    ctx.font      = 'bold 44px sans-serif';
+    ctx.font      = 'bold 44px DejaVu Sans';
     ctx.fillText(truncate(topTerm.keyword, 20), CX, dataY + 182);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '26px sans-serif';
+    ctx.font      = '26px DejaVu Sans';
     ctx.fillText('nas buscas — últimos 90 dias', CX, dataY + 222);
   }
 
@@ -433,7 +437,7 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
   ctx.fillStyle = '#0c0c0c';
   ctx.fillRect(PAD, ctaY - 10, W - PAD * 2, 3);
   ctx.fillStyle = WHITE;
-  ctx.font      = 'bold 30px sans-serif';
+  ctx.font      = 'bold 30px DejaVu Sans';
   ctx.textAlign = 'center';
   ctx.fillText('Leia a análise completa — link na bio 👆', CX, ctaY + 40);
 
