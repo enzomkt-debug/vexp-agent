@@ -81,18 +81,7 @@ async function runPost() {
     return;
   }
 
-  // 4. Publicar post no feed
-  let postResult;
-  try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
-    if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
-  } catch (err) {
-    console.error('[runPost] Erro ao publicar feed:', err.message);
-    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
-    return;
-  }
-
-  // 5. Salvar no Supabase
+  // 4. Salvar no Supabase (independente do Instagram)
   let registro;
   if (!TEST_MODE) {
     try {
@@ -101,7 +90,7 @@ async function runPost() {
         fonte:             news.source,
         url_original:      news.link,
         imagem_url:        null,
-        imagem_github:     postResult.mediaUrl,
+        imagem_github:     imageResult.githubUrl || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
@@ -110,6 +99,15 @@ async function runPost() {
     } catch (err) {
       console.error('[runPost] Erro ao salvar no Supabase:', err.message);
     }
+  }
+
+  // 5. Publicar post no feed
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 6. Publicar story com link para o artigo
@@ -157,18 +155,7 @@ async function runVarejoPost() {
     return;
   }
 
-  // 3. Publicar feed
-  let postResult;
-  try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
-    if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
-  } catch (err) {
-    console.error('[runVarejoPost] Erro ao publicar feed:', err.message);
-    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
-    return;
-  }
-
-  // 4. Salvar no Supabase (url_original contém a chave de dedup)
+  // 3. Salvar no Supabase (independente do Instagram)
   let registro;
   if (!TEST_MODE) {
     try {
@@ -177,7 +164,7 @@ async function runVarejoPost() {
         fonte:             news.source,
         url_original:      news.link,
         imagem_url:        null,
-        imagem_github:     postResult.mediaUrl,
+        imagem_github:     imageResult.githubUrl || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
@@ -186,6 +173,15 @@ async function runVarejoPost() {
     } catch (err) {
       console.error('[runVarejoPost] Erro ao salvar no Supabase:', err.message);
     }
+  }
+
+  // 4. Publicar feed
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 5. Publicar story
