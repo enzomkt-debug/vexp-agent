@@ -6,8 +6,8 @@ async function fetchShoppingResults(keyword) {
   try {
     const { data } = await axios.get('https://api.scaleserp.com/search', {
       params: {
-        engine:  'google_shopping',
         q:       keyword,
+        tbm:     'shop',
         gl:      'br',
         hl:      'pt-br',
         num:     10,
