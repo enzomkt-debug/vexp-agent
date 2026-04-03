@@ -2,107 +2,75 @@ const axios = require('axios');
 
 const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
-// Mapa de categoria → ID MLB do Mercado Livre
-const MLB_CATEGORY_MAP = {
-  'moda-feminina':      'MLB1051',
-  'moda-masculina':     'MLB1051',
-  'calcados':           'MLB1430',
-  'smartphones':        'MLB1648',
-  'notebooks':          'MLB1652',
-  'tv-eletronicos':     'MLB1000',
-  'games':              'MLB1144',
-  'beleza-cosmeticos':  'MLB1246',
-  'suplementos':        'MLB1297',
-  'casa-decoracao':     'MLB1574',
-  'moveis':             'MLB1574',
-  'utensilios':         'MLB1574',
-  'eletrodomesticos':   'MLB1574',
-  'livros':             'MLB1193',
-  'esportes':           'MLB1297',
-  'ferramentas':        'MLB1499',
-  'pet':                'MLB1132',
-  'brinquedos':         'MLB5726',
-  'bebe':               'MLB1276',
-  'joias-relogios':     'MLB1182',
-  'informatica':        'MLB1652',
-  'automotivo':         'MLB1747',
-  'saude':              'MLB1246',
-  'bolsas':             'MLB1430',
-  'infantil-roupas':    'MLB1276',
-  'alimentos-delivery':'MLB1172',
-  'papelaria':          'MLB1574',
-  'oculos':             'MLB1182',
-  'streaming-digital':  'MLB1144',
-  'cama-banho':         'MLB1574',
-  'audio':              'MLB1000',
-};
-
-let cachedToken = null;
-let tokenExpiry  = 0;
-
-async function getAccessToken() {
-  if (cachedToken && Date.now() < tokenExpiry) return cachedToken;
-
-  const { data } = await axios.post('https://api.mercadolibre.com/oauth/token', null, {
-    params: {
-      grant_type:    'client_credentials',
-      client_id:     process.env.ML_APP_ID,
-      client_secret: process.env.ML_SECRET_KEY,
-    },
-    timeout: 10000,
-  });
-
-  cachedToken = data.access_token;
-  tokenExpiry  = Date.now() + (data.expires_in - 60) * 1000; // renova 1min antes
-  return cachedToken;
-}
-
-async function fetchShoppingData(categoria) {
-  const categoryId = MLB_CATEGORY_MAP[categoria.id];
-
-  if (!categoryId) {
-    console.warn(`[fetchShopping] Categoria sem mapeamento MLB: ${categoria.id}`);
-    return { categoria, products: [], period: { label: 'Hoje' }, source: 'Mercado Livre' };
-  }
-
-  let token;
+async function fetchShoppingResults(keyword) {
   try {
-    token = await getAccessToken();
-  } catch (err) {
-    console.warn(`[fetchShopping] Erro ao obter token ML: ${err.message}`);
-    return { categoria, products: [], period: { label: 'Hoje' }, source: 'Mercado Livre' };
-  }
-
-  try {
-    await delay(500);
-    const { data } = await axios.get('https://api.mercadolibre.com/sites/MLB/search', {
+    const { data } = await axios.get('https://api.scaleserp.com/search', {
       params: {
-        category: categoryId,
-        sort:     'sold_quantity_desc',
-        limit:    8,
+        engine:  'google_shopping',
+        q:       keyword,
+        gl:      'br',
+        hl:      'pt-br',
+        num:     10,
+        api_key: process.env.SCALESERP_KEY,
       },
-      headers: { Authorization: `Bearer ${token}` },
       timeout: 15000,
     });
 
-    const products = (data.results || []).slice(0, 5).map((item, i) => ({
+    return (data.shopping_results || []).map((item) => ({
       title:     item.title      || '',
-      price:     item.price      ? `R$ ${item.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : null,
-      rating:    item.reviews?.rating_average || null,
-      reviews:   item.reviews?.total          || null,
-      source:    item.seller?.nickname         || null,
-      thumbnail: item.thumbnail?.replace('-I.jpg', '-O.jpg') || item.thumbnail || null,
-      link:      item.permalink  || null,
-      position:  i + 1,
+      price:     item.price      || null,
+      rating:    item.rating     || null,
+      reviews:   item.reviews    || null,
+      source:    item.source     || null,
+      thumbnail: item.thumbnail  || null,
+      link:      item.link       || null,
+      position:  item.position   || 999,
     }));
-
-    console.log(`[fetchShopping] ${products.length} produtos coletados para "${categoria.label}" (${categoryId})`);
-    return { categoria, products, period: { label: 'Hoje' }, source: 'Mercado Livre' };
-
   } catch (err) {
-    console.warn(`[fetchShopping] Erro ao buscar produtos ML: ${err.message}`);
-    return { categoria, products: [], period: { label: 'Hoje' }, source: 'Mercado Livre' };
+    console.warn(`[fetchShopping] Erro ao buscar "${keyword}": ${err.message}`);
+    return [];
   }
+}
+
+function titlesAreSimilar(a, b) {
+  const normalize = (s) => s.toLowerCase().replace(/[^a-z0-9 ]/g, '').trim();
+  const na = normalize(a);
+  const nb = normalize(b);
+  if (na === nb) return true;
+  const short = Math.min(na.length, nb.length, 30);
+  return short > 10 && na.slice(0, short) === nb.slice(0, short);
+}
+
+async function fetchShoppingData(categoria) {
+  const keywords = (categoria.keywords || []).slice(0, 2);
+  const allResults = [];
+
+  for (let i = 0; i < keywords.length; i++) {
+    const kw = keywords[i];
+    console.log(`[fetchShopping] Buscando "${kw}"...`);
+    const results = await fetchShoppingResults(kw);
+    allResults.push(...results);
+
+    if (i < keywords.length - 1) await delay(1000);
+  }
+
+  // Remove duplicatas por título similar
+  const deduped = [];
+  for (const item of allResults) {
+    const isDupe = deduped.some((existing) => titlesAreSimilar(existing.title, item.title));
+    if (!isDupe) deduped.push(item);
+  }
+
+  const products = deduped
+    .sort((a, b) => a.position - b.position)
+    .slice(0, 5);
+
+  return {
+    categoria,
+    products,
+    period: { label: 'Hoje' },
+    source: 'Google Shopping',
+  };
 }
 
 module.exports = { fetchShoppingData };
