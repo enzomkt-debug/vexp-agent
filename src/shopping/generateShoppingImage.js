@@ -89,11 +89,16 @@ async function loadProductThumbnail(product, categoriaLabel) {
     } catch { /* fallthrough */ }
   }
 
-  // 2. Fallback: Unsplash → Wikimedia Commons pelo título do produto
-  try {
-    const imageUrl = await fetchProductImage(product.title, categoriaLabel);
-    if (imageUrl) return await loadImage(imageUrl);
-  } catch { /* fallthrough */ }
+  // 2. Fallback: Unsplash → Wikimedia Commons
+  // Usa título simplificado (3 primeiras palavras) para evitar títulos longos em PT-BR
+  // que dificilmente retornam resultado no Unsplash/Wikimedia
+  const shortTitle = product.title.split(' ').slice(0, 3).join(' ');
+  for (const query of [shortTitle, product.title]) {
+    try {
+      const imageUrl = await fetchProductImage(query, categoriaLabel);
+      if (imageUrl) return await loadImage(imageUrl);
+    } catch { /* fallthrough */ }
+  }
 
   return null;
 }

@@ -77,6 +77,11 @@ function getCategoryHint(label = '') {
   if (/bel[ae]za|cosm[ée]tic|perfume|maquiagem/.test(l)) return 'cosmetic beauty';
   if (/brinqued|jog[oa]|game/.test(l)) return 'toy game';
   if (/livr[oa]|libro/.test(l)) return 'book';
+  if (/sa[úu]de|farm[áa]cia|rem[ée]dio|medicament|vitamina|suplemento/.test(l)) return 'health pharmacy medicine';
+  if (/esport|academia|fitness|muscula/.test(l)) return 'sport fitness';
+  if (/pet|animal|cachorro|gato/.test(l)) return 'pet animal';
+  if (/jardim|plant|ferramenta|constru/.test(l)) return 'garden tools';
+  if (/aliment|comida|bebida|cozinha/.test(l)) return 'food kitchen';
   return 'product';
 }
 
