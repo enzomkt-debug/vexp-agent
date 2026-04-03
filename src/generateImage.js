@@ -12,7 +12,7 @@ const SUBTITLE_COLOR = '#cccccc';
 const WIDTH = 1080;
 const HEIGHT = 1080;
 const STORY_WIDTH = 1080;
-const STORY_HEIGHT = 1920;
+const STORY_HEIGHT = 1350; // 4:5 — máximo aceito pelo Instagram via Zernio
 
 async function extractOgImage(url) {
   try {
