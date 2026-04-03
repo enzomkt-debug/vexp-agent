@@ -124,6 +124,11 @@
       margin: 0 auto;
       padding: 0 24px 28px;
       display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .controls-top {
+      display: flex;
       gap: 12px;
       align-items: center;
       flex-wrap: wrap;
@@ -155,11 +160,25 @@
     }
     #search:focus { border-color: #FFD700; }
     #search::placeholder { color: #555; }
-    .filters {
+    .filters-row {
       display: flex;
-      gap: 8px;
+      gap: 16px;
       flex-wrap: wrap;
       align-items: center;
+    }
+    .filter-group {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .filter-group-label {
+      font-size: 0.72rem;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 2px;
+      white-space: nowrap;
     }
     .filter-btn {
       font-family: inherit;
@@ -226,14 +245,29 @@
 </section>
 
 <div class="controls">
-  <div class="search-wrap">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-    <input id="search" type="text" placeholder="Buscar por título ou fonte…" autocomplete="off" />
+  <div class="controls-top">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="search" type="text" placeholder="Buscar notícias…" autocomplete="off" />
+    </div>
+    <span class="results-info" id="results-info"></span>
   </div>
-  <div class="filters" id="filters">
-    <button class="filter-btn active" data-fonte="">Todas</button>
+  <div class="filters-row">
+    <div class="filter-group">
+      <span class="filter-group-label">Tipo</span>
+      <button class="filter-btn active" data-tipo="">Todos</button>
+      <button class="filter-btn" data-tipo="noticias">Notícias</button>
+      <button class="filter-btn" data-tipo="varejo">Varejo</button>
+      <button class="filter-btn" data-tipo="tendencias">Tendências</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-group-label">Período</span>
+      <button class="filter-btn active" data-periodo="">Sempre</button>
+      <button class="filter-btn" data-periodo="hoje">Hoje</button>
+      <button class="filter-btn" data-periodo="semana">Esta semana</button>
+      <button class="filter-btn" data-periodo="mes">Este mês</button>
+    </div>
   </div>
-  <span class="results-info" id="results-info"></span>
 </div>
 
 <section class="grid-section">
@@ -265,11 +299,29 @@
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let allNoticias = [];
-  let filtered    = [];
-  let page        = 0;
-  let activeFonte = '';
-  let searchQuery = '';
+  let allNoticias  = [];
+  let filtered     = [];
+  let page         = 0;
+  let activeTipo   = '';
+  let activePeriodo = '';
+  let searchQuery  = '';
+
+  const TIPO_MAP = {
+    noticias:   (fonte) => fonte && fonte !== 'Google Trends Varejo' && !fonte.startsWith('Google Trends'),
+    varejo:     (fonte) => fonte === 'Google Trends Varejo',
+    tendencias: (fonte) => fonte && fonte.startsWith('Google Trends') && fonte !== 'Google Trends Varejo',
+  };
+
+  function matchPeriodo(iso) {
+    if (!activePeriodo || !iso) return true;
+    const pub  = new Date(iso);
+    const now  = new Date();
+    const diff = now - pub;
+    if (activePeriodo === 'hoje')   return diff < 86400000;
+    if (activePeriodo === 'semana') return diff < 7 * 86400000;
+    if (activePeriodo === 'mes')    return diff < 30 * 86400000;
+    return true;
+  }
 
   function formatDate(iso) {
     if (!iso) return '';
@@ -301,22 +353,19 @@
   }
 
   function buildFilters() {
-    const fontes = [...new Set(allNoticias.map(n => n.fonte).filter(Boolean))].sort();
-    const wrap = document.getElementById('filters');
-    wrap.innerHTML = `<button class="filter-btn active" data-fonte="">Todas</button>`;
-    fontes.forEach(f => {
-      const b = document.createElement('button');
-      b.className = 'filter-btn';
-      b.dataset.fonte = f;
-      b.textContent = f;
-      wrap.appendChild(b);
-    });
-    wrap.querySelectorAll('.filter-btn').forEach(btn => {
+    document.querySelectorAll('.filter-btn[data-tipo]').forEach(btn => {
       btn.addEventListener('click', () => {
-        activeFonte = btn.dataset.fonte;
-        wrap.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        activeTipo = btn.dataset.tipo;
+        document.querySelectorAll('.filter-btn[data-tipo]').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        page = 0;
+        applyFilters();
+      });
+    });
+    document.querySelectorAll('.filter-btn[data-periodo]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        activePeriodo = btn.dataset.periodo;
+        document.querySelectorAll('.filter-btn[data-periodo]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
         applyFilters();
       });
     });
@@ -325,10 +374,10 @@
   function applyFilters() {
     const q = searchQuery.toLowerCase().trim();
     filtered = allNoticias.filter(n => {
-      const matchFonte  = !activeFonte || n.fonte === activeFonte;
-      const matchSearch = !q || (n.titulo && n.titulo.toLowerCase().includes(q))
-                               || (n.fonte  && n.fonte.toLowerCase().includes(q));
-      return matchFonte && matchSearch;
+      const matchTipo    = !activeTipo || (TIPO_MAP[activeTipo] && TIPO_MAP[activeTipo](n.fonte));
+      const matchPeriod  = matchPeriodo(n.publicado_em);
+      const matchSearch  = !q || (n.titulo && n.titulo.toLowerCase().includes(q));
+      return matchTipo && matchPeriod && matchSearch;
     });
     page = 0;
     renderGrid();
@@ -376,7 +425,7 @@
     allNoticias = data;
     filtered    = data;
     buildFilters();
-    renderGrid();
+    applyFilters();
   }
 
   // Search com debounce
