@@ -112,7 +112,7 @@ async function generateImage(news) {
   // Category badge
   ctx.fillStyle = ACCENT_COLOR;
   ctx.beginPath();
-  ctx.roundRect(60, 110, 270, 44, 22);
+  ctx.roundRect(60, 110, 285, 44, 22);
   ctx.fill();
   ctx.fillStyle = '#000000';
   ctx.font = 'bold 21px sans-serif';
