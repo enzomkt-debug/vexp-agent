@@ -4,11 +4,12 @@ const fs = require('fs');
 const { fetchLatestNews } = require('./fetchNews');
 const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
-const { generateImage } = require('./generateImage');
-const { postToInstagram } = require('./postInstagram');
+const { generateImage, gerarStory } = require('./generateImage');
+const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClient');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
+const PORTAL_BASE = 'https://vendaexponencial.com.br';
 
 // Horários de postagem: 09:00, 13:00, 18:00 (fuso Brasília = UTC-3)
 // No Railway (UTC), os horários ficam: 12:00, 16:00, 21:00
@@ -27,13 +28,11 @@ async function runPost() {
     }
 
     for (const item of items) {
-      // Dedup por URL (Supabase)
       if (!TEST_MODE && item.link && await jaPostadoHoje(item.link)) {
         console.log(`[runPost] Já postada hoje: "${item.title}"`);
         continue;
       }
 
-      // Filtro de qualidade via Claude
       const candidate = await generateCaption(item);
       if (candidate.trim() === 'IRRELEVANTE') {
         console.warn(`[runPost] Rejeitada (autopromocional): "${item.title}"`);
@@ -66,30 +65,35 @@ async function runPost() {
     artigo = null;
   }
 
-  // 3. Gerar imagem
-  let imageResult;
+  // 3. Gerar imagem feed + story em paralelo
+  let imageResult, storyResult;
   try {
-    imageResult = await generateImage(news);
-    console.log(`[runPost] Imagem gerada: ${imageResult.filename}`);
+    [imageResult, storyResult] = await Promise.all([
+      generateImage(news),
+      gerarStory(news),
+    ]);
+    console.log(`[runPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
-    console.error('[runPost] Erro ao gerar imagem:', err.message);
+    console.error('[runPost] Erro ao gerar imagens:', err.message);
     return;
   }
 
-  // 4. Publicar no Instagram (sobe imagem ao GitHub internamente)
+  // 4. Publicar post no feed
   let postResult;
   try {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
-    if (!TEST_MODE) console.log(`[runPost] Post publicado! ID: ${postResult.postId}`);
+    if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
-    console.error('[runPost] Erro ao publicar no Instagram:', err.message);
+    console.error('[runPost] Erro ao publicar feed:', err.message);
+    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
     return;
   }
 
   // 5. Salvar no Supabase
+  let registro;
   if (!TEST_MODE) {
     try {
-      const registro = await salvarNoticia({
+      registro = await salvarNoticia({
         titulo:            news.title,
         fonte:             news.source,
         url_original:      news.link,
@@ -99,13 +103,25 @@ async function runPost() {
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runPost] Salvo no Supabase. ID: ${registro?.id}`);
     } catch (err) {
       console.error('[runPost] Erro ao salvar no Supabase:', err.message);
     }
   }
 
-  // Clean up local image
+  // 6. Publicar story com link para o artigo
+  const artigoId = registro?.id;
+  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    if (!TEST_MODE) console.log(`[runPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runPost] Erro ao publicar story:', err.message);
+  }
+
+  // Clean up local files
   try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
 
   console.log('[runPost] Ciclo concluído com sucesso.');
 }

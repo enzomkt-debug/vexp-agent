@@ -11,6 +11,8 @@ const TEXT_COLOR = '#ffffff';
 const SUBTITLE_COLOR = '#cccccc';
 const WIDTH = 1080;
 const HEIGHT = 1080;
+const STORY_WIDTH = 1080;
+const STORY_HEIGHT = 1920;
 
 async function extractOgImage(url) {
   try {
@@ -33,8 +35,7 @@ async function loadBackground(ogImageUrl) {
       timeout: 8000,
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vexp-agent/1.0)' },
     });
-    const buffer = Buffer.from(response.data);
-    return await loadImage(buffer);
+    return await loadImage(Buffer.from(response.data));
   } catch {
     return null;
   }
@@ -44,7 +45,6 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   const words = text.split(' ');
   let line = '';
   let posY = y;
-
   for (const word of words) {
     const testLine = line + word + ' ';
     if (ctx.measureText(testLine).width > maxWidth && line !== '') {
@@ -59,48 +59,43 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
   return posY;
 }
 
-async function generateImage(news) {
-  const canvas = createCanvas(WIDTH, HEIGHT);
-  const ctx = canvas.getContext('2d');
-
-  // --- Background ---
+async function drawBackground(ctx, w, h, link, overlayAlpha) {
   let usedOgImage = false;
-  if (news.link) {
-    const ogUrl = await extractOgImage(news.link);
+  if (link) {
+    const ogUrl = await extractOgImage(link);
     if (ogUrl) {
       const bgImage = await loadBackground(ogUrl);
       if (bgImage) {
-        // Draw og:image scaled to fill canvas
-        ctx.drawImage(bgImage, 0, 0, WIDTH, HEIGHT);
-        // Dark overlay
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+        ctx.drawImage(bgImage, 0, 0, w, h);
+        ctx.fillStyle = `rgba(0, 0, 0, ${overlayAlpha})`;
+        ctx.fillRect(0, 0, w, h);
         usedOgImage = true;
       }
     }
   }
-
   if (!usedOgImage) {
     ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-    // Decorative circles only on solid bg
+    ctx.fillRect(0, 0, w, h);
     ctx.beginPath();
-    ctx.arc(WIDTH - 80, 80, 200, 0, Math.PI * 2);
+    ctx.arc(w - 80, 80, 200, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(255, 215, 0, 0.06)';
     ctx.fill();
-
     ctx.beginPath();
-    ctx.arc(80, HEIGHT - 80, 150, 0, Math.PI * 2);
+    ctx.arc(80, h - 80, 150, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(255, 215, 0, 0.04)';
     ctx.fill();
   }
+}
 
-  // Accent bar top
+async function generateImage(news) {
+  const canvas = createCanvas(WIDTH, HEIGHT);
+  const ctx = canvas.getContext('2d');
+
+  await drawBackground(ctx, WIDTH, HEIGHT, news.link, 0.75);
+
+  // Accent bars
   ctx.fillStyle = ACCENT_COLOR;
   ctx.fillRect(0, 0, WIDTH, 12);
-
-  // Accent bar bottom
   ctx.fillRect(0, HEIGHT - 12, WIDTH, 12);
 
   // Handle label
@@ -111,10 +106,8 @@ async function generateImage(news) {
 
   // Category badge — dynamic width
   ctx.font = 'bold 21px sans-serif';
-  ctx.textAlign = 'left';
   const badgeText = '⚡ ECOMMERCE NEWS';
-  const badgeTextW = ctx.measureText(badgeText).width;
-  const badgeW = 20 + badgeTextW + 20; // pad-left + text + pad-right
+  const badgeW = 20 + ctx.measureText(badgeText).width + 20;
   ctx.fillStyle = ACCENT_COLOR;
   ctx.beginPath();
   ctx.roundRect(60, 110, badgeW, 44, 22);
@@ -136,8 +129,7 @@ async function generateImage(news) {
   // Source chip — dynamic width
   const sourceLabel = `📰  ${news.source}`;
   ctx.font = '26px sans-serif';
-  const sourceTextW = ctx.measureText(sourceLabel).width;
-  const sourceChipW = Math.min(20 + sourceTextW + 20, WIDTH - 120); // cap at canvas width
+  const sourceChipW = Math.min(20 + ctx.measureText(sourceLabel).width + 20, WIDTH - 120);
   ctx.fillStyle = 'rgba(255,255,255,0.12)';
   ctx.beginPath();
   ctx.roundRect(60, lastY + 60, sourceChipW, 48, 24);
@@ -153,12 +145,106 @@ async function generateImage(news) {
     wrapText(ctx, snippet + '...', 60, lastY + 180, WIDTH - 120, 42);
   }
 
-  // Save to disk
   const filename = `post_${Date.now()}.png`;
   const filepath = path.join(ASSETS_DIR, filename);
   fs.writeFileSync(filepath, canvas.toBuffer('image/png'));
-
   return { filepath, filename };
 }
 
-module.exports = { generateImage };
+async function gerarStory(news) {
+  const canvas = createCanvas(STORY_WIDTH, STORY_HEIGHT);
+  const ctx = canvas.getContext('2d');
+
+  await drawBackground(ctx, STORY_WIDTH, STORY_HEIGHT, news.link, 0.85);
+
+  // Accent bars
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.fillRect(0, 0, STORY_WIDTH, 14);
+  ctx.fillRect(0, STORY_HEIGHT - 14, STORY_WIDTH, 14);
+
+  const CX = STORY_WIDTH / 2;
+
+  // Handle label — top center
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.font = 'bold 44px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('@vendaexponencial', CX, 120);
+
+  // Badge — centered
+  ctx.font = 'bold 26px sans-serif';
+  const badgeText = '⚡ ECOMMERCE NEWS';
+  const badgeW = 24 + ctx.measureText(badgeText).width + 24;
+  const badgeX = CX - badgeW / 2;
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.beginPath();
+  ctx.roundRect(badgeX, 150, badgeW, 52, 26);
+  ctx.fill();
+  ctx.fillStyle = '#000000';
+  ctx.fillText(badgeText, CX, 186);
+
+  // Divider
+  ctx.fillStyle = 'rgba(255,255,255,0.2)';
+  ctx.fillRect(80, 230, STORY_WIDTH - 160, 2);
+
+  // Title — large, centered, middle of canvas
+  const title = news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title;
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 68px sans-serif';
+  ctx.textAlign = 'center';
+
+  // Measure and wrap centered
+  const words = title.split(' ');
+  const maxW = STORY_WIDTH - 120;
+  const lineH = 86;
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line + word + ' ';
+    if (ctx.measureText(test).width > maxW && line !== '') {
+      lines.push(line.trim());
+      line = word + ' ';
+    } else {
+      line = test;
+    }
+  }
+  if (line.trim()) lines.push(line.trim());
+
+  const totalTitleH = lines.length * lineH;
+  const titleStartY = (STORY_HEIGHT - totalTitleH) / 2 - 60;
+  lines.forEach((l, i) => ctx.fillText(l, CX, titleStartY + i * lineH));
+
+  const afterTitle = titleStartY + totalTitleH + 40;
+
+  // Divider below title
+  ctx.fillStyle = 'rgba(255,255,255,0.15)';
+  ctx.fillRect(80, afterTitle, STORY_WIDTH - 160, 2);
+
+  // Source chip — centered
+  const sourceLabel = `📰  ${news.source}`;
+  ctx.font = '30px sans-serif';
+  const srcChipW = Math.min(24 + ctx.measureText(sourceLabel).width + 24, STORY_WIDTH - 120);
+  const srcChipX = CX - srcChipW / 2;
+  ctx.fillStyle = 'rgba(255,255,255,0.12)';
+  ctx.beginPath();
+  ctx.roundRect(srcChipX, afterTitle + 20, srcChipW, 54, 27);
+  ctx.fill();
+  ctx.fillStyle = SUBTITLE_COLOR;
+  ctx.fillText(sourceLabel, CX, afterTitle + 57);
+
+  // CTA — bottom
+  const ctaY = STORY_HEIGHT - 140;
+  ctx.fillStyle = ACCENT_COLOR;
+  ctx.fillRect(80, ctaY - 20, STORY_WIDTH - 160, 3);
+  ctx.fillStyle = 'rgba(255, 215, 0, 0.10)';
+  ctx.fillRect(0, ctaY - 10, STORY_WIDTH, 100);
+  ctx.fillStyle = TEXT_COLOR;
+  ctx.font = 'bold 34px sans-serif';
+  ctx.fillText('Leia o artigo completo — link na bio 👆', CX, ctaY + 52);
+
+  const filename = `story_${Date.now()}.png`;
+  const filepath = path.join(ASSETS_DIR, filename);
+  fs.writeFileSync(filepath, canvas.toBuffer('image/png'));
+  return { filepath, filename };
+}
+
+module.exports = { generateImage, gerarStory };
