@@ -6,7 +6,6 @@ const { fetchProductImage } = require('./fetchProductImage');
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR, { recursive: true });
 
-// ── Paleta invertida: fundo gold, texto escuro ───────────────────────────────
 const DARK_BG     = '#FFD700';
 const WHITE       = '#0c0c0c';
 const CARD_BG     = 'rgba(0,0,0,0.06)';
@@ -64,44 +63,41 @@ function wrapLines(ctx, text, maxWidth) {
   return lines;
 }
 
-function drawDataBar(ctx, x, y, barMaxW, label, value, pct, isTop) {
-  const barH    = 10;
+function drawDataBar(ctx, x, y, barMaxW, label, value, pct) {
+  const barH    = 9;
   const barFill = Math.max(0.05, Math.min(1, pct)) * barMaxW;
 
-  ctx.fillStyle = isTop ? '#0c0c0c' : 'rgba(0,0,0,0.55)';
-  ctx.font      = isTop ? 'bold 22px sans-serif' : '20px sans-serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.font      = '19px sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText(truncate(label, 28), x, y);
+  ctx.fillText(truncate(label, 26), x, y);
 
-  drawRoundRect(ctx, x, y + 10, barMaxW, barH, 5);
+  drawRoundRect(ctx, x, y + 8, barMaxW, barH, 4);
   ctx.fillStyle = 'rgba(255,255,255,0.06)';
   ctx.fill();
 
-  drawRoundRect(ctx, x, y + 10, barFill, barH, 5);
+  drawRoundRect(ctx, x, y + 8, barFill, barH, 4);
   const grad = ctx.createLinearGradient(x, 0, x + barFill, 0);
-  grad.addColorStop(0, isTop ? '#0c0c0c' : 'rgba(0,0,0,0.5)');
-  grad.addColorStop(1, isTop ? '#333333' : 'rgba(0,0,0,0.25)');
+  grad.addColorStop(0, 'rgba(0,0,0,0.5)');
+  grad.addColorStop(1, 'rgba(0,0,0,0.25)');
   ctx.fillStyle = grad;
   ctx.fill();
 
-  ctx.fillStyle = isTop ? '#0c0c0c' : 'rgba(0,0,0,0.55)';
-  ctx.font      = isTop ? 'bold 22px sans-serif' : '20px sans-serif';
+  ctx.fillStyle = 'rgba(0,0,0,0.55)';
+  ctx.font      = '19px sans-serif';
   ctx.textAlign = 'right';
   ctx.fillText(value, x + barMaxW, y);
 }
 
 /**
- * Desenha uma imagem do produto recortada em retângulo arredondado.
- * Mantém proporção (cover), centraliza. Retorna a altura usada.
+ * Desenha imagem em modo COVER (preenche a área, centraliza e recorta).
  */
-async function drawProductImage(ctx, imgUrl, x, y, w, h, radius = 16) {
+async function drawImgCover(ctx, imgUrl, x, y, w, h, radius = 20) {
   if (!imgUrl) return false;
   try {
-    const img = await loadImage(imgUrl);
-
-    // Cover: escala para preencher toda a área
+    const img   = await loadImage(imgUrl);
     const scale = Math.max(w / img.width, h / img.height);
-    const dw    = img.width * scale;
+    const dw    = img.width  * scale;
     const dh    = img.height * scale;
     const dx    = x + (w - dw) / 2;
     const dy    = y + (h - dh) / 2;
@@ -112,26 +108,58 @@ async function drawProductImage(ctx, imgUrl, x, y, w, h, radius = 16) {
     ctx.drawImage(img, dx, dy, dw, dh);
     ctx.restore();
 
-    // Borda sutil
+    // Borda
     drawRoundRect(ctx, x, y, w, h, radius);
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+    ctx.lineWidth   = 3;
     ctx.stroke();
-
     return true;
   } catch {
     return false;
   }
 }
 
-/** Badge de categoria: fundo preto sólido, texto gold — grande e destacado */
+/**
+ * Desenha imagem em modo CONTAIN (exibe o produto inteiro, sem corte).
+ */
+async function drawImgContain(ctx, imgUrl, x, y, w, h, radius = 20) {
+  if (!imgUrl) return false;
+  try {
+    const img   = await loadImage(imgUrl);
+    const scale = Math.min(w / img.width, h / img.height);
+    const dw    = img.width  * scale;
+    const dh    = img.height * scale;
+    const dx    = x + (w - dw) / 2;
+    const dy    = y + (h - dh) / 2;
+
+    // Fundo arredondado atrás da imagem
+    drawRoundRect(ctx, x, y, w, h, radius);
+    ctx.fillStyle = 'rgba(255,255,255,0.18)';
+    ctx.fill();
+
+    ctx.save();
+    drawRoundRect(ctx, x, y, w, h, radius);
+    ctx.clip();
+    ctx.drawImage(img, dx, dy, dw, dh);
+    ctx.restore();
+
+    drawRoundRect(ctx, x, y, w, h, radius);
+    ctx.strokeStyle = 'rgba(0,0,0,0.18)';
+    ctx.lineWidth   = 3;
+    ctx.stroke();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Badge de categoria: fundo preto sólido, texto gold */
 function drawCategoryBadge(ctx, text, x, y, align = 'left') {
   ctx.font = 'bold 26px sans-serif';
   const textW  = ctx.measureText(text).width;
-  const padH   = 14;
-  const padV   = 16;
+  const padH   = 14, padV = 14;
   const badgeW = textW + padH * 2;
-  const badgeH = 26 + padV * 2;  // font size + vertical padding
+  const badgeH = 26 + padV * 2;
 
   const bx = align === 'center' ? x - badgeW / 2
            : align === 'right'  ? x - badgeW
@@ -141,8 +169,8 @@ function drawCategoryBadge(ctx, text, x, y, align = 'left') {
   ctx.fillStyle = '#0c0c0c';
   ctx.fill();
 
-  ctx.fillStyle  = '#FFD700';
-  ctx.textAlign  = align === 'center' ? 'center' : 'left';
+  ctx.fillStyle    = '#FFD700';
+  ctx.textAlign    = align === 'center' ? 'center' : 'left';
   ctx.textBaseline = 'middle';
   ctx.fillText(text, align === 'center' ? x : bx + padH, y + badgeH / 2);
   ctx.textBaseline = 'alphabetic';
@@ -151,6 +179,8 @@ function drawCategoryBadge(ctx, text, x, y, align = 'left') {
 }
 
 // ── Feed 1080×1080 ───────────────────────────────────────────────────────────
+// Layout: título hero no topo (full width) → separador → coluna esquerda com
+// dados + coluna direita com imagem grande (460×460)
 async function generateVarejoFeedImage(trendData, articleTitle = '') {
   const W = 1080, H = 1080;
   const canvas = createCanvas(W, H);
@@ -168,28 +198,26 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
   ctx.textAlign = 'left';
   ctx.fillText('@vendaexponencial', PAD, 62);
 
-  // ── Badge "TENDÊNCIAS DO VAREJO" ─────────────────────────────────────────
   ctx.font = 'bold 22px sans-serif';
-  const subBadgeText = '📊  TENDÊNCIAS DO VAREJO';
-  const subBadgeW    = ctx.measureText(subBadgeText).width + 36;
-  drawRoundRect(ctx, PAD, 76, subBadgeW, 36, 18);
+  const subText = '📊  TENDÊNCIAS DO VAREJO';
+  const subW    = ctx.measureText(subText).width + 36;
+  drawRoundRect(ctx, PAD, 76, subW, 36, 18);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   ctx.fill();
-  ctx.fillStyle  = '#0c0c0c';
-  ctx.textAlign  = 'left';
-  ctx.fillText(subBadgeText, PAD + 18, 100);
+  ctx.fillStyle = '#0c0c0c';
+  ctx.textAlign = 'left';
+  ctx.fillText(subText, PAD + 18, 100);
 
   ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.fillRect(PAD, 130, W - PAD * 2, 1);
+  ctx.fillRect(PAD, 128, W - PAD * 2, 1);
 
-  // ── TÍTULO — hero no topo ─────────────────────────────────────────────────
-  let titleBottom = 145;
+  // ── TÍTULO — hero (full width) ────────────────────────────────────────────
+  let titleBottom = 142;
   if (articleTitle) {
     ctx.font = 'bold 50px sans-serif';
-    const maxW       = W - PAD * 2;
-    const titleLines = wrapLines(ctx, articleTitle, maxW);
+    const titleLines = wrapLines(ctx, articleTitle, W - PAD * 2);
     const lineH      = 66;
-    const maxLines   = 4;
+    const maxLines   = 3;
     const displayed  = titleLines.slice(0, maxLines);
 
     ctx.fillStyle = '#0c0c0c';
@@ -197,94 +225,95 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
     displayed.forEach((line, i) => {
       const text = (i === maxLines - 1 && titleLines.length > maxLines)
         ? truncate(line, 30) : line;
-      ctx.fillText(text, PAD, 145 + 60 + i * lineH);
+      ctx.fillText(text, PAD, 142 + 60 + i * lineH);
     });
 
-    titleBottom = 145 + 60 + displayed.length * lineH + 16;
+    titleBottom = 142 + 60 + displayed.length * lineH + 14;
     ctx.fillStyle = '#0c0c0c';
-    ctx.fillRect(PAD, titleBottom, 80, 4);
-    titleBottom += 24;
+    ctx.fillRect(PAD, titleBottom, 70, 4);
+    titleBottom += 20;
   }
 
-  // ── Separador ─────────────────────────────────────────────────────────────
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
-  ctx.fillRect(PAD, titleBottom + 8, W - PAD * 2, 1);
-  let dataY = titleBottom + 26;
+  ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
+  const dataY = titleBottom + 24;
 
-  // ── Badge de categoria destacado ─────────────────────────────────────────
-  const catBadgeH = drawCategoryBadge(
-    ctx,
-    trendData.categoria.label.toUpperCase(),
-    PAD,
-    dataY,
-    'left'
-  );
-  dataY += catBadgeH + 18;
+  // ── Coluna direita: IMAGEM GRANDE ────────────────────────────────────────
+  const IMG_W = 460, IMG_H = H - dataY - PAD - 6;
+  const imgX  = W - PAD - IMG_W;
+  const imgY  = dataY;
 
-  // ── Linha com imagem do produto + % hero ─────────────────────────────────
   const topTerm = (trendData.specificTrends || [])[0];
-
-  const IMG_SIZE  = 220;
-  const imgX      = W - PAD - IMG_SIZE;
-  const imgY      = dataY;
-  const textAreaW = W - PAD * 2 - IMG_SIZE - 24;
-
-  // Buscar imagem do produto (em paralelo com resto do desenho)
   const imgUrlPromise = topTerm
     ? fetchProductImage(topTerm.keyword, trendData.categoria?.label || '')
     : Promise.resolve(null);
+
+  // ── Coluna esquerda: dados ────────────────────────────────────────────────
+  const leftW = W - PAD * 3 - IMG_W;   // largura disponível na coluna esquerda
+  let leftY   = dataY;
+
+  const catBadgeH = drawCategoryBadge(
+    ctx, trendData.categoria.label.toUpperCase(), PAD, leftY, 'left'
+  );
+  leftY += catBadgeH + 16;
 
   if (topTerm) {
     const heroPct   = topTerm.isBreakout ? 'BREAKOUT' : topTerm.value ? `+${topTerm.value}%` : `${topTerm.avgInterest || ''}`;
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
-    ctx.font      = 'bold 88px sans-serif';
+    ctx.font      = 'bold 96px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText(heroPct, PAD, dataY + 88);
+    ctx.fillText(heroPct, PAD, leftY + 96);
 
     ctx.fillStyle = WHITE;
-    ctx.font      = 'bold 36px sans-serif';
-    ctx.fillText(truncate(topTerm.keyword, 20), PAD, dataY + 138);
+    ctx.font      = 'bold 34px sans-serif';
+    ctx.fillText(truncate(topTerm.keyword, 18), PAD, leftY + 148);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.font      = '22px sans-serif';
-    ctx.fillText('nas buscas — últimos 90 dias', PAD, dataY + 168);
+    ctx.fillText('nas buscas', PAD, leftY + 180);
+    ctx.fillText('últimos 90 dias', PAD, leftY + 206);
 
-    dataY += 192;
-  } else {
-    dataY += 20;
+    leftY += 228;
   }
 
-  // ── Outros rising terms ────────────────────────────────────────────────────
   const others = (trendData.specificTrends || []).slice(1, 4);
   if (others.length) {
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(PAD, dataY + 8, W - PAD * 2, 1);
+    ctx.fillRect(PAD, leftY + 8, leftW, 1);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '20px sans-serif';
+    ctx.font      = '18px sans-serif';
     ctx.textAlign = 'left';
-    ctx.fillText('TAMBÉM EM ALTA', PAD, dataY + 32);
+    ctx.fillText('TAMBÉM EM ALTA', PAD, leftY + 28);
 
     const maxVal  = Math.max(...others.map(t => t.value || t.avgInterest || 1));
-    const barMaxW = W - PAD * 2 - 60;
     others.forEach((t, i) => {
-      const y   = dataY + 50 + i * 66;
+      const y   = leftY + 46 + i * 62;
       const val = t.isBreakout ? 'BREAKOUT' : t.value ? `+${t.value}%` : t.avgInterest ? `${t.avgInterest}/100` : '';
       const pct = (t.value || t.avgInterest || 1) / (maxVal || 1);
-      drawDataBar(ctx, PAD, y, barMaxW, truncate(t.keyword, 24), val, pct, false);
+      drawDataBar(ctx, PAD, y, leftW, truncate(t.keyword, 22), val, pct);
     });
   }
 
-  // ── Imagem do produto (aguarda e desenha) ─────────────────────────────────
-  const imgUrl = await imgUrlPromise;
-  if (imgUrl) {
-    await drawProductImage(ctx, imgUrl, imgX, imgY, IMG_SIZE, IMG_SIZE, 20);
-  }
-
+  // ── Borda inferior ────────────────────────────────────────────────────────
   ctx.fillStyle = '#0c0c0c';
   ctx.fillRect(0, H - 6, W, 6);
+
+  // ── Imagem do produto (aguarda e preenche coluna direita) ─────────────────
+  const imgUrl = await imgUrlPromise;
+  const drawn  = imgUrl && await drawImgCover(ctx, imgUrl, imgX, imgY, IMG_W, Math.min(IMG_H, 500), 24);
+  if (!drawn) {
+    // Placeholder
+    drawRoundRect(ctx, imgX, imgY, IMG_W, Math.min(IMG_H, 500), 24);
+    ctx.fillStyle = 'rgba(0,0,0,0.07)';
+    ctx.fill();
+    drawRoundRect(ctx, imgX, imgY, IMG_W, Math.min(IMG_H, 500), 24);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
 
   const filename = `varejo_${Date.now()}.png`;
   const filepath = path.join(ASSETS_DIR, filename);
@@ -293,6 +322,8 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
 }
 
 // ── Story 1080×1920 ──────────────────────────────────────────────────────────
+// Layout: título → badge de categoria → IMAGEM GRANDE (quase full-width) →
+// % hero + produto → 2 barras → CTA
 async function generateVarejoStoryImage(trendData, articleTitle = '') {
   const W = 1080, H = 1920;
   const canvas = createCanvas(W, H);
@@ -302,7 +333,6 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
   const SAFE_BOTTOM = 1600;
   const CX          = W / 2;
   const PAD         = 80;
-  // Usable: SAFE_BOTTOM - SAFE_TOP = 1330px
 
   drawBackground(ctx, W, H);
 
@@ -311,30 +341,28 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
 
   // ── Handle ────────────────────────────────────────────────────────────────
   ctx.fillStyle = '#0c0c0c';
-  ctx.font      = 'bold 38px sans-serif';
+  ctx.font      = 'bold 36px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('@vendaexponencial', CX, SAFE_TOP + 58);
+  ctx.fillText('@vendaexponencial', CX, SAFE_TOP + 54);
 
-  // ── Badge "TENDÊNCIAS DO VAREJO" ─────────────────────────────────────────
-  ctx.font = 'bold 22px sans-serif';
+  ctx.font = 'bold 21px sans-serif';
   const subText = '📊  TENDÊNCIAS DO VAREJO';
-  const subW    = ctx.measureText(subText).width + 44;
-  drawRoundRect(ctx, CX - subW / 2, SAFE_TOP + 72, subW, 42, 21);
+  const subW    = ctx.measureText(subText).width + 40;
+  drawRoundRect(ctx, CX - subW / 2, SAFE_TOP + 66, subW, 40, 20);
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   ctx.fill();
   ctx.fillStyle = '#0c0c0c';
-  ctx.fillText(subText, CX, SAFE_TOP + 100);
+  ctx.fillText(subText, CX, SAFE_TOP + 92);
 
   ctx.fillStyle = 'rgba(0,0,0,0.15)';
-  ctx.fillRect(PAD, SAFE_TOP + 132, W - PAD * 2, 1);
+  ctx.fillRect(PAD, SAFE_TOP + 122, W - PAD * 2, 1);
 
-  // ── TÍTULO — hero (max 3 linhas, fonte compacta) ──────────────────────────
-  let titleBottom = SAFE_TOP + 148;
+  // ── TÍTULO ────────────────────────────────────────────────────────────────
+  let titleBottom = SAFE_TOP + 138;
   if (articleTitle) {
-    ctx.font = 'bold 50px sans-serif';
-    const maxW       = W - PAD * 2;
-    const titleLines = wrapLines(ctx, articleTitle, maxW);
-    const lineH      = 64;
+    ctx.font = 'bold 48px sans-serif';
+    const titleLines = wrapLines(ctx, articleTitle, W - PAD * 2);
+    const lineH      = 62;
     const maxLines   = 3;
     const displayed  = titleLines.slice(0, maxLines);
 
@@ -343,41 +371,37 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
     displayed.forEach((line, i) => {
       const text = (i === maxLines - 1 && titleLines.length > maxLines)
         ? truncate(line, 28) + '…' : line;
-      ctx.fillText(text, CX, titleBottom + 54 + i * lineH);
+      ctx.fillText(text, CX, titleBottom + 52 + i * lineH);
     });
 
-    titleBottom = titleBottom + 54 + displayed.length * lineH + 14;
+    titleBottom = titleBottom + 52 + displayed.length * lineH + 12;
     ctx.fillStyle = '#0c0c0c';
-    ctx.fillRect(CX - 44, titleBottom, 88, 4);
-    titleBottom += 22;
+    ctx.fillRect(CX - 40, titleBottom, 80, 4);
+    titleBottom += 20;
   }
 
   ctx.fillStyle = 'rgba(0,0,0,0.12)';
   ctx.fillRect(PAD, titleBottom + 6, W - PAD * 2, 1);
-  let dataY = titleBottom + 24;
+  let dataY = titleBottom + 22;
 
-  // ── Badge de categoria destacado (centralizado) ──────────────────────────
+  // ── Badge de categoria ────────────────────────────────────────────────────
   const catBadgeH = drawCategoryBadge(
-    ctx,
-    trendData.categoria.label.toUpperCase(),
-    CX,
-    dataY,
-    'center'
+    ctx, trendData.categoria.label.toUpperCase(), CX, dataY, 'center'
   );
-  dataY += catBadgeH + 18;
+  dataY += catBadgeH + 16;
 
-  // ── Imagem do produto (centralizada) ─────────────────────────────────────
+  // ── IMAGEM GRANDE (quase full-width, modo contain) ────────────────────────
   const topTerm = (trendData.specificTrends || [])[0];
-  const IMG_W = 200, IMG_H = 200;
-  const imgX  = CX - IMG_W / 2;
-  const imgY  = dataY;
+  const IMG_W   = W - PAD * 2;    // 920px de largura
+  const IMG_H   = 400;
+  const imgX    = PAD;
+  const imgY    = dataY;
 
   const imgUrlPromise = topTerm
     ? fetchProductImage(topTerm.keyword, trendData.categoria?.label || '')
     : Promise.resolve(null);
 
-  // Reserva espaço
-  dataY += IMG_H + 14;
+  dataY += IMG_H + 24;
 
   // ── % hero + produto ──────────────────────────────────────────────────────
   if (topTerm) {
@@ -385,80 +409,46 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
-    ctx.font      = 'bold 100px sans-serif';
+    ctx.font      = 'bold 110px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(heroPct, CX, dataY + 100);
+    ctx.fillText(heroPct, CX, dataY + 110);
 
     const numW = ctx.measureText(heroPct).width;
     ctx.fillStyle = heroColor;
-    ctx.fillRect(CX - numW / 2, dataY + 112, numW, 4);
+    ctx.fillRect(CX - numW / 2, dataY + 124, numW, 5);
 
     ctx.fillStyle = WHITE;
-    ctx.font      = 'bold 42px sans-serif';
-    ctx.fillText(truncate(topTerm.keyword, 20), CX, dataY + 168);
+    ctx.font      = 'bold 44px sans-serif';
+    ctx.fillText(truncate(topTerm.keyword, 20), CX, dataY + 182);
 
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '24px sans-serif';
-    ctx.fillText('nas buscas — últimos 90 dias', CX, dataY + 204);
-
-    dataY += 228;
-  }
-
-  // ── Outros rising terms (máx 2 no story) ────────────────────────────────
-  const others = (trendData.specificTrends || []).slice(1, 3);
-  if (others.length) {
-    ctx.fillStyle = 'rgba(0,0,0,0.12)';
-    ctx.fillRect(PAD, dataY, W - PAD * 2, 1);
-
-    ctx.fillStyle = 'rgba(0,0,0,0.45)';
-    ctx.font      = '22px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('TAMBÉM EM ALTA', CX, dataY + 32);
-
-    const maxVal  = Math.max(...others.map(t => t.value || t.avgInterest || 1));
-    const barMaxW = W - PAD * 2 - 40;
-
-    others.forEach((t, i) => {
-      const y   = dataY + 50 + i * 78;
-      const val = t.isBreakout ? 'BREAKOUT' : t.value ? `+${t.value}%` : t.avgInterest ? `${t.avgInterest}/100` : '';
-      const pct = (t.value || t.avgInterest || 1) / (maxVal || 1);
-
-      drawRoundRect(ctx, PAD - 10, y - 4, W - PAD * 2 + 20, 62, 12);
-      ctx.fillStyle = CARD_BG;
-      ctx.fill();
-      drawRoundRect(ctx, PAD - 10, y - 4, W - PAD * 2 + 20, 62, 12);
-      ctx.strokeStyle = CARD_BORDER;
-      ctx.lineWidth = 1;
-      ctx.stroke();
-
-      drawDataBar(ctx, PAD, y + 10, barMaxW, truncate(t.keyword, 26), val, pct, false);
-    });
+    ctx.font      = '26px sans-serif';
+    ctx.fillText('nas buscas — últimos 90 dias', CX, dataY + 222);
   }
 
   // ── CTA ───────────────────────────────────────────────────────────────────
-  const ctaY = SAFE_BOTTOM - 104;
+  const ctaY = SAFE_BOTTOM - 100;
   ctx.fillStyle = 'rgba(0,0,0,0.10)';
-  ctx.fillRect(0, ctaY - 10, W, 104);
+  ctx.fillRect(0, ctaY - 10, W, 100);
   ctx.fillStyle = '#0c0c0c';
   ctx.fillRect(PAD, ctaY - 10, W - PAD * 2, 3);
   ctx.fillStyle = WHITE;
   ctx.font      = 'bold 30px sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Leia a análise completa — link na bio 👆', CX, ctaY + 42);
+  ctx.fillText('Leia a análise completa — link na bio 👆', CX, ctaY + 40);
 
   ctx.fillStyle = '#0c0c0c';
   ctx.fillRect(PAD, SAFE_BOTTOM - 4, W - PAD * 2, 4);
 
-  // ── Imagem do produto (aguarda e desenha sobre o espaço reservado) ────────
+  // ── Imagem do produto (aguarda e desenha) ─────────────────────────────────
   const imgUrl = await imgUrlPromise;
-  if (imgUrl) {
-    await drawProductImage(ctx, imgUrl, imgX, imgY, IMG_W, IMG_H, 20);
-  } else {
-    drawRoundRect(ctx, imgX, imgY, IMG_W, IMG_H, 20);
-    ctx.fillStyle = 'rgba(0,0,0,0.08)';
+  const drawn  = imgUrl && await drawImgContain(ctx, imgUrl, imgX, imgY, IMG_W, IMG_H, 24);
+  if (!drawn) {
+    drawRoundRect(ctx, imgX, imgY, IMG_W, IMG_H, 24);
+    ctx.fillStyle = 'rgba(0,0,0,0.07)';
     ctx.fill();
-    drawRoundRect(ctx, imgX, imgY, IMG_W, IMG_H, 20);
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    drawRoundRect(ctx, imgX, imgY, IMG_W, IMG_H, 24);
+    ctx.strokeStyle = 'rgba(0,0,0,0.12)';
     ctx.lineWidth = 2;
     ctx.stroke();
   }
