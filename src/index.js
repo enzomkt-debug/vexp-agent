@@ -8,7 +8,8 @@ const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClient');
 const { runTrendIntelligence } = require('./trendIntelligence');
-const { runVarejo }            = require('./varejo/index');
+const { runVarejo }                                    = require('./varejo/index');
+const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
@@ -143,12 +144,12 @@ async function runVarejoPost() {
   const { news, caption, artigo, categoria, refYear, mesNome } = varejoResult;
   console.log(`[runVarejoPost] Categoria: "${categoria.label}" | Ref: ${mesNome}/${refYear}`);
 
-  // 2. Gerar imagens feed + story em paralelo
+  // 2. Gerar imagens com template exclusivo de varejo
   let imageResult, storyResult;
   try {
     [imageResult, storyResult] = await Promise.all([
-      generateImage(news),
-      gerarStory(news),
+      generateVarejoFeedImage(varejoResult.trendData, varejoResult.news.title),
+      generateVarejoStoryImage(varejoResult.trendData, varejoResult.news.title),
     ]);
     console.log(`[runVarejoPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -218,6 +219,10 @@ console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horári
 
 if (process.env.RUN_ON_START === 'true') {
   runPost();
+}
+
+if (process.env.RUN_VAREJO_ON_START === 'true') {
+  runVarejoPost();
 }
 
 async function runTrendPost() {
