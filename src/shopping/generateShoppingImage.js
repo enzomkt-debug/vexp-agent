@@ -163,20 +163,32 @@ async function tryLoadUrl(url) {
 // 2. og:image da página do lojista
 // 3. Emoji da categoria (fallback garantido)
 async function loadProductImage(product, emojiImg) {
+  const label = product.title?.slice(0, 30);
+
   // 1. URL direta do ScaleSerp
   if (product.thumbnail) {
+    console.log(`[prodImg] "${label}" thumbnail=${product.thumbnail.slice(0, 60)}`);
     const img = await tryLoadUrl(product.thumbnail);
-    if (img) return { img, isEmoji: false };
+    if (img) { console.log(`[prodImg] "${label}" OK via thumbnail`); return { img, isEmoji: false }; }
+    console.log(`[prodImg] "${label}" thumbnail FALHOU`);
+  } else {
+    console.log(`[prodImg] "${label}" sem thumbnail`);
   }
 
   // 2. og:image da página do lojista
+  console.log(`[prodImg] "${label}" link=${product.link?.slice(0, 60)}`);
   const ogUrl = await fetchProductOgImage(product.link);
   if (ogUrl) {
+    console.log(`[prodImg] "${label}" og:image=${ogUrl.slice(0, 60)}`);
     const img = await tryLoadUrl(ogUrl);
-    if (img) return { img, isEmoji: false };
+    if (img) { console.log(`[prodImg] "${label}" OK via og:image`); return { img, isEmoji: false }; }
+    console.log(`[prodImg] "${label}" og:image FALHOU ao carregar`);
+  } else {
+    console.log(`[prodImg] "${label}" og:image não encontrado`);
   }
 
   // 3. Emoji da categoria
+  console.log(`[prodImg] "${label}" usando emoji`);
   return { img: emojiImg, isEmoji: true };
 }
 
