@@ -7,8 +7,11 @@ nixPkgs = [
   "libjpeg",
   "giflib",
   "librsvg",
-  "pixman"
+  "pixman",
+  "python3",
+  "gcc",
+  "gnumake"
 ]
 
 [phases.install]
-cmds = ["npm ci --build-from-source=canvas"]
+cmds = ["npm ci", "npm rebuild canvas --build-from-source"]

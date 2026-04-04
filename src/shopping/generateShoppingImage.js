@@ -148,8 +148,13 @@ const BROWSER_HEADERS = {
 
 async function tryLoadUrl(url) {
   if (!url) return null;
-  // Base64 WebP do ScaleSerp — canvas no Railway não suporta WebP, pula direto
-  if (url.startsWith('data:')) return null;
+  // Base64 data URL (WebP do ScaleSerp) — decodifica para Buffer e passa ao canvas
+  if (url.startsWith('data:')) {
+    try {
+      const b64 = url.split(',')[1];
+      return await loadImage(Buffer.from(b64, 'base64'));
+    } catch { return null; }
+  }
   try {
     const { data } = await axios.get(url, {
       responseType: 'arraybuffer',
