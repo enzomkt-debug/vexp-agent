@@ -37,7 +37,7 @@ const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
-const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaPostadoHoje } = require('./supabaseClient');
+const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado } = require('./supabaseClient');
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
@@ -64,7 +64,7 @@ async function runPost() {
     }
 
     for (const item of items) {
-      if (!TEST_MODE && item.link && await jaPostadoHoje(item.link)) {
+      if (!TEST_MODE && item.link && await jaFoiPostado(item.link)) {
         console.log(`[runPost] Já postada hoje: "${item.title}"`);
         continue;
       }

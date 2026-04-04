@@ -82,18 +82,14 @@ async function buscarUltimasNoticias(limit = 10) {
   return data || [];
 }
 
-async function jaPostadoHoje(url_original) {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
+async function jaFoiPostado(url_original) {
   const { data } = await supabase
     .from('noticias')
     .select('id')
     .eq('url_original', url_original)
-    .gte('publicado_em', today.toISOString())
     .limit(1);
 
   return data && data.length > 0;
 }
 
-module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, atualizarImagemGithub, buscarUltimasNoticias, jaPostadoHoje };
+module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, atualizarImagemGithub, buscarUltimasNoticias, jaFoiPostado };
