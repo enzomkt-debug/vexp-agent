@@ -208,6 +208,42 @@
       color: #444;
       white-space: nowrap;
     }
+    .fonte-select {
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: #0a0a0a;
+      border: 1px solid #333;
+      color: #666;
+      padding: 6px 28px 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23666' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      outline: none;
+      max-width: 200px;
+    }
+    .fonte-select:hover { border-color: #FFD700; color: #FFD700; }
+    .fonte-select.active { border-color: #FFD700; color: #FFD700; }
+    .fonte-select option { background: #111; color: #fff; }
+    .btn-clear {
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 600;
+      background: transparent;
+      border: 1px solid #2a2a2a;
+      color: #555;
+      padding: 5px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-clear:hover { border-color: #e55; color: #e55; }
     .load-more-wrap { text-align: center; padding: 12px 0 48px; }
     .btn-load-more {
       font-family: inherit;
@@ -267,6 +303,7 @@
       <button class="filter-btn" data-tipo="noticias">Notícias</button>
       <button class="filter-btn" data-tipo="varejo">Varejo</button>
       <button class="filter-btn" data-tipo="tendencias">Tendências</button>
+      <button class="filter-btn" data-tipo="shopping">Shopping</button>
     </div>
     <div class="filter-group">
       <span class="filter-group-label">Período</span>
@@ -274,7 +311,17 @@
       <button class="filter-btn" data-periodo="hoje">Hoje</button>
       <button class="filter-btn" data-periodo="semana">Esta semana</button>
       <button class="filter-btn" data-periodo="mes">Este mês</button>
+      <button class="filter-btn" data-periodo="trimestre">Este trimestre</button>
     </div>
+    <div class="filter-group" id="fonte-group" style="display:none">
+      <span class="filter-group-label">Fonte</span>
+      <select id="fonte-select" class="fonte-select">
+        <option value="">Todas as fontes</option>
+      </select>
+    </div>
+  </div>
+  <div class="controls-top" id="filters-meta" style="display:none">
+    <button class="btn-clear" id="btn-clear">✕ Limpar filtros</button>
   </div>
 </div>
 
@@ -307,17 +354,19 @@
   const { createClient } = supabase;
   const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  let allNoticias  = [];
-  let filtered     = [];
-  let page         = 0;
-  let activeTipo   = '';
+  let allNoticias   = [];
+  let filtered      = [];
+  let page          = 0;
+  let activeTipo    = '';
   let activePeriodo = '';
-  let searchQuery  = '';
+  let activeFonte   = '';
+  let searchQuery   = '';
 
   const TIPO_MAP = {
-    noticias:   (fonte) => fonte && fonte !== 'Google Trends Varejo' && !fonte.startsWith('Google Trends'),
+    noticias:   (fonte) => fonte && fonte !== 'Google Trends Varejo' && fonte !== 'Google Shopping' && !fonte.startsWith('Google Trends'),
     varejo:     (fonte) => fonte === 'Google Trends Varejo',
     tendencias: (fonte) => fonte && fonte.startsWith('Google Trends') && fonte !== 'Google Trends Varejo',
+    shopping:   (fonte) => fonte === 'Google Shopping',
   };
 
   function matchPeriodo(iso) {
@@ -325,10 +374,41 @@
     const pub  = new Date(iso);
     const now  = new Date();
     const diff = now - pub;
-    if (activePeriodo === 'hoje')   return diff < 86400000;
-    if (activePeriodo === 'semana') return diff < 7 * 86400000;
-    if (activePeriodo === 'mes')    return diff < 30 * 86400000;
+    if (activePeriodo === 'hoje')      return diff < 86400000;
+    if (activePeriodo === 'semana')    return diff < 7 * 86400000;
+    if (activePeriodo === 'mes')       return diff < 30 * 86400000;
+    if (activePeriodo === 'trimestre') return diff < 90 * 86400000;
     return true;
+  }
+
+  function syncURL() {
+    const params = new URLSearchParams();
+    if (activeTipo)    params.set('tipo', activeTipo);
+    if (activePeriodo) params.set('periodo', activePeriodo);
+    if (activeFonte)   params.set('fonte', activeFonte);
+    if (searchQuery)   params.set('q', searchQuery);
+    const str = params.toString();
+    history.replaceState(null, '', str ? '?' + str : location.pathname);
+  }
+
+  function readURL() {
+    const params = new URLSearchParams(location.search);
+    activeTipo    = params.get('tipo')    || '';
+    activePeriodo = params.get('periodo') || '';
+    activeFonte   = params.get('fonte')   || '';
+    searchQuery   = params.get('q')       || '';
+    if (searchQuery) document.getElementById('search').value = searchQuery;
+    document.querySelectorAll('.filter-btn[data-tipo]').forEach(b => {
+      b.classList.toggle('active', b.dataset.tipo === activeTipo);
+    });
+    document.querySelectorAll('.filter-btn[data-periodo]').forEach(b => {
+      b.classList.toggle('active', b.dataset.periodo === activePeriodo);
+    });
+  }
+
+  function updateClearBtn() {
+    const hasFilter = activeTipo || activePeriodo || activeFonte || searchQuery;
+    document.getElementById('filters-meta').style.display = hasFilter ? 'flex' : 'none';
   }
 
   function formatDate(iso) {
@@ -360,6 +440,27 @@
       </a>`;
   }
 
+  function buildFonteSelect() {
+    const sel = document.getElementById('fonte-select');
+    const counts = {};
+    allNoticias.forEach(n => { if (n.fonte) counts[n.fonte] = (counts[n.fonte] || 0) + 1; });
+    const sorted = Object.entries(counts).filter(([, c]) => c >= 2).sort((a, b) => b[1] - a[1]);
+    sorted.forEach(([fonte]) => {
+      const opt = document.createElement('option');
+      opt.value = fonte;
+      opt.textContent = fonte;
+      if (fonte === activeFonte) opt.selected = true;
+      sel.appendChild(opt);
+    });
+    if (sorted.length > 0) document.getElementById('fonte-group').style.display = 'flex';
+    if (activeFonte) sel.classList.add('active');
+    sel.addEventListener('change', () => {
+      activeFonte = sel.value;
+      sel.classList.toggle('active', !!activeFonte);
+      applyFilters();
+    });
+  }
+
   function buildFilters() {
     document.querySelectorAll('.filter-btn[data-tipo]').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -377,6 +478,15 @@
         applyFilters();
       });
     });
+    document.getElementById('btn-clear').addEventListener('click', () => {
+      activeTipo = ''; activePeriodo = ''; activeFonte = ''; searchQuery = '';
+      document.getElementById('search').value = '';
+      document.querySelectorAll('.filter-btn[data-tipo]').forEach(b => b.classList.toggle('active', b.dataset.tipo === ''));
+      document.querySelectorAll('.filter-btn[data-periodo]').forEach(b => b.classList.toggle('active', b.dataset.periodo === ''));
+      const sel = document.getElementById('fonte-select');
+      sel.value = ''; sel.classList.remove('active');
+      applyFilters();
+    });
   }
 
   function applyFilters() {
@@ -384,10 +494,13 @@
     filtered = allNoticias.filter(n => {
       const matchTipo    = !activeTipo || (TIPO_MAP[activeTipo] && TIPO_MAP[activeTipo](n.fonte));
       const matchPeriod  = matchPeriodo(n.publicado_em);
-      const matchSearch  = !q || (n.titulo && n.titulo.toLowerCase().includes(q));
-      return matchTipo && matchPeriod && matchSearch;
+      const matchFonte   = !activeFonte || n.fonte === activeFonte;
+      const matchSearch  = !q || (n.titulo && n.titulo.toLowerCase().includes(q)) || (n.fonte && n.fonte.toLowerCase().includes(q));
+      return matchTipo && matchPeriod && matchFonte && matchSearch;
     });
     page = 0;
+    syncURL();
+    updateClearBtn();
     renderGrid();
   }
 
@@ -432,7 +545,9 @@
 
     allNoticias = data;
     filtered    = data;
+    readURL();
     buildFilters();
+    buildFonteSelect();
     applyFilters();
   }
 
