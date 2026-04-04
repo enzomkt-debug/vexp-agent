@@ -1,6 +1,37 @@
 require('dotenv').config();
+const http = require('http');
 const cron = require('node-cron');
 const fs = require('fs');
+
+// ─── HANDLERS GLOBAIS DE ERRO ───
+process.on('uncaughtException', (err) => {
+  console.error(`[FATAL] uncaughtException: ${err.message}`, err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error(`[FATAL] unhandledRejection:`, reason);
+  process.exit(1);
+});
+
+process.on('SIGTERM', () => {
+  console.log('[INFO] SIGTERM recebido — encerrando gracefully...');
+  process.exit(0);
+});
+
+// ─── HEALTHCHECK HTTP ───
+const PORT = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  if (req.url === '/health') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() }));
+  } else {
+    res.writeHead(404);
+    res.end();
+  }
+}).listen(PORT, () => {
+  console.log(`[healthcheck] HTTP server escutando na porta ${PORT}`);
+});
 const { fetchLatestNews } = require('./fetchNews');
 const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
@@ -104,17 +135,17 @@ async function runPost() {
   }
 
   // 5. Publicar post no feed
+  const artigoId = registro?.id;
+  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 6. Publicar story com link para o artigo
-  const artigoId = registro?.id;
-  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   try {
     const storyPost = await publicarStory(storyResult.filepath, linkUrl);
     if (!TEST_MODE) console.log(`[runPost] Story publicado! ID: ${storyPost.postId}`);
@@ -178,17 +209,17 @@ async function runVarejoPost() {
   }
 
   // 4. Publicar feed
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 5. Publicar story
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   try {
     const storyPost = await publicarStory(storyResult.filepath, linkUrl);
     if (!TEST_MODE) console.log(`[runVarejoPost] Story publicado! ID: ${storyPost.postId}`);
@@ -251,17 +282,17 @@ async function runShoppingPost() {
   }
 
   // 4. Publicar feed
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 5. Publicar story
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   try {
     const storyPost = await publicarStory(storyResult.filepath, linkUrl);
     if (!TEST_MODE) console.log(`[runShoppingPost] Story publicado! ID: ${storyPost.postId}`);
@@ -277,18 +308,18 @@ async function runShoppingPost() {
 
 // Register cron jobs — pipeline principal
 for (const schedule of SCHEDULE_TIMES) {
-  cron.schedule(schedule, runPost, { timezone: 'UTC' });
+  cron.schedule(schedule, () => runPost().catch(err => console.error(`[cron] Erro em runPost:`, err.message)), { timezone: 'UTC' });
   console.log(`[cron] Agendado (news): ${schedule} UTC`);
 }
 
 // Post diário de varejo: 18:00 UTC = 15:00 BRT
 const VAREJO_SCHEDULE = '0 18 * * *';
-cron.schedule(VAREJO_SCHEDULE, runVarejoPost, { timezone: 'UTC' });
+cron.schedule(VAREJO_SCHEDULE, () => runVarejoPost().catch(err => console.error(`[cron] Erro em runVarejoPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (varejo): ${VAREJO_SCHEDULE} UTC`);
 
 // Post diário de shopping: 20:00 UTC = 17:00 BRT
 const SHOPPING_SCHEDULE = '0 20 * * *';
-cron.schedule(SHOPPING_SCHEDULE, runShoppingPost, { timezone: 'UTC' });
+cron.schedule(SHOPPING_SCHEDULE, () => runShoppingPost().catch(err => console.error(`[cron] Erro em runShoppingPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 
 console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);

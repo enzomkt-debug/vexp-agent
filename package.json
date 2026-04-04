@@ -4,7 +4,7 @@
   "description": "Agente automático de postagem de notícias de ecommerce no Instagram @vendaexponencial",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node scripts/validate-env.js && node src/index.js",
     "dev": "node --watch src/index.js"
   },
   "dependencies": {

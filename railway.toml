@@ -1,2 +1,11 @@
 [deploy]
 ignoredPaths = ["assets/"]
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 5
+
+[healthcheck]
+path = "/health"
+initialDelaySeconds = 30
+periodSeconds = 30
+timeoutSeconds = 5
+failureThreshold = 3

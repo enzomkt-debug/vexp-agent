@@ -2,21 +2,32 @@ require('dotenv').config();
 const axios = require('axios');
 const { subirImagemGithub } = require('./utils');
 
-async function postToInstagram({ imagePath, caption }) {
+async function postToInstagram({ imagePath, caption, linkUrl }) {
   const imageUrl = await subirImagemGithub(imagePath);
 
   if (process.env.TEST_MODE === 'true') {
     console.log('[postInstagram] TEST_MODE ativo — publicação bloqueada.');
     console.log('[postInstagram] imageUrl:', imageUrl);
     console.log('[postInstagram] caption:', caption);
+    console.log('[postInstagram] linkUrl:', linkUrl);
     return { postId: 'test-mode', mediaUrl: imageUrl };
   }
 
+  const platforms = [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }];
+  if (process.env.ZERNIO_LINKEDIN_ACCOUNT_ID) {
+    platforms.push({ platform: 'linkedin', accountId: process.env.ZERNIO_LINKEDIN_ACCOUNT_ID });
+  }
+
+  const linkedinCaption = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
+
   const payload = {
-    platforms: [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }],
+    platforms,
     content: caption,
     mediaItems: [{ type: 'image', url: imageUrl }],
     publishNow: true,
+    platformOverrides: {
+      linkedin: { content: linkedinCaption },
+    },
   };
 
   let res;
@@ -26,6 +37,7 @@ async function postToInstagram({ imagePath, caption }) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.ZERNIO_API_KEY}`,
       },
+      timeout: 30000,
     });
   } catch (err) {
     const detail = err.response?.data ? JSON.stringify(err.response.data) : err.message;
@@ -66,6 +78,7 @@ async function publicarStory(imagePath, linkUrl) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${process.env.ZERNIO_API_KEY}`,
       },
+      timeout: 30000,
     });
   } catch (err) {
     const detail = err.response?.data ? JSON.stringify(err.response.data) : err.message;
