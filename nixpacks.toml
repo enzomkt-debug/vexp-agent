@@ -1,8 +1,14 @@
 [phases.setup]
-nixPkgs = ["libuuid", "pkg-config", "pixman", "cairo", "pango", "libjpeg", "libpng", "giflib"]
+nixPkgs = [
+  "libwebp",
+  "pkg-config",
+  "cairo",
+  "pango",
+  "libjpeg",
+  "giflib",
+  "librsvg",
+  "pixman"
+]
 
-[phases.build]
-cmds = ["npm install"]
-
-[phases.start]
-cmd = "node src/index.js"
+[phases.install]
+cmds = ["npm ci --build-from-source=canvas"]
