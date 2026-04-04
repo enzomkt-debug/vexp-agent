@@ -18,6 +18,16 @@ const HEIGHT = 1080;
 const STORY_WIDTH = 1080;
 const STORY_HEIGHT = 1920; // 9:16 — formato nativo de Story
 
+function extrairPrimeiroParagrafo(artigo) {
+  if (!artigo) return null;
+  const texto = artigo.replace(/\*\*/g, '').replace(/\n+/g, ' ').trim();
+  const primeiro = texto.split(/\n\n/)[0] || texto;
+  if (primeiro.length <= 150) return primeiro;
+  const cortado = primeiro.slice(0, 150);
+  const ultimoEspaco = cortado.lastIndexOf(' ');
+  return cortado.slice(0, ultimoEspaco > 0 ? ultimoEspaco : 150) + '...';
+}
+
 const STOPWORDS = new Set([
   'de','da','do','dos','das','no','na','nos','nas','e','com','para','que',
   'em','um','uma','o','a','os','as','por','se','ao','ou','mas','é','são',
@@ -123,7 +133,7 @@ async function drawBackground(ctx, w, h, titulo, overlayAlpha, orientation = 'la
   }
 }
 
-async function generateImage(news) {
+async function generateImage(news, artigo) {
   const canvas = createCanvas(WIDTH, HEIGHT);
   const ctx = canvas.getContext('2d');
 
@@ -155,12 +165,13 @@ async function generateImage(news) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(60, 180, WIDTH - 120, 2);
 
-  // Title
-  const title = news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title;
+  // Texto principal: primeiro parágrafo do artigo (máx 3 linhas) ou título como fallback
+  const primeiroParagrafo = extrairPrimeiroParagrafo(artigo);
+  const textoImagem = primeiroParagrafo || (news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title);
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 58px DejaVu Sans';
+  ctx.font = 'bold 52px DejaVu Sans';
   ctx.textAlign = 'left';
-  const lastY = wrapText(ctx, title, 60, 280, WIDTH - 120, 74);
+  const lastY = wrapText(ctx, textoImagem, 60, 280, WIDTH - 120, 68);
 
   // Source chip — dynamic width
   const sourceLabel = `📰  ${news.source}`;
@@ -187,7 +198,7 @@ async function generateImage(news) {
   return { filepath, filename };
 }
 
-async function gerarStory(news) {
+async function gerarStory(news, artigo) {
   const canvas = createCanvas(STORY_WIDTH, STORY_HEIGHT);
   const ctx = canvas.getContext('2d');
 
@@ -226,10 +237,11 @@ async function gerarStory(news) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(80, SAFE_TOP + 170, STORY_WIDTH - 160, 2);
 
-  // Title — centered in the middle of the safe area
-  const title = news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title;
+  // Texto principal: primeiro parágrafo do artigo (máx 3 linhas) ou título como fallback
+  const primeiroParagrafoStory = extrairPrimeiroParagrafo(artigo);
+  const title = primeiroParagrafoStory || (news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title);
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 68px DejaVu Sans';
+  ctx.font = 'bold 62px DejaVu Sans';
   ctx.textAlign = 'center';
 
   const words = title.split(' ');

@@ -105,8 +105,8 @@ async function runPost() {
   let imageResult, storyResult;
   try {
     [imageResult, storyResult] = await Promise.all([
-      generateImage(news),
-      gerarStory(news),
+      generateImage(news, artigo),
+      gerarStory(news, artigo),
     ]);
     console.log(`[runPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -374,8 +374,8 @@ async function runTrendPost() {
   let imageResult, storyResult;
   try {
     [imageResult, storyResult] = await Promise.all([
-      generateImage(news),
-      gerarStory(news),
+      generateImage(news, artigo),
+      gerarStory(news, artigo),
     ]);
     console.log(`[runTrendPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
