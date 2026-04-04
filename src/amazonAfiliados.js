@@ -111,14 +111,16 @@ async function insertAffiliateLinks(articleText, productLinks) {
 
   const prompt = `Você receberá um artigo em markdown e uma lista de produtos da Amazon com seus links de afiliado.
 
-Sua tarefa: inserir os links de afiliado de forma NATURAL e CONTEXTUAL no texto do artigo. Cada link deve ser inserido onde o produto ou termo já é mencionado organicamente no texto, transformando o texto existente em um hiperlink markdown: [texto](url).
+Sua tarefa: inserir os links de afiliado de forma NATURAL e CONTEXTUAL no texto do artigo, transformando o texto existente em hiperlink markdown: [texto](url).
 
-REGRAS:
+REGRAS ESTRITAS:
 - Insira no máximo 3 links no total
 - Cada link deve aparecer UMA ÚNICA VEZ no artigo, na primeira menção relevante
-- Insira APENAS onde o produto é mencionado naturalmente no texto — nunca force uma menção
+- Insira SOMENTE em produtos físicos ou digitais concretos que alguém poderia comprar na Amazon (ex: "notebook", "leitor de código de barras", "software de gestão", "câmera", "impressora")
+- NUNCA insira links em palavras abstratas ou conceituais como "empresas", "mercado", "vendas", "estratégia", "crescimento", "presença", "marketplace", "ecommerce", "negócio", "loja"
+- NUNCA insira links em verbos, adjetivos ou expressões genéricas
+- Se o produto listado não aparecer explicitamente no artigo como item comprável, NÃO insira o link — prefira não inserir nenhum link a inserir um inadequado
 - Não adicione frases novas, não altere o conteúdo, não adicione notas ou avisos
-- Se um produto não for mencionado no artigo, não insira o link
 - Retorne SOMENTE o artigo com os links inseridos, sem comentários
 
 PRODUTOS PARA LINKAR:

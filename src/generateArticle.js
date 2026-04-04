@@ -4,14 +4,27 @@ const { addAffiliateLinks } = require('./amazonAfiliados');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-// Extrai 2-3 termos de produto do título da notícia para busca na Amazon
+// Palavras que são conceitos/abstrações e nunca produtos Amazon
+const NON_PRODUCTS = new Set([
+  'empresas','empresa','mercado','mercados','vendas','venda','estrategia','estratégias',
+  'crescimento','presença','presenca','marketplace','marketplaces','ecommerce','negocio',
+  'negocios','negócio','negócios','loja','lojas','setor','setores','varejo','consumidor',
+  'consumidores','cliente','clientes','produto','produtos','servico','serviço','servicos',
+  'serviços','digital','digitais','online','tecnologia','inovacao','inovação','solucao',
+  'solução','plataforma','plataformas','sistema','sistemas','gestao','gestão','logistica',
+  'logística','entrega','entregas','frete','pagamento','pagamentos','receita','lucro',
+  'faturamento','investimento','capital','parceria','parcerias','acordo','acordos',
+  'expansao','expansão','crescer','ampliam','pressionam','dominam','lideram','superam',
+]);
+
+// Extrai termos que parecem produtos concretos compráveis na Amazon
 function extractKeywords(news) {
   const stopWords = new Set(['de','do','da','dos','das','em','no','na','nos','nas','com','para','por','que','como','mais','uma','um','os','as','ao','às']);
-  return news.title
+  const candidates = news.title
     .replace(/[^a-zA-ZÀ-ú\s]/g, ' ')
     .split(/\s+/)
-    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()))
-    .slice(0, 3);
+    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()) && !NON_PRODUCTS.has(w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
+  return candidates.slice(0, 3);
 }
 
 async function generateArticle(news) {
