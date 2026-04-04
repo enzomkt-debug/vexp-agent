@@ -8,6 +8,11 @@
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://vendaexponencial.com.br/" />
 
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://dizkzzxquztoeqtjkcib.supabase.co" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -23,11 +28,15 @@
   <meta property="og:description" content="Notícias e análises sobre ecommerce, marketing digital e vendas online no Brasil." />
   <meta property="og:url" content="https://vendaexponencial.com.br/" />
   <meta property="og:locale" content="pt_BR" />
+  <meta property="og:image" content="https://vendaexponencial.com.br/web-app-manifest-512x512.png" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Venda Exponencial — Notícias de Ecommerce" />
   <meta name="twitter:description" content="Notícias e análises sobre ecommerce, marketing digital e vendas online no Brasil." />
+  <meta name="twitter:image" content="https://vendaexponencial.com.br/web-app-manifest-512x512.png" />
 
   <!-- JSON-LD WebSite -->
   <script type="application/ld+json">
@@ -40,7 +49,21 @@
     "publisher": {
       "@type": "Organization",
       "name": "Venda Exponencial",
-      "sameAs": "https://instagram.com/vendaexponencial"
+      "url": "https://vendaexponencial.com.br",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://vendaexponencial.com.br/favicon-96x96.png"
+      },
+      "description": "Notícias e análises sobre ecommerce, marketing digital e vendas online no Brasil",
+      "sameAs": ["https://instagram.com/vendaexponencial"]
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://vendaexponencial.com.br/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
     }
   }
   </script>

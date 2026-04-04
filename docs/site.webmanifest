@@ -1,6 +1,7 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "Venda Exponencial",
+  "short_name": "VendaExp",
+  "description": "Notícias de ecommerce e vendas digitais no Brasil",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
@@ -15,7 +16,9 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#979797",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "theme_color": "#FFD700",
+  "background_color": "#0a0a0a",
+  "display": "standalone",
+  "start_url": "/",
+  "lang": "pt-BR"
 }

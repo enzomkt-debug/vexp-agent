@@ -7,6 +7,11 @@
   <title>Artigo — Venda Exponencial</title>
   <meta name="robots" content="index, follow" />
 
+  <!-- Preconnect -->
+  <link rel="preconnect" href="https://dizkzzxquztoeqtjkcib.supabase.co" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -175,7 +180,7 @@
   }
 
   function injectMeta({ title, description, image, slug, pubDate }) {
-    const canonical = `${BASE_URL}/artigo/${slug}`;
+    const canonical = `${BASE_URL}/artigo.html?slug=${slug}`;
 
     document.title = `${title} — Venda Exponencial`;
 
@@ -213,33 +218,59 @@
 
   function injectJsonLd(data) {
     const slug = data.slug || data.id;
-    const schema = {
+    const pageUrl = `${BASE_URL}/artigo.html?slug=${slug}`;
+    const desc = (data.artigo_completo || data.titulo).replace(/[#*\n]/g, ' ').slice(0, 160).trim();
+    const keywords = data.titulo
+      .replace(/[^a-zA-ZÀ-ú\s]/g, ' ')
+      .split(/\s+/)
+      .filter(w => w.length > 3)
+      .slice(0, 8)
+      .join(', ');
+
+    const articleSchema = {
       "@context": "https://schema.org",
-      "@type": "Article",
+      "@type": "NewsArticle",
       "headline": data.titulo,
-      "description": (data.artigo_completo || '').slice(0, 160).replace(/[#*]/g, ''),
+      "description": desc,
+      "keywords": keywords,
       "image": data.imagem_github || '',
       "datePublished": formatDateISO(data.publicado_em),
       "dateModified": formatDateISO(data.publicado_em),
+      "articleSection": data.fonte || 'Ecommerce',
+      "about": { "@type": "Thing", "name": data.fonte || 'Ecommerce e Vendas Digitais' },
+      "speakable": { "@type": "SpeakableSpecification", "cssSelector": ["h1.article-title", ".article-body p:first-of-type"] },
       "author": {
         "@type": "Organization",
         "name": "Venda Exponencial",
-        "url": "https://vendaexponencial.com.br"
+        "url": "https://vendaexponencial.com.br",
+        "sameAs": ["https://instagram.com/vendaexponencial"]
       },
       "publisher": {
         "@type": "Organization",
         "name": "Venda Exponencial",
-        "logo": { "@type": "ImageObject", "url": "https://vendaexponencial.com.br/logo.png" }
+        "url": "https://vendaexponencial.com.br",
+        "logo": { "@type": "ImageObject", "url": "https://vendaexponencial.com.br/favicon-96x96.png" },
+        "sameAs": ["https://instagram.com/vendaexponencial"]
       },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `${BASE_URL}/artigo/${slug}`
-      }
+      "mainEntityOfPage": { "@type": "WebPage", "@id": pageUrl }
     };
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
+
+    const breadcrumbSchema = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+        { "@type": "ListItem", "position": 2, "name": "Notícias", "item": `${BASE_URL}/` },
+        { "@type": "ListItem", "position": 3, "name": data.titulo, "item": pageUrl }
+      ]
+    };
+
+    [articleSchema, breadcrumbSchema].forEach(schema => {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.textContent = JSON.stringify(schema);
+      document.head.appendChild(script);
+    });
   }
 
   async function loadArtigo() {
@@ -277,7 +308,7 @@
     const artigoHTML = markdownToHtml(data.artigo_completo);
     const igURL = 'https://instagram.com/vendaexponencial';
     const slugVal = data.slug || data.id;
-    const pageUrl = `${BASE_URL}/artigo.html?id=${data.id}`;
+    const pageUrl = `${BASE_URL}/artigo.html?slug=${slugVal}`;
 
     content.innerHTML = `
       <nav class="breadcrumb" aria-label="breadcrumb">
