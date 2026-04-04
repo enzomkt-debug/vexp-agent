@@ -20,7 +20,13 @@ const STORY_HEIGHT = 1920; // 9:16 — formato nativo de Story
 
 function extrairPrimeiroParagrafo(artigo) {
   if (!artigo) return null;
-  const texto = artigo.replace(/\*\*/g, '').replace(/\n+/g, ' ').trim();
+  const texto = artigo
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // [texto](url) → texto
+    .replace(/^#{1,6}\s+/gm, '')               // # headings → sem prefixo
+    .replace(/\*\*/g, '')                       // **bold** → texto
+    .replace(/\*/g, '')                         // *italic* → texto
+    .replace(/\n+/g, ' ')
+    .trim();
   const primeiro = texto.split(/\n\n/)[0] || texto;
   if (primeiro.length <= 150) return primeiro;
   const cortado = primeiro.slice(0, 150);
