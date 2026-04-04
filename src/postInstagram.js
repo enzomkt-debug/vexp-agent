@@ -2,8 +2,8 @@ require('dotenv').config();
 const axios = require('axios');
 const { subirImagemGithub } = require('./utils');
 
-async function postToInstagram({ imagePath, caption, linkUrl }) {
-  const imageUrl = await subirImagemGithub(imagePath);
+async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, linkUrl }) {
+  const imageUrl = imageUrlParam || await subirImagemGithub(imagePath);
 
   if (process.env.TEST_MODE === 'true') {
     console.log('[postInstagram] TEST_MODE ativo — publicação bloqueada.');
@@ -48,8 +48,8 @@ async function postToInstagram({ imagePath, caption, linkUrl }) {
   return { postId: res.data.post?._id || res.data.id || res.data.post_id, mediaUrl: imageUrl };
 }
 
-async function publicarStory(imagePath, linkUrl) {
-  const imageUrl = await subirImagemGithub(imagePath);
+async function publicarStory(imagePath, linkUrl, imageUrlParam) {
+  const imageUrl = imageUrlParam || await subirImagemGithub(imagePath);
 
   if (process.env.TEST_MODE === 'true') {
     console.log('[publicarStory] TEST_MODE ativo — story bloqueado.');

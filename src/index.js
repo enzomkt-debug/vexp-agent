@@ -38,6 +38,7 @@ const { generateArticle } = require('./generateArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado } = require('./supabaseClient');
+const { subirImagemGithub } = require('./utils');
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
@@ -114,7 +115,19 @@ async function runPost() {
     return;
   }
 
-  // 4. Salvar no Supabase (independente do Instagram)
+  // 4. Upload das imagens para o GitHub (antes de salvar no Supabase)
+  let feedGithubUrl, storyGithubUrl;
+  try {
+    [feedGithubUrl, storyGithubUrl] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runPost] GitHub: feed=${feedGithubUrl}`);
+  } catch (err) {
+    console.error('[runPost] Erro ao subir imagens para GitHub:', err.message);
+  }
+
+  // 5. Salvar no Supabase com imagem_github já definida
   let registro;
   if (!TEST_MODE) {
     try {
@@ -123,7 +136,7 @@ async function runPost() {
         fonte:             news.source,
         url_original:      news.link,
         imagem_url:        null,
-        imagem_github:     imageResult.githubUrl || null,
+        imagem_github:     feedGithubUrl || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
@@ -134,23 +147,20 @@ async function runPost() {
     }
   }
 
-  // 5. Publicar post no feed
+  // 6. Publicar post no feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
   const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) {
-      console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
-      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
-    }
+    postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 6. Publicar story com link para o artigo
+  // 7. Publicar story com link para o artigo
   try {
-    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrl);
     if (!TEST_MODE) console.log(`[runPost] Story publicado! ID: ${storyPost.postId}`);
   } catch (err) {
     console.error('[runPost] Erro ao publicar story:', err.message);
@@ -191,7 +201,19 @@ async function runVarejoPost() {
     return;
   }
 
-  // 3. Salvar no Supabase (independente do Instagram)
+  // 3. Upload das imagens para o GitHub (antes de salvar no Supabase)
+  let feedGithubUrlV, storyGithubUrlV;
+  try {
+    [feedGithubUrlV, storyGithubUrlV] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runVarejoPost] GitHub: feed=${feedGithubUrlV}`);
+  } catch (err) {
+    console.error('[runVarejoPost] Erro ao subir imagens para GitHub:', err.message);
+  }
+
+  // 4. Salvar no Supabase com imagem_github já definida
   let registro;
   if (!TEST_MODE) {
     try {
@@ -200,7 +222,7 @@ async function runVarejoPost() {
         fonte:             news.source,
         url_original:      news.link,
         imagem_url:        null,
-        imagem_github:     imageResult.githubUrl || null,
+        imagem_github:     feedGithubUrlV || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
@@ -211,23 +233,20 @@ async function runVarejoPost() {
     }
   }
 
-  // 4. Publicar feed
+  // 5. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) {
-      console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
-      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
-    }
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlV, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 5. Publicar story
+  // 6. Publicar story
   try {
-    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrlV);
     if (!TEST_MODE) console.log(`[runVarejoPost] Story publicado! ID: ${storyPost.postId}`);
   } catch (err) {
     console.error('[runVarejoPost] Erro ao publicar story:', err.message);
@@ -267,7 +286,19 @@ async function runShoppingPost() {
     return;
   }
 
-  // 3. Salvar no Supabase (independente do Instagram)
+  // 3. Upload das imagens para o GitHub (antes de salvar no Supabase)
+  let feedGithubUrlS, storyGithubUrlS;
+  try {
+    [feedGithubUrlS, storyGithubUrlS] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runShoppingPost] GitHub: feed=${feedGithubUrlS}`);
+  } catch (err) {
+    console.error('[runShoppingPost] Erro ao subir imagens para GitHub:', err.message);
+  }
+
+  // 4. Salvar no Supabase com imagem_github já definida
   let registro;
   if (!TEST_MODE) {
     try {
@@ -276,7 +307,7 @@ async function runShoppingPost() {
         fonte:             news.source,
         url_original:      news.link,
         imagem_url:        null,
-        imagem_github:     imageResult.githubUrl || null,
+        imagem_github:     feedGithubUrlS || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
@@ -287,23 +318,20 @@ async function runShoppingPost() {
     }
   }
 
-  // 4. Publicar feed
+  // 5. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) {
-      console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
-      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
-    }
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 5. Publicar story
+  // 6. Publicar story
   try {
-    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrlS);
     if (!TEST_MODE) console.log(`[runShoppingPost] Story publicado! ID: ${storyPost.postId}`);
   } catch (err) {
     console.error('[runShoppingPost] Erro ao publicar story:', err.message);
@@ -392,7 +420,19 @@ async function runTrendPost() {
     return;
   }
 
-  // 4. Salvar no Supabase ANTES de publicar (garante artigo no site independente do Instagram)
+  // 4. Upload das imagens para o GitHub (antes de salvar no Supabase)
+  let feedGithubUrlT, storyGithubUrlT;
+  try {
+    [feedGithubUrlT, storyGithubUrlT] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runTrendPost] GitHub: feed=${feedGithubUrlT}`);
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao subir imagens para GitHub:', err.message);
+  }
+
+  // 5. Salvar no Supabase com imagem_github já definida
   let registro;
   if (!TEST_MODE) {
     try {
@@ -401,38 +441,33 @@ async function runTrendPost() {
         fonte:             news.source,
         url_original:      news.link || null,
         imagem_url:        null,
-        imagem_github:     imageResult.githubUrl || null,
+        imagem_github:     feedGithubUrlT || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
+      if (registro?.id) await marcarPostado(registro.id);
       console.log(`[runTrendPost] Salvo no Supabase. ID: ${registro?.id}`);
     } catch (err) {
       console.error('[runTrendPost] Erro ao salvar no Supabase:', err.message);
     }
   }
 
-  // 5. Publicar feed
+  // 6. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) {
-      console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
-      if (registro?.id) {
-        await marcarPostado(registro.id);
-        await atualizarImagemGithub(registro.id, postResult.mediaUrl);
-      }
-    }
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runTrendPost] Erro ao publicar feed:', err.message);
     try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
     return;
   }
 
-  // 6. Publicar story
+  // 7. Publicar story
   try {
-    const storyPost = await publicarStory(storyResult.filepath, linkUrl);
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrlT);
     if (!TEST_MODE) console.log(`[runTrendPost] Story publicado! ID: ${storyPost.postId}`);
   } catch (err) {
     console.error('[runTrendPost] Erro ao publicar story:', err.message);
