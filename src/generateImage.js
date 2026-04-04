@@ -40,7 +40,9 @@ async function buscarImagemUnsplash(titulo, orientation = 'landscape') {
   const key = process.env.UNSPLASH_ACCESS_KEY;
   if (!key) return null;
 
-  const query = extrairKeywords(titulo);
+  // Sufixo garante imagens de contexto digital/profissional, evitando mercados físicos
+  const keywords = extrairKeywords(titulo);
+  const query = `${keywords} digital technology business`;
 
   try {
     const { data } = await axios.get('https://api.unsplash.com/photos/random', {
@@ -52,7 +54,7 @@ async function buscarImagemUnsplash(titulo, orientation = 'landscape') {
     // Fallback com query genérica
     try {
       const { data } = await axios.get('https://api.unsplash.com/photos/random', {
-        params: { query: 'ecommerce business digital', orientation, client_id: key },
+        params: { query: 'ecommerce business digital technology', orientation, client_id: key },
         timeout: 8000,
       });
       return data?.urls?.regular || null;

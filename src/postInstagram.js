@@ -15,19 +15,20 @@ async function postToInstagram({ imagePath, caption, linkUrl }) {
 
   const platforms = [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }];
   if (process.env.ZERNIO_LINKEDIN_ACCOUNT_ID) {
-    platforms.push({ platform: 'linkedin', accountId: process.env.ZERNIO_LINKEDIN_ACCOUNT_ID });
+    const linkedinData = {};
+    if (linkUrl) linkedinData.content = `${caption}\n\n🔗 ${linkUrl}`;
+    platforms.push({
+      platform: 'linkedin',
+      accountId: process.env.ZERNIO_LINKEDIN_ACCOUNT_ID,
+      ...(Object.keys(linkedinData).length ? { platformSpecificData: linkedinData } : {}),
+    });
   }
-
-  const linkedinCaption = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
 
   const payload = {
     platforms,
     content: caption,
     mediaItems: [{ type: 'image', url: imageUrl }],
     publishNow: true,
-    platformOverrides: {
-      linkedin: { content: linkedinCaption },
-    },
   };
 
   let res;
