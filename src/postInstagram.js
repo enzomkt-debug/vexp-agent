@@ -15,18 +15,18 @@ async function postToInstagram({ imagePath, caption, linkUrl }) {
 
   const platforms = [{ platform: 'instagram', accountId: process.env.ZERNIO_ACCOUNT_ID }];
   if (process.env.ZERNIO_LINKEDIN_ACCOUNT_ID) {
-    const linkedinData = {};
-    if (linkUrl) linkedinData.content = `${caption}\n\n🔗 ${linkUrl}`;
     platforms.push({
       platform: 'linkedin',
       accountId: process.env.ZERNIO_LINKEDIN_ACCOUNT_ID,
-      ...(Object.keys(linkedinData).length ? { platformSpecificData: linkedinData } : {}),
     });
   }
 
+  // Inclui o link no caption global — clicável no LinkedIn, visível no Instagram
+  const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
+
   const payload = {
     platforms,
-    content: caption,
+    content: contentWithLink,
     mediaItems: [{ type: 'image', url: imageUrl }],
     publishNow: true,
   };
