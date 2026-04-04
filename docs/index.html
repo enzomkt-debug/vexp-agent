@@ -402,13 +402,27 @@
 
   function matchPeriodo(iso) {
     if (!activePeriodo || !iso) return true;
-    const pub  = new Date(iso);
-    const now  = new Date();
-    const diff = now - pub;
-    if (activePeriodo === 'hoje')      return diff < 86400000;
-    if (activePeriodo === 'semana')    return diff < 7 * 86400000;
-    if (activePeriodo === 'mes')       return diff < 30 * 86400000;
-    if (activePeriodo === 'trimestre') return diff < 90 * 86400000;
+    const pub = new Date(iso);
+    const now = new Date();
+    if (activePeriodo === 'hoje') {
+      return pub.getFullYear() === now.getFullYear() &&
+             pub.getMonth()    === now.getMonth()    &&
+             pub.getDate()     === now.getDate();
+    }
+    if (activePeriodo === 'semana') {
+      const startOfWeek = new Date(now);
+      startOfWeek.setHours(0, 0, 0, 0);
+      startOfWeek.setDate(now.getDate() - now.getDay()); // domingo como início
+      return pub >= startOfWeek;
+    }
+    if (activePeriodo === 'mes') {
+      return pub.getFullYear() === now.getFullYear() &&
+             pub.getMonth()    === now.getMonth();
+    }
+    if (activePeriodo === 'trimestre') {
+      return pub.getFullYear() === now.getFullYear() &&
+             Math.floor(pub.getMonth() / 3) === Math.floor(now.getMonth() / 3);
+    }
     return true;
   }
 
