@@ -18,7 +18,9 @@ async function fetchShoppingResults(keyword) {
       timeout: 15000,
     });
 
-    return (data.shopping_results || []).map((item) => ({
+    const results = data.shopping_results || [];
+    if (results[0]) console.log('[fetchShopping] campos item[0]:', JSON.stringify(Object.fromEntries(Object.entries(results[0]).map(([k,v]) => [k, typeof v === 'string' && v.length > 80 ? v.slice(0,80)+'…' : v]))));
+    return results.map((item) => ({
       title:     item.title                                                            || '',
       price:     item.price                                                            || null,
       rating:    item.rating                                                           || null,
