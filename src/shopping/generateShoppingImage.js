@@ -4,6 +4,22 @@ const fs    = require('fs');
 const axios = require('axios');
 const { subirImagemGithub } = require('../utils');
 
+// Decoder WebP em puro WASM — funciona em qualquer ambiente sem deps nativas
+let _webpDecode = null;
+async function decodeWebP(buffer) {
+  if (!_webpDecode) {
+    const webp = await import('@jsquash/webp');
+    _webpDecode = webp.decode;
+  }
+  const { width, height, data } = await _webpDecode(buffer);
+  const tmp    = createCanvas(width, height);
+  const tmpCtx = tmp.getContext('2d');
+  const imgData = tmpCtx.createImageData(width, height);
+  imgData.data.set(data);
+  tmpCtx.putImageData(imgData, 0, 0);
+  return tmp;
+}
+
 const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
 const ASSETS_DIR = path.join(__dirname, '..', '..', 'assets');
 if (!fs.existsSync(ASSETS_DIR)) fs.mkdirSync(ASSETS_DIR, { recursive: true });
@@ -148,11 +164,11 @@ const BROWSER_HEADERS = {
 
 async function tryLoadUrl(url) {
   if (!url) return null;
-  // Base64 data URL (WebP do ScaleSerp) — decodifica para Buffer e passa ao canvas
+  // Base64 WebP do ScaleSerp — decodifica via WASM e desenha num canvas temporário
   if (url.startsWith('data:')) {
     try {
       const b64 = url.split(',')[1];
-      return await loadImage(Buffer.from(b64, 'base64'));
+      return await decodeWebP(Buffer.from(b64, 'base64'));
     } catch { return null; }
   }
   try {
