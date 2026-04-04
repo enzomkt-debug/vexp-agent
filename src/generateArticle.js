@@ -1,31 +1,8 @@
 require('dotenv').config();
 const Anthropic = require('@anthropic-ai/sdk');
-const { addAffiliateLinks } = require('./amazonAfiliados');
+const { addAffiliateLinks, classifyAmazonKeywords } = require('./amazonAfiliados');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
-// Palavras que são conceitos/abstrações e nunca produtos Amazon
-const NON_PRODUCTS = new Set([
-  'empresas','empresa','mercado','mercados','vendas','venda','estrategia','estratégias',
-  'crescimento','presença','presenca','marketplace','marketplaces','ecommerce','negocio',
-  'negocios','negócio','negócios','loja','lojas','setor','setores','varejo','consumidor',
-  'consumidores','cliente','clientes','produto','produtos','servico','serviço','servicos',
-  'serviços','digital','digitais','online','tecnologia','inovacao','inovação','solucao',
-  'solução','plataforma','plataformas','sistema','sistemas','gestao','gestão','logistica',
-  'logística','entrega','entregas','frete','pagamento','pagamentos','receita','lucro',
-  'faturamento','investimento','capital','parceria','parcerias','acordo','acordos',
-  'expansao','expansão','crescer','ampliam','pressionam','dominam','lideram','superam',
-]);
-
-// Extrai termos que parecem produtos concretos compráveis na Amazon
-function extractKeywords(news) {
-  const stopWords = new Set(['de','do','da','dos','das','em','no','na','nos','nas','com','para','por','que','como','mais','uma','um','os','as','ao','às']);
-  const candidates = news.title
-    .replace(/[^a-zA-ZÀ-ú\s]/g, ' ')
-    .split(/\s+/)
-    .filter(w => w.length > 3 && !stopWords.has(w.toLowerCase()) && !NON_PRODUCTS.has(w.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')));
-  return candidates.slice(0, 3);
-}
 
 async function generateArticle(news) {
   const prompt = `Você é um jornalista experiente de negócios conversando com um empreendedor brasileiro. Escreve para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais.
@@ -65,7 +42,11 @@ URL: ${news.link}`;
   });
 
   const artigo = message.content[0].text.trim();
-  const keywords = extractKeywords(news);
+  const candidates = news.title
+    .replace(/[^a-zA-ZÀ-ú\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 3);
+  const keywords = await classifyAmazonKeywords(candidates);
   return addAffiliateLinks(artigo, keywords);
 }
 

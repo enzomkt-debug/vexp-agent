@@ -1,6 +1,6 @@
 require('dotenv').config();
 const Anthropic = require('@anthropic-ai/sdk');
-const { addAffiliateLinks } = require('../amazonAfiliados');
+const { addAffiliateLinks, classifyAmazonKeywords } = require('../amazonAfiliados');
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -104,7 +104,8 @@ IMPORTANTE: Se os dados de termos específicos estiverem ausentes, não invente 
   });
 
   const artigo = message.content[0].text.trim();
-  const keywords = (specificTrends || []).slice(0, 3).map(t => t.keyword).filter(Boolean);
+  const candidates = (specificTrends || []).slice(0, 5).map(t => t.keyword).filter(Boolean);
+  const keywords = await classifyAmazonKeywords(candidates);
   return addAffiliateLinks(artigo, keywords);
 }
 

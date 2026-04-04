@@ -142,6 +142,35 @@ ${articleText}`;
   }
 }
 
+// ── Classifica candidatos: retorna apenas os que são produtos compráveis na Amazon ──
+async function classifyAmazonKeywords(candidates) {
+  if (!candidates || candidates.length === 0) return [];
+
+  const prompt = `Você receberá uma lista de termos extraídos de títulos de artigos ou tendências de busca.
+
+Retorne SOMENTE os termos que são produtos físicos ou digitais que alguém pode comprar na Amazon.com.br. Exemplos válidos: "notebook", "tênis de corrida", "câmera", "fone de ouvido", "livro", "suplemento", "impressora", "leitor de código de barras".
+
+NÃO retorne: verbos, conceitos abstratos, nomes de empresas, expressões jornalísticas, termos de mercado, categorias de negócio, adjetivos ou qualquer coisa que não seja um produto tangível.
+
+Termos para classificar:
+${candidates.map((c, i) => `${i + 1}. ${c}`).join('\n')}
+
+Retorne SOMENTE um JSON array com os termos aprovados (strings). Se nenhum for produto, retorne []. Sem explicações.`;
+
+  try {
+    const message = await client.messages.create({
+      model:      'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      messages:   [{ role: 'user', content: prompt }],
+    });
+    const parsed = JSON.parse(message.content[0].text.trim());
+    return Array.isArray(parsed) ? parsed.slice(0, 3) : [];
+  } catch (err) {
+    console.warn(`[amazonAfiliados] Erro ao classificar keywords: ${err.message}`);
+    return [];
+  }
+}
+
 // ── Função principal: extrai termos, busca produtos, insere links ─────────────
 async function addAffiliateLinks(articleText, keywords = []) {
   if (!keywords.length) return articleText;
@@ -162,4 +191,4 @@ async function addAffiliateLinks(articleText, keywords = []) {
   return insertAffiliateLinks(articleText, productLinks);
 }
 
-module.exports = { addAffiliateLinks, buildFallbackLink };
+module.exports = { addAffiliateLinks, buildFallbackLink, classifyAmazonKeywords };
