@@ -2,11 +2,18 @@ const Parser = require('rss-parser');
 const parser = new Parser();
 
 const RSS_FEEDS = [
+  // Blogs brasileiros de vendas/marketing
   'https://resultadosdigitais.com.br/feed/',
   'https://conversion.com.br/blog/feed/',
   'https://marketingdeconteudo.com/feed/',
   'https://www.agendor.com.br/blog/feed/',
   'https://meetime.com.br/blog/feed/',
+  // Portais especializados em ecommerce e varejo
+  'https://www.ecommercebrasil.com.br/feed/',
+  'https://portalnovarejo.com.br/feed/',
+  'https://mercadoeconsumo.com.br/feed/',
+  'https://www.abcomm.org.br/feed/',
+  // Google News — tópicos de ecommerce e varejo digital
   'https://news.google.com/rss/search?q=ecommerce+OR+"vendas+online"+OR+"loja+virtual"&hl=pt-BR&gl=BR&ceid=BR:pt',
   'https://news.google.com/rss/search?q=marketing+digital+OR+"trafego+pago"+OR+"conversao"&hl=pt-BR&gl=BR&ceid=BR:pt',
   'https://news.google.com/rss/search?q=marketplace+OR+"varejo+digital"+OR+faturamento&hl=pt-BR&gl=BR&ceid=BR:pt',
