@@ -18,15 +18,32 @@ const HEIGHT = 1080;
 const STORY_WIDTH = 1080;
 const STORY_HEIGHT = 1920; // 9:16 — formato nativo de Story
 
-function extrairPrimeiroParagrafo(artigo) {
-  if (!artigo) return null;
-  const texto = artigo
+function limparMarkdown(texto) {
+  return texto
     .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')  // [texto](url) → texto
     .replace(/^#{1,6}\s+/gm, '')               // # headings → sem prefixo
     .replace(/\*\*/g, '')                       // **bold** → texto
     .replace(/\*/g, '')                         // *italic* → texto
     .replace(/\n+/g, ' ')
     .trim();
+}
+
+// Para o título da imagem: extrai a primeira frase completa
+function extrairPrimeiraSentenca(artigo) {
+  if (!artigo) return null;
+  const texto = limparMarkdown(artigo);
+  const match = texto.match(/^.+?[.!?]/);
+  if (match) return match[0].trim();
+  // Fallback: 120 chars cortando na última palavra
+  const cortado = texto.slice(0, 120);
+  const ultimoEspaco = cortado.lastIndexOf(' ');
+  return cortado.slice(0, ultimoEspaco > 0 ? ultimoEspaco : 120) + '...';
+}
+
+// Para o texto menor: primeiro parágrafo com até 150 chars
+function extrairPrimeiroParagrafo(artigo) {
+  if (!artigo) return null;
+  const texto = limparMarkdown(artigo);
   const primeiro = texto.split(/\n\n/)[0] || texto;
   if (primeiro.length <= 150) return primeiro;
   const cortado = primeiro.slice(0, 150);
@@ -171,9 +188,9 @@ async function generateImage(news, artigo) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(60, 180, WIDTH - 120, 2);
 
-  // Texto principal: primeiro parágrafo do artigo (máx 3 linhas) ou título como fallback
-  const primeiroParagrafo = extrairPrimeiroParagrafo(artigo);
-  const textoImagem = primeiroParagrafo || (news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title);
+  // Texto principal: primeira frase do artigo ou título como fallback
+  const primeiraSentenca = extrairPrimeiraSentenca(artigo);
+  const textoImagem = primeiraSentenca || (news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title);
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 52px DejaVu Sans';
   ctx.textAlign = 'left';
@@ -243,9 +260,9 @@ async function gerarStory(news, artigo) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(80, SAFE_TOP + 170, STORY_WIDTH - 160, 2);
 
-  // Texto principal: primeiro parágrafo do artigo (máx 3 linhas) ou título como fallback
-  const primeiroParagrafoStory = extrairPrimeiroParagrafo(artigo);
-  const title = primeiroParagrafoStory || (news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title);
+  // Texto principal: primeira frase do artigo ou título como fallback
+  const primeiraSentencaStory = extrairPrimeiraSentenca(artigo);
+  const title = primeiraSentencaStory || (news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title);
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 62px DejaVu Sans';
   ctx.textAlign = 'center';
