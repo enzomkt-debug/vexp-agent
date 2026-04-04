@@ -37,7 +37,7 @@ const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
-const { salvarNoticia, marcarPostado, jaPostadoHoje } = require('./supabaseClient');
+const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaPostadoHoje } = require('./supabaseClient');
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
@@ -140,7 +140,10 @@ async function runPost() {
   let postResult;
   try {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
+    if (!TEST_MODE) {
+      console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
+      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
+    }
   } catch (err) {
     console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
   }
@@ -214,7 +217,10 @@ async function runVarejoPost() {
   let postResult;
   try {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
+    if (!TEST_MODE) {
+      console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
+      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
+    }
   } catch (err) {
     console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
   }
@@ -287,7 +293,10 @@ async function runShoppingPost() {
   let postResult;
   try {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
-    if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
+    if (!TEST_MODE) {
+      console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
+      await atualizarImagemGithub(registro?.id, postResult.mediaUrl);
+    }
   } catch (err) {
     console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
   }
@@ -410,7 +419,10 @@ async function runTrendPost() {
     postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
     if (!TEST_MODE) {
       console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
-      if (registro?.id) await marcarPostado(registro.id);
+      if (registro?.id) {
+        await marcarPostado(registro.id);
+        await atualizarImagemGithub(registro.id, postResult.mediaUrl);
+      }
     }
   } catch (err) {
     console.error('[runTrendPost] Erro ao publicar feed:', err.message);

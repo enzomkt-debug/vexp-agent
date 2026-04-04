@@ -61,6 +61,16 @@ async function marcarPostado(id) {
   if (error) console.error('[Supabase] Erro ao marcar postado:', error.message);
 }
 
+async function atualizarImagemGithub(id, url) {
+  if (!id || !url) return;
+  const { error } = await supabase
+    .from('noticias')
+    .update({ imagem_github: url })
+    .eq('id', id);
+
+  if (error) console.error('[Supabase] Erro ao atualizar imagem_github:', error.message);
+}
+
 async function buscarUltimasNoticias(limit = 10) {
   const { data, error } = await supabase
     .from('noticias')
@@ -86,4 +96,4 @@ async function jaPostadoHoje(url_original) {
   return data && data.length > 0;
 }
 
-module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, buscarUltimasNoticias, jaPostadoHoje };
+module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, atualizarImagemGithub, buscarUltimasNoticias, jaPostadoHoje };
