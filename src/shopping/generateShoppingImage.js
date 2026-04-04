@@ -147,6 +147,11 @@ const BROWSER_HEADERS = {
 };
 
 async function tryLoadUrl(url) {
+  if (!url) return null;
+  // Base64 data URL — canvas carrega diretamente sem precisar de HTTP
+  if (url.startsWith('data:')) {
+    try { return await loadImage(url); } catch { return null; }
+  }
   try {
     const { data } = await axios.get(url, {
       responseType: 'arraybuffer',
