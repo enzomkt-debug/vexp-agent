@@ -35,7 +35,20 @@ async function salvarNoticia({ titulo, fonte, url_original, imagem_url, imagem_g
     postado_instagram:  false,
   }]).select().single();
 
-  if (error) console.error('[Supabase] Erro ao salvar notícia:', error.message);
+  if (error) {
+    // Slug duplicado — retorna o registro existente para o pipeline continuar
+    if (error.code === '23505') {
+      const { data: existente } = await supabase
+        .from('noticias')
+        .select('id')
+        .eq('slug', slug)
+        .single();
+      console.log(`[Supabase] Slug duplicado — reutilizando registro existente. ID: ${existente?.id}`);
+      return existente;
+    }
+    console.error('[Supabase] Erro ao salvar notícia:', error.message);
+    return null;
+  }
   return data;
 }
 

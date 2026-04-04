@@ -383,18 +383,7 @@ async function runTrendPost() {
     return;
   }
 
-  // 4. Publicar feed
-  let postResult;
-  try {
-    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption });
-    if (!TEST_MODE) console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
-  } catch (err) {
-    console.error('[runTrendPost] Erro ao publicar feed:', err.message);
-    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
-    return;
-  }
-
-  // 5. Salvar no Supabase
+  // 4. Salvar no Supabase ANTES de publicar (garante artigo no site independente do Instagram)
   let registro;
   if (!TEST_MODE) {
     try {
@@ -403,20 +392,33 @@ async function runTrendPost() {
         fonte:             news.source,
         url_original:      news.link || null,
         imagem_url:        null,
-        imagem_github:     postResult.mediaUrl,
+        imagem_github:     imageResult.githubUrl || null,
         legenda_instagram: caption,
         artigo_completo:   artigo,
       });
-      if (registro?.id) await marcarPostado(registro.id);
       console.log(`[runTrendPost] Salvo no Supabase. ID: ${registro?.id}`);
     } catch (err) {
       console.error('[runTrendPost] Erro ao salvar no Supabase:', err.message);
     }
   }
 
-  // 6. Publicar story
+  // 5. Publicar feed
   const artigoId = registro?.id;
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  let postResult;
+  try {
+    postResult = await postToInstagram({ imagePath: imageResult.filepath, caption, linkUrl });
+    if (!TEST_MODE) {
+      console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
+      if (registro?.id) await marcarPostado(registro.id);
+    }
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao publicar feed:', err.message);
+    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+    return;
+  }
+
+  // 6. Publicar story
   try {
     const storyPost = await publicarStory(storyResult.filepath, linkUrl);
     if (!TEST_MODE) console.log(`[runTrendPost] Story publicado! ID: ${storyPost.postId}`);
