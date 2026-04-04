@@ -2,6 +2,7 @@ const { createCanvas, loadImage, registerFont } = require('canvas');
 const path  = require('path');
 const fs    = require('fs');
 const axios = require('axios');
+const sharp = require('sharp');
 const { subirImagemGithub } = require('../utils');
 
 const FONTS_DIR  = path.join(__dirname, '..', '..', 'fonts');
@@ -148,9 +149,15 @@ const BROWSER_HEADERS = {
 
 async function tryLoadUrl(url) {
   if (!url) return null;
-  // Base64 data URL — canvas carrega diretamente sem precisar de HTTP
+  // Base64 data URL (geralmente WebP do ScaleSerp) — converte para PNG via sharp
+  // pois node-canvas no Linux não suporta WebP sem libwebp instalado
   if (url.startsWith('data:')) {
-    try { return await loadImage(url); } catch { return null; }
+    try {
+      const b64 = url.split(',')[1];
+      const buffer = Buffer.from(b64, 'base64');
+      const png = await sharp(buffer).png().toBuffer();
+      return await loadImage(png);
+    } catch { return null; }
   }
   try {
     const { data } = await axios.get(url, {

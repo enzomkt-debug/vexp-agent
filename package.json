@@ -15,7 +15,8 @@
     "dotenv": "^16.4.7",
     "google-trends-api": "^4.9.2",
     "node-cron": "^3.0.3",
-    "rss-parser": "^3.13.0"
+    "rss-parser": "^3.13.0",
+    "sharp": "^0.34.5"
   },
   "engines": {
     "node": ">=18.0.0"
