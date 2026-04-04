@@ -40,6 +40,8 @@ const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado } = require('./supabaseClient');
 const { subirImagemGithub } = require('./utils');
 const { runTrendIntelligence } = require('./trendIntelligence');
+const { execFile } = require('child_process');
+const path = require('path');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
 const { runShopping } = require('./shopping/index');
@@ -348,6 +350,15 @@ for (const schedule of SCHEDULE_TIMES) {
   cron.schedule(schedule, () => runPost().catch(err => console.error(`[cron] Erro em runPost:`, err.message)), { timezone: 'UTC' });
   console.log(`[cron] Agendado (news): ${schedule} UTC`);
 }
+
+// Sitemap diário: 03:00 UTC = meia-noite BRT
+cron.schedule('0 3 * * *', () => {
+  execFile('node', ['scripts/generateSitemap.js'], { cwd: path.join(__dirname, '..') }, (err, stdout, stderr) => {
+    if (err) console.error('[cron] Erro ao gerar sitemap:', err.message);
+    else console.log('[cron] Sitemap atualizado.', stdout.trim());
+  });
+}, { timezone: 'UTC' });
+console.log('[cron] Agendado (sitemap): 0 3 * * * UTC');
 
 // Post diário de varejo: 18:00 UTC = 15:00 BRT
 const VAREJO_SCHEDULE = '0 18 * * *';
