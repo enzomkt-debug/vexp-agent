@@ -45,11 +45,26 @@ async function subirImagemGithub(filepath) {
     console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, usando URL existente`);
   }
 
-  // Wait 5s for GitHub CDN to propagate
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-
   const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${destPath}`;
-  console.log(`[utils] Imagem disponível em: ${rawUrl}`);
+
+  // Aguarda CDN propagar com polling (até 60s, intervalo de 5s)
+  const maxAttempts = 12;
+  for (let i = 1; i <= maxAttempts; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+    try {
+      const res = await axios.head(rawUrl, { timeout: 8000 });
+      if (res.status === 200) {
+        console.log(`[utils] Imagem disponível em: ${rawUrl} (tentativa ${i})`);
+        return rawUrl;
+      }
+    } catch (_) {
+      // ainda não propagou — tenta de novo
+    }
+    console.log(`[utils] Aguardando CDN... tentativa ${i}/${maxAttempts}`);
+  }
+
+  // Retorna a URL mesmo se o polling esgotou (pode já estar acessível no cliente)
+  console.warn(`[utils] CDN não confirmado após ${maxAttempts * 5}s — retornando URL mesmo assim: ${rawUrl}`);
   return rawUrl;
 }
 
