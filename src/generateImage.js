@@ -110,22 +110,36 @@ async function loadBackground(imageUrl) {
   }
 }
 
-function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = Infinity) {
   const words = text.split(' ');
+  const lines = [];
   let line = '';
-  let posY = y;
   for (const word of words) {
     const testLine = line + word + ' ';
     if (ctx.measureText(testLine).width > maxWidth && line !== '') {
-      ctx.fillText(line.trim(), x, posY);
+      lines.push(line.trim());
       line = word + ' ';
-      posY += lineHeight;
     } else {
       line = testLine;
     }
   }
-  ctx.fillText(line.trim(), x, posY);
-  return posY;
+  if (line.trim()) lines.push(line.trim());
+
+  const displayed = lines.slice(0, maxLines);
+  let posY = y;
+  displayed.forEach((l, i) => {
+    let text = l;
+    if (i === maxLines - 1 && lines.length > maxLines) {
+      // truncate last visible line with ellipsis
+      while (ctx.measureText(text + '…').width > maxWidth && text.length > 0) {
+        text = text.slice(0, text.lastIndexOf(' '));
+      }
+      text = text + '…';
+    }
+    ctx.fillText(text, x, posY);
+    posY += lineHeight;
+  });
+  return posY - lineHeight;
 }
 
 async function drawBackground(ctx, w, h, titulo, overlayAlpha, orientation = 'landscape') {
@@ -194,7 +208,7 @@ async function generateImage(news, artigo) {
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 52px DejaVu Sans';
   ctx.textAlign = 'left';
-  const lastY = wrapText(ctx, textoImagem, 60, 280, WIDTH - 120, 68);
+  const lastY = wrapText(ctx, textoImagem, 60, 280, WIDTH - 120, 68, 3);
 
   // Source chip — dynamic width
   const sourceLabel = `📰  ${news.source}`;
