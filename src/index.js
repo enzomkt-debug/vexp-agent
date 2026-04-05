@@ -213,6 +213,12 @@ async function runVarejoPost() {
     console.log(`[runVarejoPost] GitHub: feed=${feedGithubUrlV}`);
   } catch (err) {
     console.error('[runVarejoPost] Erro ao subir imagens para GitHub:', err.message);
+    return;
+  }
+
+  if (!feedGithubUrlV) {
+    console.error('[runVarejoPost] URL da imagem não obtida — abortando para não salvar artigo sem imagem.');
+    return;
   }
 
   // 4. Salvar no Supabase com imagem_github já definida
@@ -377,6 +383,7 @@ if (process.env.RUN_ON_START === 'true') {
 }
 
 if (process.env.RUN_VAREJO_ON_START === 'true') {
+  console.log('[on-start] RUN_VAREJO_ON_START ativo — disparando runVarejoPost...');
   runVarejoPost().catch(err => console.error('[on-start] Erro em runVarejoPost:', err.message));
 }
 
