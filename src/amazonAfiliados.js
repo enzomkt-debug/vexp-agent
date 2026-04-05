@@ -163,7 +163,8 @@ Retorne SOMENTE um JSON array com os termos aprovados (strings). Se nenhum for p
       max_tokens: 200,
       messages:   [{ role: 'user', content: prompt }],
     });
-    const parsed = JSON.parse(message.content[0].text.trim());
+    const raw = message.content[0].text.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+    const parsed = JSON.parse(raw);
     return Array.isArray(parsed) ? parsed.slice(0, 3) : [];
   } catch (err) {
     console.warn(`[amazonAfiliados] Erro ao classificar keywords: ${err.message}`);
