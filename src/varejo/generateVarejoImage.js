@@ -247,7 +247,12 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
   const imgX  = W - PAD - IMG_W;
   const imgY  = dataY;
 
-  const topTerm = (trendData.specificTrends || [])[0];
+  // Fallback: se specificTrends vazio, usa trendTerms (interest over time)
+  const displayTerms = (trendData.specificTrends?.length)
+    ? trendData.specificTrends
+    : (trendData.terms || []).map(t => ({ keyword: t.keyword, avgInterest: t.avgInterest, isBreakout: false, value: null, type: 'top' }));
+
+  const topTerm = displayTerms[0];
   const imgUrlPromise = topTerm
     ? fetchProductImage(topTerm.keyword, trendData.categoria?.label || '')
     : Promise.resolve(null);
@@ -262,7 +267,10 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
   leftY += catBadgeH + 16;
 
   if (topTerm) {
-    const heroPct   = topTerm.isBreakout ? 'BREAKOUT' : topTerm.value ? `+${topTerm.value}%` : `${topTerm.avgInterest || ''}`;
+    const heroPct   = topTerm.isBreakout ? 'BREAKOUT'
+                    : topTerm.value      ? `+${topTerm.value}%`
+                    : topTerm.avgInterest ? `${topTerm.avgInterest}/100`
+                    : '—';
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
@@ -282,7 +290,7 @@ async function generateVarejoFeedImage(trendData, articleTitle = '') {
     leftY += 228;
   }
 
-  const others = (trendData.specificTrends || []).slice(1, 4);
+  const others = displayTerms.slice(1, 4);
   if (others.length) {
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
     ctx.fillRect(PAD, leftY + 8, leftW, 1);
@@ -395,7 +403,12 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
   dataY += catBadgeH + 16;
 
   // ── IMAGEM GRANDE (quase full-width, modo contain) ────────────────────────
-  const topTerm = (trendData.specificTrends || [])[0];
+  // Fallback: se specificTrends vazio, usa trendTerms (interest over time)
+  const displayTermsS = (trendData.specificTrends?.length)
+    ? trendData.specificTrends
+    : (trendData.terms || []).map(t => ({ keyword: t.keyword, avgInterest: t.avgInterest, isBreakout: false, value: null, type: 'top' }));
+
+  const topTerm = displayTermsS[0];
   const IMG_W   = W - PAD * 2;    // 920px de largura
   const IMG_H   = 400;
   const imgX    = PAD;
@@ -409,7 +422,10 @@ async function generateVarejoStoryImage(trendData, articleTitle = '') {
 
   // ── % hero + produto ──────────────────────────────────────────────────────
   if (topTerm) {
-    const heroPct   = topTerm.isBreakout ? 'BREAKOUT' : topTerm.value ? `+${topTerm.value}%` : `${topTerm.avgInterest || ''}`;
+    const heroPct   = topTerm.isBreakout ? 'BREAKOUT'
+                    : topTerm.value      ? `+${topTerm.value}%`
+                    : topTerm.avgInterest ? `${topTerm.avgInterest}/100`
+                    : '—';
     const heroColor = topTerm.isBreakout ? '#8B0000' : '#0c0c0c';
 
     ctx.fillStyle = heroColor;
