@@ -33,7 +33,7 @@ async function fetchInterestOverTimeSerpApi(keywords, { dateFrom, dateTo }) {
       results.push({ keyword: kw, avgInterest, peakInterest, weeklyData: timeline });
       await delay(500);
     } catch (err) {
-      console.warn(`[ScaleSerp] Falha para "${kw}": ${err.message}`);
+      console.warn(`[ScaleSerp] Falha para "${kw}": ${err.message}`, err.response?.data);
     }
   }
 
