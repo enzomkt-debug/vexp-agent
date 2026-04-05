@@ -373,15 +373,15 @@ console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);
 
 if (process.env.RUN_ON_START === 'true') {
-  runPost();
+  runPost().catch(err => console.error('[on-start] Erro em runPost:', err.message));
 }
 
 if (process.env.RUN_VAREJO_ON_START === 'true') {
-  runVarejoPost();
+  runVarejoPost().catch(err => console.error('[on-start] Erro em runVarejoPost:', err.message));
 }
 
 if (process.env.RUN_SHOPPING_ON_START === 'true') {
-  runShoppingPost();
+  runShoppingPost().catch(err => console.error('[on-start] Erro em runShoppingPost:', err.message));
 }
 
 async function runTrendPost() {
