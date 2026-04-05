@@ -28,11 +28,9 @@ async function pollJob(jobId, maxAttempts = 15, intervalMs = 2000) {
 async function uploadMedia(imageUrl) {
   let res;
   try {
-    const accountIds = [process.env.PUBLER_INSTAGRAM_ACCOUNT_ID].filter(Boolean);
-    if (process.env.PUBLER_LINKEDIN_ACCOUNT_ID) accountIds.push(process.env.PUBLER_LINKEDIN_ACCOUNT_ID);
     res = await axios.post(
       `${BASE_URL}/media/from-url`,
-      { url: imageUrl, direct_upload: false, in_library: false, account_ids: accountIds },
+      { url: imageUrl, direct_upload: false, in_library: false },
       { headers: publerHeaders(), timeout: 30000 },
     );
   } catch (err) {
