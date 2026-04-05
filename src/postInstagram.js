@@ -25,12 +25,15 @@ async function pollJob(jobId, maxAttempts = 15, intervalMs = 2000) {
   throw new Error(`Publer job ${jobId} timed out`);
 }
 
-async function uploadMedia(imageUrl) {
+async function uploadMedia(imageUrl, accountIds) {
+  const ids = accountIds && accountIds.length > 0
+    ? accountIds
+    : [process.env.PUBLER_INSTAGRAM_ACCOUNT_ID];
   let res;
   try {
     res = await axios.post(
       `${BASE_URL}/media/from-url`,
-      { media: [{ url: imageUrl, account_ids: [process.env.PUBLER_INSTAGRAM_ACCOUNT_ID] }] },
+      { media: [{ url: imageUrl, account_ids: ids }] },
       { headers: publerHeaders(), timeout: 30000 },
     );
   } catch (err) {
@@ -83,15 +86,16 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
     return { postId: 'test-mode', mediaUrl: imageUrl };
   }
 
-  const mediaId = await uploadMedia(imageUrl);
-
-  const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
-  const media = [{ id: mediaId, type: 'image' }];
-
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
   if (process.env.PUBLER_LINKEDIN_ACCOUNT_ID) {
     accounts.push({ id: process.env.PUBLER_LINKEDIN_ACCOUNT_ID });
   }
+
+  const accountIds = accounts.map((a) => a.id);
+  const mediaId = await uploadMedia(imageUrl, accountIds);
+
+  const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
+  const media = [{ id: mediaId, type: 'image' }];
 
   const networks = {
     instagram: { type: 'photo', text: contentWithLink, media },
@@ -116,12 +120,15 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
 
   const mediaId = await uploadMedia(imageUrl);
 
+  const storyDetails = { type: 'story' };
+  if (linkUrl) storyDetails.link = linkUrl;
+
   const networks = {
     instagram: {
       type: 'photo',
       text: '',
       media: [{ id: mediaId, type: 'image' }],
-      details: { type: 'story' },
+      details: storyDetails,
     },
   };
 
