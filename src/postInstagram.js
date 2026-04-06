@@ -49,14 +49,14 @@ async function uploadMedia(imageUrl) {
   throw new Error(`Publer media upload resposta inesperada: ${JSON.stringify(res.data)}`);
 }
 
-async function createPost(accounts, networks) {
+async function createPost(accounts, networks, state = 'scheduled') {
   let res;
   try {
     res = await axios.post(
       `${BASE_URL}/posts/schedule/publish`,
       {
         bulk: {
-          state: 'scheduled',
+          state,
           posts: [{ networks, accounts }],
         },
       },
@@ -125,7 +125,7 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
     },
   };
 
-  const jobId = await createPost([{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }], networks);
+  const jobId = await createPost([{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }], networks, 'published');
   return { postId: jobId, mediaUrl: imageUrl };
 }
 
