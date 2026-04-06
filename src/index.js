@@ -25,6 +25,32 @@ http.createServer((req, res) => {
   if (req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() }));
+  } else if (req.method === 'POST' && req.url === '/post-manual') {
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== process.env.MANUAL_POST_API_KEY) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      let payload;
+      try { payload = JSON.parse(body); } catch (_) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Invalid JSON' }));
+        return;
+      }
+      const { tema } = payload;
+      if (!tema || typeof tema !== 'string') {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Campo "tema" obrigatório' }));
+        return;
+      }
+      res.writeHead(202, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'accepted', tema }));
+      runManualPost(tema).catch(err => console.error('[post-manual] Erro:', err.message));
+    });
   } else {
     res.writeHead(404);
     res.end();
@@ -491,4 +517,97 @@ async function runTrendPost() {
   console.log('[runTrendPost] Ciclo de tendência concluído.');
 }
 
-module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost };
+async function runManualPost(tema) {
+  console.log(`\n[${new Date().toISOString()}] Iniciando POST MANUAL: "${tema}"`);
+
+  const news = {
+    title:   tema,
+    source:  'Manual',
+    summary: '',
+    link:    '',
+    pubDate: new Date().toISOString(),
+  };
+
+  let caption;
+  try {
+    caption = await generateCaption(news);
+    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${tema}\n\n#vendaexponencial #ecommerce #varejo`;
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar caption:', err.message);
+    caption = `📊 ${tema}\n\n#vendaexponencial #ecommerce`;
+  }
+
+  let artigo;
+  try {
+    artigo = await generateArticle(news);
+    console.log('[runManualPost] Artigo gerado.');
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar artigo:', err.message);
+    artigo = null;
+  }
+
+  let imageResult, storyResult;
+  try {
+    [imageResult, storyResult] = await Promise.all([
+      generateImage(news, artigo),
+      gerarStory(news, artigo),
+    ]);
+    console.log(`[runManualPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar imagens:', err.message);
+    return;
+  }
+
+  let feedGithubUrl, storyGithubUrl;
+  try {
+    [feedGithubUrl, storyGithubUrl] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runManualPost] GitHub: feed=${feedGithubUrl}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao subir imagens:', err.message);
+  }
+
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      null,
+        imagem_url:        null,
+        imagem_github:     feedGithubUrl || null,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runManualPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runManualPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  const artigoId = registro?.id;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runManualPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao publicar feed:', err.message);
+  }
+
+  try {
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrl);
+    if (!TEST_MODE) console.log(`[runManualPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao publicar story:', err.message);
+  }
+
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+
+  console.log('[runManualPost] Post manual concluído.');
+}
+
+module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost, runManualPost };
