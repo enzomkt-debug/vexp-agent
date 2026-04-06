@@ -3,7 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-async function subirImagemGithub(filepath) {
+async function subirImagemGithub(filepath, _retries = 3) {
   const filename = path.basename(filepath);
   const content = fs.readFileSync(filepath).toString('base64');
 
@@ -13,48 +13,62 @@ async function subirImagemGithub(filepath) {
   const destPath = `assets/${filename}`;
 
   const url = `https://api.github.com/repos/${repo}/contents/${destPath}`;
-
-  // Check if file already exists (need SHA to update)
-  let sha;
-  try {
-    const { data } = await axios.get(url, {
-      headers: { Authorization: `token ${token}` },
-    });
-    sha = data.sha;
-  } catch (_) {
-    // File does not exist yet — no SHA needed
-  }
-
-  const body = {
-    message: `chore: upload image ${filename}`,
-    content,
-    branch,
-    ...(sha ? { sha } : {}),
-  };
-
   const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${destPath}`;
 
-  try {
-    await axios.put(url, body, {
-      headers: {
-        Authorization: `token ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (err) {
-    if (err?.response?.status !== 409) throw err;
-    // 409 = SHA stale (outro processo atualizou o arquivo) — busca a URL atual via API
-    console.warn(`[utils] 409 no upload de ${filename} — conflito de SHA, obtendo URL via API...`);
+  for (let attempt = 1; attempt <= _retries; attempt++) {
+    // Busca SHA atual do arquivo (necessário para atualizar)
+    let sha;
     try {
-      const { data } = await axios.get(url, { headers: { Authorization: `token ${token}` } });
-      if (data?.download_url) {
-        console.log(`[utils] URL obtida via API: ${data.download_url}`);
-        return data.download_url;
-      }
-    } catch (getErr) {
-      console.warn(`[utils] Falha ao obter URL via API: ${getErr.message}`);
+      const { data } = await axios.get(url, {
+        headers: { Authorization: `token ${token}` },
+      });
+      sha = data.sha;
+    } catch (_) {
+      // Arquivo não existe ainda — sem SHA
     }
-    // Fallback: raw URL com polling
+
+    const body = {
+      message: `chore: upload image ${filename}`,
+      content,
+      branch,
+      ...(sha ? { sha } : {}),
+    };
+
+    try {
+      await axios.put(url, body, {
+        headers: {
+          Authorization: `token ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      // Upload bem-sucedido — segue para polling de CDN
+      break;
+    } catch (err) {
+      const status = err?.response?.status;
+
+      // 422 = arquivo já existe com conteúdo idêntico ou SHA inválido
+      // 409 = conflito git (deploy concorrente) — retenta com novo SHA
+      if (status === 422 || status === 409) {
+        // Tenta pegar a URL direto da API (arquivo pode já estar lá)
+        try {
+          const { data } = await axios.get(url, { headers: { Authorization: `token ${token}` } });
+          if (data?.download_url) {
+            console.log(`[utils] ${status} no upload de ${filename} — arquivo existente, URL via API: ${data.download_url}`);
+            return data.download_url;
+          }
+        } catch (_) {}
+
+        // Arquivo não existe ainda — conflito transitório, retenta
+        if (attempt < _retries) {
+          const wait = attempt * 3000;
+          console.warn(`[utils] ${status} no upload de ${filename} — conflito transitório, retentando em ${wait / 1000}s (tentativa ${attempt}/${_retries})...`);
+          await new Promise((r) => setTimeout(r, wait));
+          continue;
+        }
+      }
+
+      throw err;
+    }
   }
 
   // Aguarda CDN propagar com polling (até 60s, intervalo de 5s)
@@ -73,7 +87,6 @@ async function subirImagemGithub(filepath) {
     console.log(`[utils] Aguardando CDN... tentativa ${i}/${maxAttempts}`);
   }
 
-  // Retorna a URL mesmo se o polling esgotou (pode já estar acessível no cliente)
   console.warn(`[utils] CDN não confirmado após ${maxAttempts * 5}s — retornando URL mesmo assim: ${rawUrl}`);
   return rawUrl;
 }
