@@ -32,6 +32,8 @@ async function subirImagemGithub(filepath) {
     ...(sha ? { sha } : {}),
   };
 
+  const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${destPath}`;
+
   try {
     await axios.put(url, body, {
       headers: {
@@ -40,12 +42,11 @@ async function subirImagemGithub(filepath) {
       },
     });
   } catch (err) {
-    // 409 = arquivo já existe (upload concorrente) — URL válida mesmo assim
+    // 409 = arquivo já existe no GitHub → CDN já tem o arquivo, retornar URL sem polling
     if (err?.response?.status !== 409) throw err;
-    console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, usando URL existente`);
+    console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, retornando URL sem polling`);
+    return rawUrl;
   }
-
-  const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${destPath}`;
 
   // Aguarda CDN propagar com polling (até 60s, intervalo de 5s)
   const maxAttempts = 12;
