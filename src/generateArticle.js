@@ -4,7 +4,11 @@ const { addAffiliateLinks, classifyAmazonKeywords } = require('./amazonAfiliados
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-async function generateArticle(news) {
+async function generateArticle(news, conteudoUrl = null) {
+  const fonteInfo = conteudoUrl
+    ? `Conteúdo extraído da URL:\n${conteudoUrl}`
+    : `Resumo: ${news.summary}`;
+
   const prompt = `Você é um jornalista experiente de negócios conversando com um empreendedor brasileiro. Escreve para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais.
 
 Com base na notícia abaixo, escreva um artigo em português brasileiro com 600 a 800 palavras.
@@ -31,7 +35,7 @@ Use subtítulos em negrito (**Subtítulo**) para separar blocos de texto. Retorn
 
 Notícia:
 Título: ${news.title}
-Resumo: ${news.summary}
+${fonteInfo}
 Fonte: ${news.source}
 URL: ${news.link}`;
 

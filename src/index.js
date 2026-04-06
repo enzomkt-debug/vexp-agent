@@ -41,15 +41,17 @@ http.createServer((req, res) => {
         res.end(JSON.stringify({ error: 'Invalid JSON' }));
         return;
       }
-      const { tema } = payload;
-      if (!tema || typeof tema !== 'string') {
+      const { tema, url } = payload;
+      const temaTipo = typeof tema === 'string' && tema.trim();
+      const urlTipo  = typeof url  === 'string' && url.trim();
+      if (!temaTipo && !urlTipo) {
         res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Campo "tema" obrigatório' }));
+        res.end(JSON.stringify({ error: 'Informe ao menos "tema" ou "url"' }));
         return;
       }
       res.writeHead(202, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ status: 'accepted', tema }));
-      runManualPost(tema).catch(err => console.error('[post-manual] Erro:', err.message));
+      res.end(JSON.stringify({ status: 'accepted', tema: temaTipo || urlTipo }));
+      runManualPost(temaTipo || null, urlTipo || null).catch(err => console.error('[post-manual] Erro:', err.message));
     });
   } else {
     res.writeHead(404);
@@ -517,29 +519,56 @@ async function runTrendPost() {
   console.log('[runTrendPost] Ciclo de tendência concluído.');
 }
 
-async function runManualPost(tema) {
-  console.log(`\n[${new Date().toISOString()}] Iniciando POST MANUAL: "${tema}"`);
+async function runManualPost(tema, url = null) {
+  console.log(`\n[${new Date().toISOString()}] Iniciando POST MANUAL: tema="${tema}" url="${url}"`);
+
+  // Se URL fornecida, faz fetch e extrai conteúdo
+  let conteudoUrl = null;
+  let tituloFinal = tema;
+  if (url) {
+    try {
+      const axios = require('axios');
+      const { data: html } = await axios.get(url, {
+        timeout: 15000,
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vexp-agent/1.0)' },
+      });
+      if (!tituloFinal) {
+        const m = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (m) tituloFinal = m[1].trim();
+      }
+      conteudoUrl = html
+        .replace(/<script[\s\S]*?<\/script>/gi, '')
+        .replace(/<style[\s\S]*?<\/style>/gi, '')
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 5000);
+      console.log(`[runManualPost] Conteúdo extraído da URL (${conteudoUrl.length} chars).`);
+    } catch (err) {
+      console.error('[runManualPost] Erro ao buscar URL:', err.message);
+    }
+  }
 
   const news = {
-    title:   tema,
-    source:  'Manual',
+    title:   tituloFinal || url,
+    source:  url ? new URL(url).hostname : 'Manual',
     summary: '',
-    link:    '',
+    link:    url || '',
     pubDate: new Date().toISOString(),
   };
 
   let caption;
   try {
     caption = await generateCaption(news);
-    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${tema}\n\n#vendaexponencial #ecommerce #varejo`;
+    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce #varejo`;
   } catch (err) {
     console.error('[runManualPost] Erro ao gerar caption:', err.message);
-    caption = `📊 ${tema}\n\n#vendaexponencial #ecommerce`;
+    caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce`;
   }
 
   let artigo;
   try {
-    artigo = await generateArticle(news);
+    artigo = await generateArticle(news, conteudoUrl);
     console.log('[runManualPost] Artigo gerado.');
   } catch (err) {
     console.error('[runManualPost] Erro ao gerar artigo:', err.message);
