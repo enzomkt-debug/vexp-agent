@@ -4,10 +4,11 @@ const REQUIRED = [
   'ANTHROPIC_API_KEY',
   'SUPABASE_URL',
   'SUPABASE_ANON_KEY',
-  'ZERNIO_API_KEY',
-  'ZERNIO_ACCOUNT_ID',
   'GITHUB_TOKEN',
   'GITHUB_REPO',
+  'PUBLER_API_KEY',
+  'PUBLER_WORKSPACE_ID',
+  'PUBLER_INSTAGRAM_ACCOUNT_ID',
 ];
 
 const missing = REQUIRED.filter(key => !process.env[key]);

@@ -187,8 +187,8 @@ async function runVarejoPost() {
     return;
   }
 
-  const { news, caption, artigo, categoria, refYear, mesNome } = varejoResult;
-  console.log(`[runVarejoPost] Categoria: "${categoria.label}" | Ref: ${mesNome}/${refYear}`);
+  const { news, caption, artigo, categoria } = varejoResult;
+  console.log(`[runVarejoPost] Categoria: "${categoria.label}"`);
 
   // 2. Gerar imagens com template exclusivo de varejo
   let imageResult, storyResult;
@@ -294,17 +294,11 @@ async function runShoppingPost() {
     return;
   }
 
-  // 3. Upload das imagens para o GitHub (antes de salvar no Supabase)
-  let feedGithubUrlS, storyGithubUrlS;
-  try {
-    [feedGithubUrlS, storyGithubUrlS] = await Promise.all([
-      subirImagemGithub(imageResult.filepath),
-      subirImagemGithub(storyResult.filepath),
-    ]);
-    console.log(`[runShoppingPost] GitHub: feed=${feedGithubUrlS}`);
-  } catch (err) {
-    console.error('[runShoppingPost] Erro ao subir imagens para GitHub:', err.message);
-  }
+  // 3. URLs do GitHub já obtidas dentro de generateShoppingFeedImage/StoryImage
+  //    Evita double upload que causaria 409 garantido
+  const feedGithubUrlS  = imageResult.githubUrl;
+  const storyGithubUrlS = storyResult.githubUrl;
+  console.log(`[runShoppingPost] GitHub: feed=${feedGithubUrlS} | story=${storyGithubUrlS}`);
 
   // 4. Salvar no Supabase com imagem_github já definida
   let registro;
