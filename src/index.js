@@ -19,22 +19,62 @@ process.on('SIGTERM', () => {
   process.exit(0);
 });
 
-// ─── HEALTHCHECK HTTP ───
+// ─── HTTP SERVER (healthcheck + endpoints manuais) ───
 const PORT = process.env.PORT || 3000;
 http.createServer((req, res) => {
-  if (req.url === '/health') {
+  // GET /health
+  if (req.method === 'GET' && req.url === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ status: 'ok', uptime: process.uptime(), timestamp: new Date().toISOString() }));
-  } else {
-    res.writeHead(404);
-    res.end();
+    return;
   }
+
+  // POST /post-manual — dispara pipeline com tema fornecido manualmente
+  if (req.method === 'POST' && req.url === '/post-manual') {
+    const apiKey = req.headers['x-api-key'];
+    if (process.env.MANUAL_API_KEY && apiKey !== process.env.MANUAL_API_KEY) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' }));
+      return;
+    }
+
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      let tema;
+      try {
+        const payload = JSON.parse(body);
+        tema = payload.tema?.trim();
+      } catch (_) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'JSON inválido' }));
+        return;
+      }
+
+      if (!tema) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Campo "tema" é obrigatório' }));
+        return;
+      }
+
+      res.writeHead(202, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ status: 'accepted', tema }));
+
+      runManualPost(tema).catch(err => console.error('[post-manual] Erro:', err.message));
+    });
+    return;
+  }
+
+  res.writeHead(404);
+  res.end();
 }).listen(PORT, () => {
   console.log(`[healthcheck] HTTP server escutando na porta ${PORT}`);
 });
 const { fetchLatestNews } = require('./fetchNews');
 const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
+const { generateManualCaption } = require('./generateManualCaption');
+const { generateManualArticle } = require('./generateManualArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
 const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado } = require('./supabaseClient');
@@ -345,6 +385,101 @@ async function runShoppingPost() {
   console.log('[runShoppingPost] Ciclo de shopping concluído.');
 }
 
+async function runManualPost(tema) {
+  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo MANUAL: "${tema}" TEST_MODE=${TEST_MODE}`);
+
+  // 1. Gerar legenda
+  let caption;
+  try {
+    caption = await generateManualCaption(tema);
+    console.log('[runManualPost] Caption gerada.');
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar caption:', err.message);
+    return;
+  }
+
+  // 2. Gerar artigo completo
+  let artigo;
+  try {
+    artigo = await generateManualArticle(tema);
+    console.log('[runManualPost] Artigo gerado com sucesso.');
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar artigo:', err.message);
+    artigo = null;
+  }
+
+  // Objeto news-like para reusar pipeline de imagem
+  const news = { title: tema, summary: '', source: 'Manual', link: '' };
+
+  // 3. Gerar imagem feed + story em paralelo
+  let imageResult, storyResult;
+  try {
+    [imageResult, storyResult] = await Promise.all([
+      generateImage(news, artigo),
+      gerarStory(news, artigo),
+    ]);
+    console.log(`[runManualPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar imagens:', err.message);
+    return;
+  }
+
+  // 4. Upload das imagens para o GitHub
+  let feedGithubUrl, storyGithubUrl;
+  try {
+    [feedGithubUrl, storyGithubUrl] = await Promise.all([
+      subirImagemGithub(imageResult.filepath),
+      subirImagemGithub(storyResult.filepath),
+    ]);
+    console.log(`[runManualPost] GitHub: feed=${feedGithubUrl}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao subir imagens para GitHub:', err.message);
+  }
+
+  // 5. Salvar no Supabase
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            tema,
+        fonte:             'Manual',
+        url_original:      null,
+        imagem_url:        null,
+        imagem_github:     feedGithubUrl || null,
+        legenda_instagram: caption,
+        artigo_completo:   artigo,
+      });
+      if (registro?.id) await marcarPostado(registro.id);
+      console.log(`[runManualPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runManualPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  // 6. Publicar feed
+  const artigoId = registro?.id;
+  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  try {
+    const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
+    if (!TEST_MODE) console.log(`[runManualPost] Feed publicado! ID: ${postResult.postId}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao publicar feed:', err.message);
+  }
+
+  // 7. Publicar story
+  try {
+    const storyPost = await publicarStory(null, linkUrl, storyGithubUrl);
+    if (!TEST_MODE) console.log(`[runManualPost] Story publicado! ID: ${storyPost.postId}`);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao publicar story:', err.message);
+  }
+
+  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
+  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
+
+  console.log('[runManualPost] Ciclo manual concluído.');
+}
+
 // Register cron jobs — pipeline principal
 for (const schedule of SCHEDULE_TIMES) {
   cron.schedule(schedule, () => runPost().catch(err => console.error(`[cron] Erro em runPost:`, err.message)), { timezone: 'UTC' });
@@ -491,4 +626,4 @@ async function runTrendPost() {
   console.log('[runTrendPost] Ciclo de tendência concluído.');
 }
 
-module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost };
+module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost, runManualPost };
