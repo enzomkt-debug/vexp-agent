@@ -43,11 +43,21 @@ async function subirImagemGithub(filepath) {
     });
   } catch (err) {
     if (err?.response?.status !== 409) throw err;
-    console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, verificando CDN...`);
+    // 409 = SHA stale (outro processo atualizou o arquivo) — busca a URL atual via API
+    console.warn(`[utils] 409 no upload de ${filename} — conflito de SHA, obtendo URL via API...`);
+    try {
+      const { data } = await axios.get(url, { headers: { Authorization: `token ${token}` } });
+      if (data?.download_url) {
+        console.log(`[utils] URL obtida via API: ${data.download_url}`);
+        return data.download_url;
+      }
+    } catch (getErr) {
+      console.warn(`[utils] Falha ao obter URL via API: ${getErr.message}`);
+    }
+    // Fallback: raw URL com polling
   }
 
   // Aguarda CDN propagar com polling (até 60s, intervalo de 5s)
-  // Também roda no caso de 409 pois a URL precisa estar acessível para o Publer
   const maxAttempts = 12;
   for (let i = 1; i <= maxAttempts; i++) {
     await new Promise((resolve) => setTimeout(resolve, 5000));
