@@ -42,13 +42,12 @@ async function subirImagemGithub(filepath) {
       },
     });
   } catch (err) {
-    // 409 = arquivo já existe no GitHub → CDN já tem o arquivo, retornar URL sem polling
     if (err?.response?.status !== 409) throw err;
-    console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, retornando URL sem polling`);
-    return rawUrl;
+    console.warn(`[utils] 409 no upload de ${filename} — arquivo já existe, verificando CDN...`);
   }
 
   // Aguarda CDN propagar com polling (até 60s, intervalo de 5s)
+  // Também roda no caso de 409 pois a URL precisa estar acessível para o Publer
   const maxAttempts = 12;
   for (let i = 1; i <= maxAttempts; i++) {
     await new Promise((resolve) => setTimeout(resolve, 5000));
