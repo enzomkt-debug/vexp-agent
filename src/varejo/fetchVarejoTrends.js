@@ -23,7 +23,7 @@ async function fetchInterestOverTimeSerpApi(keywords, { dateFrom, dateTo }) {
 
   for (const kw of keywords) {
     try {
-      const data = await serpApiRequest({ search_type: 'google_trends', q: kw, geo: 'BR', hl: 'pt', date, data_type: 'TIMESERIES' });
+      const data = await serpApiRequest({ search_type: 'trends', q: kw, geo: 'BR', hl: 'pt', date, data_type: 'TIMESERIES' });
       const timeline = data.interest_over_time?.timeline_data || [];
       if (!timeline.length) continue;
 
@@ -43,7 +43,7 @@ async function fetchInterestOverTimeSerpApi(keywords, { dateFrom, dateTo }) {
 async function fetchRelatedQueriesSerpApi(keyword, { dateFrom, dateTo }) {
   const date = `${dateFrom} ${dateTo}`;
   try {
-    const data = await serpApiRequest({ search_type: 'google_trends', q: keyword, geo: 'BR', hl: 'pt', date, data_type: 'RELATED_QUERIES' });
+    const data = await serpApiRequest({ search_type: 'trends', q: keyword, geo: 'BR', hl: 'pt', date, data_type: 'RELATED_QUERIES' });
     const related = data.related_queries || {};
     const mapItems = (items) => (items || []).map((i) => ({ keyword: i.query, value: i.extracted_value ?? i.value ?? 0 }));
     return { rising: mapItems(related.rising?.queries), top: mapItems(related.default?.queries) };
@@ -56,7 +56,7 @@ async function fetchRelatedQueriesSerpApi(keyword, { dateFrom, dateTo }) {
 async function fetchRelatedTopicsSerpApi(keyword, { dateFrom, dateTo }) {
   const date = `${dateFrom} ${dateTo}`;
   try {
-    const data = await serpApiRequest({ search_type: 'google_trends', q: keyword, geo: 'BR', hl: 'pt', date, data_type: 'RELATED_TOPICS' });
+    const data = await serpApiRequest({ search_type: 'trends', q: keyword, geo: 'BR', hl: 'pt', date, data_type: 'RELATED_TOPICS' });
     const related = data.related_topics || {};
     const mapItems = (items) => (items || []).map((i) => ({ keyword: i.topic?.title ?? i.title, value: i.extracted_value ?? 0 }));
     return { rising: mapItems(related.rising?.topics), top: mapItems(related.default?.topics) };
