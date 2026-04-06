@@ -2,15 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-05</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-05</lastmod>
+    <lastmod>2026-04-06</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=games-e-consoles-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=o-marketing-digital-brasileiro-tem-um-problema-estrutural-e-ele-nao-se-resolve-c</loc>
+    <lastmod>2026-04-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=63-de-bares-e-restaurantes-de-sp-projetam-aumento-de-faturamento-no-feriado-prol</loc>
+    <lastmod>2026-04-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=tvs-e-eletronicos-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
