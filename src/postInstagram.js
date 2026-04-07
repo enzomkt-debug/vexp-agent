@@ -128,6 +128,16 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
   const scheduledAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID, scheduled_at: scheduledAt }];
   const jobId = await createPost(accounts, networks, 'scheduled');
+
+  // Verifica resultado do job para detectar falhas silenciosas
+  try {
+    const postResult = await pollJob(jobId, 10, 3000);
+    console.log('[publicarStory] Job completo:', JSON.stringify(postResult));
+  } catch (err) {
+    console.error('[publicarStory] Job falhou:', err.message);
+    throw err;
+  }
+
   return { postId: jobId, mediaUrl: imageUrl };
 }
 
