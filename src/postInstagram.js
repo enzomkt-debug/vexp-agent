@@ -118,12 +118,16 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
 
   const networks = {
     instagram: {
-      type: 'story',
+      type: 'photo',
+      text: '',
       media: [{ id: mediaId, type: 'image' }],
+      details: { type: 'story' },
     },
   };
 
-  const jobId = await createPost([{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }], networks, 'published');
+  const scheduledAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+  const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID, scheduled_at: scheduledAt }];
+  const jobId = await createPost(accounts, networks, 'scheduled');
   return { postId: jobId, mediaUrl: imageUrl };
 }
 
