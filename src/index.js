@@ -132,6 +132,16 @@ async function runPost() {
     artigo = null;
   }
 
+  // 2b. Regenerar legenda com contexto do artigo
+  try {
+    caption = await generateCaption(news, artigo);
+    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce #varejo`;
+    console.log('[runPost] Legenda enriquecida com artigo.');
+  } catch (err) {
+    console.error('[runPost] Erro ao regenerar legenda com artigo:', err.message);
+    // mantém a legenda do filtro inicial
+  }
+
   // 3. Gerar imagem feed + story em paralelo
   let imageResult, storyResult;
   try {
@@ -179,7 +189,7 @@ async function runPost() {
 
   // 6. Publicar post no feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
-  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : (news.link || null);
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
@@ -271,7 +281,7 @@ async function runVarejoPost() {
 
   // 5. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : (news.link || null);
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlV, caption, linkUrl });
@@ -350,7 +360,7 @@ async function runShoppingPost() {
 
   // 5. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : (news.link || null);
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl });
@@ -434,13 +444,13 @@ async function runTrendPost() {
   };
   const artigo = trendResult.article;
 
-  // 2. Gerar legenda
+  // 2. Gerar legenda com contexto do artigo
   let caption;
   try {
     caption = await generateCaption({
       ...news,
       title: `Tendência: ${trendResult.trendTerm} (interesse ${trendResult.trendScore}/100 em abril/2025)`,
-    });
+    }, artigo);
     if (caption.trim() === 'IRRELEVANTE') caption = `📈 ${trendResult.trendTerm} foi um dos termos mais buscados no ecommerce em abril de 2025.\n\n#vendaexponencial #ecommerce #tendencias`;
   } catch (err) {
     console.error('[runTrendPost] Erro ao gerar caption:', err.message);
@@ -494,7 +504,7 @@ async function runTrendPost() {
 
   // 6. Publicar feed (imagem já no GitHub, sem re-upload)
   const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : (news.link || null);
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl });
@@ -557,15 +567,6 @@ async function runManualPost(tema, url = null) {
     pubDate: new Date().toISOString(),
   };
 
-  let caption;
-  try {
-    caption = await generateCaption(news);
-    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce #varejo`;
-  } catch (err) {
-    console.error('[runManualPost] Erro ao gerar caption:', err.message);
-    caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce`;
-  }
-
   let artigo;
   try {
     artigo = await generateArticle(news, conteudoUrl);
@@ -573,6 +574,15 @@ async function runManualPost(tema, url = null) {
   } catch (err) {
     console.error('[runManualPost] Erro ao gerar artigo:', err.message);
     artigo = null;
+  }
+
+  let caption;
+  try {
+    caption = await generateCaption(news, artigo);
+    if (caption.trim() === 'IRRELEVANTE') caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce #varejo`;
+  } catch (err) {
+    console.error('[runManualPost] Erro ao gerar caption:', err.message);
+    caption = `📊 ${news.title}\n\n#vendaexponencial #ecommerce`;
   }
 
   let imageResult, storyResult;
@@ -618,7 +628,7 @@ async function runManualPost(tema, url = null) {
   }
 
   const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : (news.link || null);
   try {
     const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runManualPost] Feed publicado! ID: ${postResult.postId}`);

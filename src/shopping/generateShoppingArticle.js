@@ -62,7 +62,7 @@ IMPORTANTE: Se os dados de produtos estiverem ausentes, foque no comportamento g
   return addAffiliateLinks(artigo, keywords);
 }
 
-async function generateShoppingCaption(shoppingData) {
+async function generateShoppingCaption(shoppingData, artigo = null) {
   const { categoria, products } = shoppingData;
 
   const topProduct = (products || [])[0];
@@ -70,16 +70,23 @@ async function generateShoppingCaption(shoppingData) {
     ? `Produto #1: ${topProduct.title}${topProduct.price ? ` por ${topProduct.price}` : ''}${topProduct.source ? ` na ${topProduct.source}` : ''}`
     : `Categoria: ${categoria.label}`;
 
-  const prompt = `Crie uma legenda curta para Instagram (máximo 200 caracteres antes das hashtags) para um post sobre os produtos mais vendidos agora em "${categoria.label}" no Google Shopping brasileiro.
+  const artigoTrecho = artigo ? `\n\nTrecho do artigo:\n${artigo.slice(0, 600).trim()}` : '';
 
-${destaque}
-Tom: direto, menciona um produto ou preço específico, desperta curiosidade. Evite generalizações.
+  const prompt = `Você é o copywriter do perfil @vendaexponencial no Instagram, focado em ecommerce e vendas digitais para o mercado brasileiro.
 
-Retorne SOMENTE a legenda + hashtags. Use exatamente 3 hashtags: #vendaexponencial + 2 dinâmicas relevantes ao conteúdo (categoria, produto ou loja específica citada).`;
+Crie uma legenda para Instagram sobre os produtos mais vendidos em "${categoria.label}" no Google Shopping, com a seguinte estrutura:
+- Linha de abertura: frase curta e impactante que gera curiosidade (máximo 80 chars), com 1 emoji relevante
+- Resumo: 3 a 5 linhas com dados concretos do artigo (produto, preço, loja, tendência de mercado)
+- Chamada para ação curta (ex: "Leia o artigo completo 👇", "Salva esse post!")
+- Exatamente 3 hashtags: #vendaexponencial + 2 dinâmicas relevantes (categoria, produto ou loja específica citada)
+
+${destaque}${artigoTrecho}
+
+Retorne SOMENTE a legenda pronta, sem explicações.`;
 
   const message = await client.messages.create({
-    model:      'claude-haiku-4-5-20251001',
-    max_tokens: 200,
+    model:      'claude-sonnet-4-6',
+    max_tokens: 1024,
     messages:   [{ role: 'user', content: prompt }],
   });
 

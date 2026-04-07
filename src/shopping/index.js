@@ -55,11 +55,9 @@ async function runShopping() {
     throw new Error(`[shopping] Nenhum produto encontrado para "${categoria.label}" no Google Shopping.`);
   }
 
-  // 3. Gerar artigo e legenda em paralelo
-  const [artigo, caption] = await Promise.all([
-    generateShoppingArticle(shoppingData),
-    generateShoppingCaption(shoppingData),
-  ]);
+  // 3. Gerar artigo e legenda (sequencial para que a legenda use o artigo)
+  const artigo = await generateShoppingArticle(shoppingData);
+  const caption = await generateShoppingCaption(shoppingData, artigo);
   console.log('[shopping] Artigo e legenda gerados.');
 
   const today = new Date().toISOString().slice(0, 10);

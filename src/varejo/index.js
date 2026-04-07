@@ -51,11 +51,9 @@ async function runVarejo() {
   const trendData = await fetchVarejoTrends(categoria);
   console.log(`[varejo] Tendências coletadas. Termo principal: "${trendData.mainTerm.keyword}" (${trendData.mainTerm.avgInterest}/100) | Período: ${trendData.period.label}`);
 
-  // 3. Gerar artigo e legenda
-  const [artigo, caption] = await Promise.all([
-    generateVarejoArticle(trendData),
-    generateVarejoCaption(trendData),
-  ]);
+  // 3. Gerar artigo e legenda (sequencial para que a legenda use o artigo)
+  const artigo = await generateVarejoArticle(trendData);
+  const caption = await generateVarejoCaption(trendData, artigo);
   console.log('[varejo] Artigo e legenda gerados.');
 
   const news = {

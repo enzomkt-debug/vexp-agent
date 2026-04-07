@@ -109,23 +109,30 @@ IMPORTANTE: Se os dados de termos específicos estiverem ausentes, não invente 
   return addAffiliateLinks(artigo, keywords);
 }
 
-async function generateVarejoCaption(trendData) {
-  const { categoria, period, mainTerm, specificTrends } = trendData;
+async function generateVarejoCaption(trendData, artigo = null) {
+  const { categoria, mainTerm, specificTrends } = trendData;
 
   const breakouts = (specificTrends || []).filter((t) => t.isBreakout).map((t) => t.keyword);
   const topRising = (specificTrends || []).filter((t) => !t.isBreakout).slice(0, 2).map((t) => t.keyword);
   const destaques = breakouts.length ? breakouts.slice(0, 2) : topRising;
 
-  const prompt = `Crie uma legenda curta para Instagram (máximo 200 caracteres antes das hashtags) para um post sobre o que está crescendo de forma inesperada em "${categoria.label}" no varejo digital brasileiro nos últimos 90 dias.
+  const artigoTrecho = artigo ? `\n\nTrecho do artigo:\n${artigo.slice(0, 600).trim()}` : '';
 
-${destaques.length ? `Termos com crescimento acima do esperado: ${destaques.join(', ')}` : `Interesse de busca: ${mainTerm.avgInterest}/100`}
-Tom: direto, menciona um produto ou modelo específico, surpreende o leitor com um dado não-óbvio. Evite generalizações.
+  const prompt = `Você é o copywriter do perfil @vendaexponencial no Instagram, focado em ecommerce e vendas digitais para o mercado brasileiro.
 
-Retorne SOMENTE a legenda + hashtags. Use exatamente 3 hashtags: #vendaexponencial + 2 dinâmicas relevantes ao conteúdo (categoria, produto ou marca específica citada).`;
+Crie uma legenda para Instagram sobre o que está crescendo em "${categoria.label}" no varejo digital brasileiro, com a seguinte estrutura:
+- Linha de abertura: frase curta e impactante que gera curiosidade (máximo 80 chars), com 1 emoji relevante
+- Resumo: 3 a 5 linhas resumindo o que está acontecendo, por que importa e qual o impacto para quem vende online — use dados e fatos concretos
+- Chamada para ação curta (ex: "Leia o artigo completo 👇", "Salva esse post!")
+- Exatamente 3 hashtags: #vendaexponencial + 2 dinâmicas relevantes (categoria, produto ou marca específica citada)
+
+${destaques.length ? `Termos com crescimento acima do esperado: ${destaques.join(', ')}` : `Interesse de busca: ${mainTerm.avgInterest}/100`}${artigoTrecho}
+
+Retorne SOMENTE a legenda pronta, sem explicações.`;
 
   const message = await client.messages.create({
     model:      'claude-sonnet-4-6',
-    max_tokens: 200,
+    max_tokens: 1024,
     messages:   [{ role: 'user', content: prompt }],
   });
 
