@@ -33,11 +33,11 @@ function extrairPrimeiraSentenca(artigo) {
   if (!artigo) return null;
   const texto = limparMarkdown(artigo);
   const match = texto.match(/^.+?[.!?]/);
-  if (match) return match[0].replace(/[.!?]$/, '').trim() + '...';
+  if (match) return match[0].replace(/[.!?]$/, '').trim();
   // Fallback: 120 chars cortando na última palavra
   const cortado = texto.slice(0, 120);
   const ultimoEspaco = cortado.lastIndexOf(' ');
-  return cortado.slice(0, ultimoEspaco > 0 ? ultimoEspaco : 120) + '...';
+  return cortado.slice(0, ultimoEspaco > 0 ? ultimoEspaco : 120);
 }
 
 // Para o texto menor: primeiro parágrafo com até 150 chars
@@ -128,15 +128,30 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, maxLines = Infinity) {
   const displayed = lines.slice(0, maxLines);
   let posY = y;
   displayed.forEach((l, i) => {
-    let text = l;
-    if (i === maxLines - 1 && lines.length > maxLines) {
-      // truncate last visible line with ellipsis
-      while (ctx.measureText(text + '…').width > maxWidth && text.length > 0) {
-        text = text.slice(0, text.lastIndexOf(' '));
+    let t = l;
+    const isLastDisplayed = i === displayed.length - 1;
+    const overflows = i === maxLines - 1 && lines.length > maxLines;
+
+    if (overflows) {
+      // Shrink until ellipsis fits
+      while (ctx.measureText(t + '…').width > maxWidth && t.length > 0) {
+        t = t.slice(0, t.lastIndexOf(' '));
       }
-      text = text + '…';
+      // Prefer cutting at last clause boundary (comma, semicolon, colon)
+      const clauseIdx = Math.max(t.lastIndexOf(','), t.lastIndexOf(';'), t.lastIndexOf(':'));
+      if (clauseIdx > t.length * 0.5) t = t.slice(0, clauseIdx).trim();
+      t = t + '…';
+    } else if (isLastDisplayed) {
+      // Always add ellipsis on the last visible line to signal there's more
+      while (ctx.measureText(t + '…').width > maxWidth && t.length > 0) {
+        t = t.slice(0, t.lastIndexOf(' '));
+      }
+      const clauseIdx = Math.max(t.lastIndexOf(','), t.lastIndexOf(';'), t.lastIndexOf(':'));
+      if (clauseIdx > t.length * 0.5) t = t.slice(0, clauseIdx).trim();
+      t = t + '…';
     }
-    ctx.fillText(text, x, posY);
+
+    ctx.fillText(t, x, posY);
     posY += lineHeight;
   });
   return posY - lineHeight;
@@ -204,7 +219,7 @@ async function generateImage(news, artigo) {
 
   // Texto principal: primeira frase do artigo ou título como fallback
   const primeiraSentenca = extrairPrimeiraSentenca(artigo);
-  const textoImagem = primeiraSentenca || (news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title + '...');
+  const textoImagem = primeiraSentenca || (news.title.length > 120 ? news.title.slice(0, 117) : news.title);
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 52px DejaVu Sans';
   ctx.textAlign = 'left';
@@ -276,7 +291,7 @@ async function gerarStory(news, artigo) {
 
   // Texto principal: primeira frase do artigo ou título como fallback
   const primeiraSentencaStory = extrairPrimeiraSentenca(artigo);
-  const title = primeiraSentencaStory || (news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title + '...');
+  const title = primeiraSentencaStory || (news.title.length > 130 ? news.title.slice(0, 127) : news.title);
   ctx.fillStyle = TEXT_COLOR;
   ctx.font = 'bold 62px DejaVu Sans';
   ctx.textAlign = 'center';
@@ -299,13 +314,15 @@ async function gerarStory(news, artigo) {
 
   const MAX_STORY_LINES = 5;
   const displayed = lines.slice(0, MAX_STORY_LINES);
-  if (lines.length > MAX_STORY_LINES) {
-    let last = displayed[MAX_STORY_LINES - 1];
-    while (ctx.measureText(last + '...').width > maxW && last.length > 0) {
-      last = last.slice(0, last.lastIndexOf(' '));
-    }
-    displayed[MAX_STORY_LINES - 1] = last + '...';
+  // Always truncate last visible line at a clause boundary with ellipsis
+  const lastIdx = displayed.length - 1;
+  let last = displayed[lastIdx];
+  while (ctx.measureText(last + '…').width > maxW && last.length > 0) {
+    last = last.slice(0, last.lastIndexOf(' '));
   }
+  const clauseIdx = Math.max(last.lastIndexOf(','), last.lastIndexOf(';'), last.lastIndexOf(':'));
+  if (clauseIdx > last.length * 0.5) last = last.slice(0, clauseIdx).trim();
+  displayed[lastIdx] = last + '…';
 
   const totalTitleH = displayed.length * lineH;
   const contentMidY = (SAFE_TOP + SAFE_BOTTOM) / 2;
