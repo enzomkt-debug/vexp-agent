@@ -118,10 +118,8 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
 
   const networks = {
     instagram: {
-      type: 'photo',
-      text: '',
+      type: 'story',
       media: [{ id: mediaId, type: 'image' }],
-      details: { type: 'story' },
     },
   };
 
