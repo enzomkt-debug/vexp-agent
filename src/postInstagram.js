@@ -125,9 +125,8 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
     },
   };
 
-  const scheduledAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
-  const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID, scheduled_at: scheduledAt }];
-  const jobId = await createPost(accounts, networks, 'scheduled');
+  const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
+  const jobId = await createPost(accounts, networks, 'published');
 
   // Verifica resultado do job para detectar falhas silenciosas
   try {
