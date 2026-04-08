@@ -118,24 +118,19 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
 
   const networks = {
     instagram: {
-      type: 'photo',
-      text: '',
+      type: 'story',
       media: [{ id: mediaId, type: 'image' }],
-      details: { type: 'story' },
     },
   };
 
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
   const jobId = await createPost(accounts, networks, 'published');
 
-  // Verifica resultado do job para detectar falhas silenciosas
-  try {
-    const postResult = await pollJob(jobId, 10, 3000);
-    console.log('[publicarStory] Job completo:', JSON.stringify(postResult));
-  } catch (err) {
-    console.error('[publicarStory] Job falhou:', err.message);
-    throw err;
-  }
+  // Aguarda confirmação do job sem bloquear em caso de timeout
+  // (similar ao postToInstagram — não polamos o job do feed)
+  pollJob(jobId, 10, 3000)
+    .then(result => console.log('[publicarStory] Job completo:', JSON.stringify(result)))
+    .catch(err => console.warn('[publicarStory] Job poll falhou (story pode ter sido publicado mesmo assim):', err.message));
 
   return { postId: jobId, mediaUrl: imageUrl };
 }
