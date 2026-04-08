@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-07</lastmod>
+    <lastmod>2026-04-08</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=faturamento-do-aa-global-deve-superar-us-600-bi-ate-2034</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=suplementos-e-fitness-os-produtos-mais-vendidos-no-google-shopping-hoje</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=eletrodomesticos-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=varejo-no-diva-por-que-o-faturamento-recorde-de-2025-nao-trouxe-alivio</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=mei-tem-ate-31-de-maio-para-entregar-declaracao-de-faturamento-anual-veja-passo</loc>
+    <lastmod>2026-04-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=saiba-quais-sao-os-remedios-mais-vendidos-nas-farmacias-em-2026-e-o-preco-deles</loc>
