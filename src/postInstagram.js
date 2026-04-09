@@ -19,7 +19,13 @@ async function pollJob(jobId, maxAttempts = 15, intervalMs = 2000) {
       headers: publerHeaders(),
     });
     const status = data?.status;
-    if (status === 'complete') return data.payload?.[0];
+    if (status === 'complete') {
+      const result = data.payload?.[0];
+      if (!result || !result.id) {
+        throw new Error(`Publer job completo mas payload inválido: ${JSON.stringify(data)}`);
+      }
+      return result;
+    }
     if (status === 'failed') throw new Error(`Publer job failed: ${JSON.stringify(data)}`);
   }
   throw new Error(`Publer job ${jobId} timed out`);
@@ -30,7 +36,7 @@ async function uploadMedia(imageUrl) {
   try {
     res = await axios.post(
       `${BASE_URL}/media/from-url`,
-      { media: [{ url: imageUrl, account_ids: [process.env.PUBLER_INSTAGRAM_ACCOUNT_ID] }] },
+      { url: imageUrl },
       { headers: publerHeaders(), timeout: 30000 },
     );
   } catch (err) {
@@ -101,7 +107,8 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
   }
 
   const jobId = await createPost(accounts, networks);
-  return { postId: jobId, mediaUrl: imageUrl };
+  const postResult = await pollJob(jobId);
+  return { postId: postResult.id, mediaUrl: imageUrl };
 }
 
 async function publicarStory(imagePath, linkUrl, imageUrlParam) {
@@ -128,16 +135,16 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
   const jobId = await createPost(accounts, networks, 'published');
 
-  // Verifica resultado do job para detectar falhas silenciosas
+  let postResult;
   try {
-    const postResult = await pollJob(jobId, 10, 3000);
+    postResult = await pollJob(jobId, 10, 3000);
     console.log('[publicarStory] Job completo:', JSON.stringify(postResult));
   } catch (err) {
     console.error('[publicarStory] Job falhou:', err.message);
     throw err;
   }
 
-  return { postId: jobId, mediaUrl: imageUrl };
+  return { postId: postResult.id, mediaUrl: imageUrl };
 }
 
 module.exports = { postToInstagram, publicarStory };
