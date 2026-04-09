@@ -19,13 +19,7 @@ async function pollJob(jobId, maxAttempts = 15, intervalMs = 2000) {
       headers: publerHeaders(),
     });
     const status = data?.status;
-    if (status === 'complete') {
-      const result = data.payload?.[0];
-      if (!result || !result.id) {
-        throw new Error(`Publer job completo mas payload inválido: ${JSON.stringify(data)}`);
-      }
-      return result;
-    }
+    if (status === 'complete') return data.payload?.[0];
     if (status === 'failed') throw new Error(`Publer job failed: ${JSON.stringify(data)}`);
   }
   throw new Error(`Publer job ${jobId} timed out`);
@@ -47,9 +41,8 @@ async function uploadMedia(imageUrl) {
   // Async response: poll until media is ready
   if (res.data?.job_id) {
     const result = await pollJob(res.data.job_id);
-    const mediaId = result?.id;
-    if (!mediaId) throw new Error(`Publer media job sem ID: ${JSON.stringify(result)}`);
-    return mediaId;
+    if (!result?.id) throw new Error(`Publer media job sem ID: ${JSON.stringify(result)}`);
+    return result.id;
   }
 
   throw new Error(`Publer media upload resposta inesperada: ${JSON.stringify(res.data)}`);
@@ -107,8 +100,15 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
   }
 
   const jobId = await createPost(accounts, networks);
-  const postResult = await pollJob(jobId);
-  return { postId: postResult.id, mediaUrl: imageUrl };
+  // Poll apenas para detectar falha silenciosa; state='scheduled' pode não retornar id no payload
+  try {
+    const postResult = await pollJob(jobId);
+    console.log('[postInstagram] Job completo:', JSON.stringify(postResult));
+    return { postId: postResult?.id || jobId, mediaUrl: imageUrl };
+  } catch (err) {
+    console.error('[postInstagram] Job falhou:', err.message);
+    throw err;
+  }
 }
 
 async function publicarStory(imagePath, linkUrl, imageUrlParam) {
@@ -144,7 +144,7 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
     throw err;
   }
 
-  return { postId: postResult.id, mediaUrl: imageUrl };
+  return { postId: postResult?.id || jobId, mediaUrl: imageUrl };
 }
 
 module.exports = { postToInstagram, publicarStory };

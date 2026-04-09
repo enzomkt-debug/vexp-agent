@@ -187,12 +187,12 @@ function assert(condition, msg) {
     assert(threw, 'Deveria ter lançado erro');
   });
 
-  await runTest('pollJob: lança erro se payload sem .id', async () => {
+  await runTest('uploadMedia: lança erro se job de mídia sem .id', async () => {
     scenario = 'job_invalid_payload';
     let threw = false;
     try { await postToInstagram({ imageUrl: 'https://example.com/img.png', caption: 'x' }); }
-    catch (e) { threw = true; assert(e.message.includes('payload inválido'), `Erro inesperado: ${e.message}`); }
-    assert(threw, 'Deveria ter lançado erro por payload inválido');
+    catch (e) { threw = true; assert(e.message.includes('media job sem ID'), `Erro inesperado: ${e.message}`); }
+    assert(threw, 'Deveria ter lançado erro');
   });
 
   await runTest('createPost: lança erro HTTP 500 com mensagem clara', async () => {
