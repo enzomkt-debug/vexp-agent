@@ -30,7 +30,7 @@ async function uploadMedia(imageUrl) {
   try {
     res = await axios.post(
       `${BASE_URL}/media/from-url`,
-      { url: imageUrl },
+      { url: imageUrl, account_ids: [process.env.PUBLER_INSTAGRAM_ACCOUNT_ID] },
       { headers: publerHeaders(), timeout: 30000 },
     );
   } catch (err) {
