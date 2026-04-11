@@ -83,7 +83,15 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
     return { postId: 'test-mode', mediaUrl: imageUrl };
   }
 
-  const mediaId = await uploadMedia(imageUrl);
+  let mediaId;
+  try {
+    process.stdout.write('[postInstagram] Iniciando uploadMedia...\n');
+    mediaId = await uploadMedia(imageUrl);
+    process.stdout.write(`[postInstagram] uploadMedia ok. mediaId=${mediaId}\n`);
+  } catch (err) {
+    process.stderr.write(`[postInstagram] Erro em uploadMedia: ${err.message}\n`);
+    throw err;
+  }
 
   const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
   const media = [{ id: mediaId, type: 'image' }];
@@ -100,7 +108,15 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
     networks.linkedin = { type: 'photo', text: contentWithLink, media };
   }
 
-  const jobId = await createPost(accounts, networks);
+  let jobId;
+  try {
+    process.stdout.write('[postInstagram] Iniciando createPost...\n');
+    jobId = await createPost(accounts, networks);
+    process.stdout.write(`[postInstagram] createPost ok. jobId=${jobId}\n`);
+  } catch (err) {
+    process.stderr.write(`[postInstagram] Erro em createPost: ${err.message}\n`);
+    throw err;
+  }
   // Poll apenas para detectar falha silenciosa; state='scheduled' pode não retornar id no payload
   try {
     const postResult = await pollJob(jobId);

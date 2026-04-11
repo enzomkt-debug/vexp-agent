@@ -643,6 +643,7 @@ async function runManualPost(tema, url = null) {
 
   const artigoId = registro?.id;
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  process.stdout.write(`[runManualPost] Iniciando feed post. feedGithubUrl=${feedGithubUrl}\n`);
   try {
     const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runManualPost] Feed publicado! ID: ${postResult.postId}`);
@@ -650,6 +651,7 @@ async function runManualPost(tema, url = null) {
     console.error('[runManualPost] Erro ao publicar feed:', err.message);
   }
 
+  process.stdout.write(`[runManualPost] Iniciando story post. storyGithubUrl=${storyGithubUrl}\n`);
   try {
     const storyPost = await publicarStory(null, linkUrl, storyGithubUrl);
     if (!TEST_MODE) console.log(`[runManualPost] Story publicado! ID: ${storyPost.postId}`);
