@@ -2,19 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-10</lastmod>
+    <lastmod>2026-04-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-10</lastmod>
+    <lastmod>2026-04-11</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://vendaexponencial.com.br/artigo.html?slug=varejo-alimentar-registra-queda-nas-vendas-e-no-faturamento-no-1-trimestre</loc>
-    <lastmod>2026-04-09</lastmod>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=padarias-registram-aumento-de-faturamento-e-atraem-mais-clientes-com-precos-aces</loc>
+    <lastmod>2026-04-10</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=loja-virtual-epic-games-garante-acesso-gratuito-a-12-titulos-de-grande-orcamento</loc>
+    <lastmod>2026-04-10</lastmod>
     <changefreq>never</changefreq>
     <priority>0.8</priority>
   </url>
