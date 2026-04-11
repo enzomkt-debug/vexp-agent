@@ -126,7 +126,15 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
   console.log('[publicarStory] Aguardando 65s (gap mínimo do Instagram)...');
   await new Promise(r => setTimeout(r, 65000));
 
-  const mediaId = await uploadMedia(imageUrl);
+  let mediaId;
+  try {
+    process.stdout.write('[publicarStory] Iniciando uploadMedia...\n');
+    mediaId = await uploadMedia(imageUrl);
+    process.stdout.write(`[publicarStory] uploadMedia ok. mediaId=${mediaId}\n`);
+  } catch (err) {
+    process.stderr.write(`[publicarStory] Erro em uploadMedia: ${err.message}\n`);
+    throw err;
+  }
 
   const networks = {
     instagram: {
@@ -138,7 +146,16 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
   };
 
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
-  const jobId = await createPost(accounts, networks, 'published');
+
+  let jobId;
+  try {
+    process.stdout.write('[publicarStory] Iniciando createPost...\n');
+    jobId = await createPost(accounts, networks, 'published');
+    process.stdout.write(`[publicarStory] createPost ok. jobId=${jobId}\n`);
+  } catch (err) {
+    process.stderr.write(`[publicarStory] Erro em createPost: ${err.message}\n`);
+    throw err;
+  }
 
   let postResult;
   try {
