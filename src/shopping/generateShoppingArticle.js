@@ -52,7 +52,7 @@ ${productLines.length ? productLines.map(l => `• ${l}`).join('\n') : '• (sem
 IMPORTANTE: Se os dados de produtos estiverem ausentes, foque no comportamento geral do consumidor na categoria com base no que é conhecido sobre o mercado brasileiro.`;
 
   const message = await client.messages.create({
-    model:      'claude-sonnet-4-6',
+    model:      'claude-haiku-4-5-20251001',
     max_tokens: 1500,
     messages:   [{ role: 'user', content: prompt }],
   });

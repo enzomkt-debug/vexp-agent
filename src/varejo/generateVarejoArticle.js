@@ -98,7 +98,7 @@ Interesse médio da categoria: ${mainTerm.avgInterest}/100 | Pico: ${mainTerm.pe
 IMPORTANTE: Se os dados de termos específicos estiverem ausentes, não invente hipóteses vagas. Nesse caso, foque no que os números globais da categoria revelam sobre o comportamento atual do consumidor.`;
 
   const message = await client.messages.create({
-    model:      'claude-sonnet-4-6',
+    model:      'claude-haiku-4-5-20251001',
     max_tokens: 1800,
     messages:   [{ role: 'user', content: prompt }],
   });
@@ -124,7 +124,7 @@ Tom: direto, menciona um produto ou modelo específico, surpreende o leitor com 
 Retorne SOMENTE a legenda + hashtags. Use exatamente 3 hashtags: #vendaexponencial + 2 dinâmicas relevantes ao conteúdo (categoria, produto ou marca específica citada).`;
 
   const message = await client.messages.create({
-    model:      'claude-sonnet-4-6',
+    model:      'claude-haiku-4-5-20251001',
     max_tokens: 200,
     messages:   [{ role: 'user', content: prompt }],
   });
