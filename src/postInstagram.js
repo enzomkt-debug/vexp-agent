@@ -122,6 +122,10 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
     return { postId: 'test-mode-story', mediaUrl: imageUrl };
   }
 
+  // Instagram exige gap mínimo de 1 minuto entre posts consecutivos
+  console.log('[publicarStory] Aguardando 65s (gap mínimo do Instagram)...');
+  await new Promise(r => setTimeout(r, 65000));
+
   const mediaId = await uploadMedia(imageUrl);
 
   const networks = {
@@ -143,6 +147,12 @@ async function publicarStory(imagePath, linkUrl, imageUrlParam) {
   } catch (err) {
     console.error('[publicarStory] Job falhou:', err.message);
     throw err;
+  }
+
+  // Publer pode retornar job "complete" mas com payload de erro do Instagram
+  if (postResult?.type === 'error' || postResult?.status === 'failed') {
+    const msg = postResult?.failure?.message || JSON.stringify(postResult);
+    throw new Error(`Story rejeitado pelo Instagram: ${msg}`);
   }
 
   return { postId: postResult?.id || jobId, mediaUrl: imageUrl };
