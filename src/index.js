@@ -398,7 +398,12 @@ const SHOPPING_SCHEDULE = '0 20 * * *';
 cron.schedule(SHOPPING_SCHEDULE, () => runShoppingPost().catch(err => console.error(`[cron] Erro em runShoppingPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 
-console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT)...`);
+// Post diário de trends: 22:00 UTC = 19:00 BRT
+const TREND_SCHEDULE = '0 22 * * *';
+cron.schedule(TREND_SCHEDULE, () => runTrendPost().catch(err => console.error(`[cron] Erro em runTrendPost:`, err.message)), { timezone: 'UTC' });
+console.log(`[cron] Agendado (trend): ${TREND_SCHEDULE} UTC`);
+
+console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT + shopping 17h BRT + trend 19h BRT)...`);
 
 if (process.env.RUN_ON_START === 'true') {
   runPost().catch(err => console.error('[on-start] Erro em runPost:', err.message));
@@ -410,7 +415,13 @@ if (process.env.RUN_VAREJO_ON_START === 'true') {
 }
 
 if (process.env.RUN_SHOPPING_ON_START === 'true') {
+  console.log('[on-start] RUN_SHOPPING_ON_START ativo — disparando runShoppingPost...');
   runShoppingPost().catch(err => console.error('[on-start] Erro em runShoppingPost:', err.message));
+}
+
+if (process.env.RUN_TREND_ON_START === 'true') {
+  console.log('[on-start] RUN_TREND_ON_START ativo — disparando runTrendPost...');
+  runTrendPost().catch(err => console.error('[on-start] Erro em runTrendPost:', err.message));
 }
 
 async function runTrendPost() {
@@ -437,11 +448,14 @@ async function runTrendPost() {
   // 2. Gerar legenda
   let caption;
   try {
+    const _now = new Date();
+    const _mesAno = _now.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }); // ex: "abril de 2026"
+    const _mesAbrev = `${_now.toLocaleDateString('pt-BR', { month: 'long' })}/${_now.getFullYear()}`; // ex: "abril/2026"
     caption = await generateCaption({
       ...news,
-      title: `Tendência: ${trendResult.trendTerm} (interesse ${trendResult.trendScore}/100 em abril/2025)`,
+      title: `Tendência: ${trendResult.trendTerm} (interesse ${trendResult.trendScore}/100 em ${_mesAbrev})`,
     });
-    if (caption.trim() === 'IRRELEVANTE') caption = `📈 ${trendResult.trendTerm} foi um dos termos mais buscados no ecommerce em abril de 2025.\n\n#vendaexponencial #ecommerce #tendencias`;
+    if (caption.trim() === 'IRRELEVANTE') caption = `📈 ${trendResult.trendTerm} foi um dos termos mais buscados no ecommerce em ${_mesAno}.\n\n#vendaexponencial #ecommerce #tendencias`;
   } catch (err) {
     console.error('[runTrendPost] Erro ao gerar caption:', err.message);
     caption = `📈 ${trendResult.trendTerm}\n\n#vendaexponencial #ecommerce`;
