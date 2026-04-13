@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-12</lastmod>
+    <lastmod>2026-04-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-12</lastmod>
+    <lastmod>2026-04-13</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=polo-industrial-da-zona-franca-de-manaus-bate-recorde-com-faturamento-de-r-22767</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=moveis-os-produtos-mais-vendidos-no-google-shopping-hoje</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=ferramentas-e-construcao-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=google-tem-61-cursos-online-para-aprender-ia-ciberseguranca-e-marketing-como-ace</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=de-mato-de-comer-a-alta-gastronomia-agronomo-aposta-em-plantas-comestiveis-e-dup</loc>
+    <lastmod>2026-04-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=industria-registra-alta-de-49-no-faturamento-em-fevereiro</loc>
