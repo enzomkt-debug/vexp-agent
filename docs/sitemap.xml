@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-16</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=mercado-livre</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=faturamento-da-industria-cresce-em-fevereiro-mas-setor-ainda-enfrenta-retracao</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=brinquedos-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=primeiro-dia-da-expoapras26-comeca-com-destaques-paranaenses-inteligencia-artifi</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=tradicional-rede-de-supermercados-caromar-entra-em-colapso-e-anuncia-mais-de-100</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=kering-segue-pressionada-pela-gucci-no-primeiro-tri-com-queda-de-6-no-faturament</loc>
