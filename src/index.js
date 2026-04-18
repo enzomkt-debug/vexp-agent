@@ -526,9 +526,7 @@ async function runTrendPost() {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl });
     if (!TEST_MODE) console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
-    console.error('[runTrendPost] Erro ao publicar feed:', err.message);
-    try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
-    return;
+    console.error('[runTrendPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
   // 7. Publicar story
