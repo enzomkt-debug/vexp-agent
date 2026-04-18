@@ -65,7 +65,8 @@ const { generateCaption } = require('./generateCaption');
 const { generateArticle } = require('./generateArticle');
 const { generateImage, gerarStory } = require('./generateImage');
 const { postToInstagram, publicarStory } = require('./postInstagram');
-const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado } = require('./supabaseClient');
+const { salvarNoticia, marcarPostado, atualizarImagemGithub, jaFoiPostado, buscarTitulosRecentes } = require('./supabaseClient');
+const { isAssuntoDuplicado } = require('./dedupAssunto');
 const { subirImagemGithub } = require('./utils');
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { execFile } = require('child_process');
@@ -94,10 +95,20 @@ async function runPost() {
       return;
     }
 
+    const titulosRecentes = TEST_MODE ? [] : await buscarTitulosRecentes(30, 50);
+
     for (const item of items) {
       if (!TEST_MODE && item.link && await jaFoiPostado(item.link)) {
         console.log(`[runPost] Já postada hoje: "${item.title}"`);
         continue;
+      }
+
+      if (!TEST_MODE && titulosRecentes.length) {
+        const dup = await isAssuntoDuplicado(item.title, titulosRecentes);
+        if (dup.duplicado) {
+          console.log(`[runPost] Assunto já coberto (${dup.motivo}): "${item.title}"`);
+          continue;
+        }
       }
 
       const candidate = await generateCaption(item);
@@ -108,6 +119,7 @@ async function runPost() {
 
       news = item;
       caption = candidate;
+      titulosRecentes.unshift(item.title);
       break;
     }
 

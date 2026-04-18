@@ -92,4 +92,20 @@ async function jaFoiPostado(url_original) {
   return data && data.length > 0;
 }
 
-module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, atualizarImagemGithub, buscarUltimasNoticias, jaFoiPostado };
+async function buscarTitulosRecentes(dias = 30, limit = 50) {
+  const desde = new Date(Date.now() - dias * 24 * 60 * 60 * 1000).toISOString();
+  const { data, error } = await supabase
+    .from('noticias')
+    .select('titulo, publicado_em')
+    .gte('publicado_em', desde)
+    .order('publicado_em', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('[Supabase] Erro ao buscar títulos recentes:', error.message);
+    return [];
+  }
+  return (data || []).map((r) => r.titulo).filter(Boolean);
+}
+
+module.exports = { supabase, gerarSlug, salvarNoticia, marcarPostado, atualizarImagemGithub, buscarUltimasNoticias, jaFoiPostado, buscarTitulosRecentes };
