@@ -2,15 +2,33 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-19</lastmod>
+    <lastmod>2026-04-20</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-19</lastmod>
+    <lastmod>2026-04-20</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=patties-petz-ou-pets-hamburgueria-paulista-brinca-com-nomes-em-acao-com-rede-pet</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=varejo-em-transformacao-sebrae-lanca-programa-para-fortalecer-vendas-online-no-m</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=whatsapp-lidera-vendas-online-entre-pequenos-negocios-aponta-sebrae</loc>
+    <lastmod>2026-04-19</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=dia-das-maes-r-4-bi-de-faturamento</loc>
