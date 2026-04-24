@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-23</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-23</lastmod>
+    <lastmod>2026-04-24</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=loja-virtual-garante-acesso-permanente-a-doze-grandes-producoes-sem-custo-para-c</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=hospedagem-lidera-faturamento-recorde-do-turismo-no-carnaval</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=bolsas-e-acessorios-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=da-tv-para-o-celular-tele-sena-amplia-vendas-online-e-aposta-em-mobile</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=mercado-pet-brasileiro-deve-bater-recorde-de-faturamento-em-2026</loc>
+    <lastmod>2026-04-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=adeus-e-commerce-sequoia-seql3-joga-a-toalha-no-varejo-digital-e-vende-operacao</loc>
