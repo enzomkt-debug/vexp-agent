@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-04-24</lastmod>
+    <lastmod>2026-04-25</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=anthropic-marketplace-de-ia-revela-que-claude-mais-inteligente-lucra-mais</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=dia-do-marketing-tera-debate-sobre-a-nova-era-da-publicidade-em-sao-jose-dos-cam</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=roupas-infantis-os-produtos-mais-buscados-nos-ultimos-90-dias</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=5-ferramentas-de-ia-para-marketing-digital-que-podem-acelerar-seu-growth</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigo.html?slug=crise-de-liquidez-nos-correios-leva-bancos-a-bloquear-faturamento-e-forca-renego</loc>
+    <lastmod>2026-04-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html?slug=loja-virtual-garante-acesso-permanente-a-doze-grandes-producoes-sem-custo-para-c</loc>
