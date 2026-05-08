@@ -220,12 +220,12 @@ async function generateImage(news, artigo) {
   ctx.fillStyle = SUBTITLE_COLOR;
   ctx.fillText(sourceLabel, 80, lastY + 92);
 
-  // Summary snippet
-  if (news.summary) {
-    const snippet = news.summary.replace(/(<([^>]+)>)/gi, '').slice(0, 180);
+  // Summary snippet — usa o artigo editorial (mais rico que news.summary)
+  const resumo = extrairPrimeiroParagrafo(artigo) || (news.summary ? news.summary.replace(/(<([^>]+)>)/gi, '').slice(0, 200) : null);
+  if (resumo) {
     ctx.fillStyle = SUBTITLE_COLOR;
-    ctx.font = '30px DejaVu Sans';
-    wrapText(ctx, snippet + '...', 60, lastY + 180, WIDTH - 120, 42);
+    ctx.font = '26px DejaVu Sans';
+    wrapText(ctx, resumo, 60, lastY + 140, WIDTH - 120, 36, 3);
   }
 
   const filename = `post_${Date.now()}.png`;
@@ -296,14 +296,21 @@ async function gerarStory(news, artigo) {
   }
   if (line.trim()) lines.push(line.trim());
 
-  // Limitar a 4 linhas sem "..."
+  // Preparar resumo para calcular altura total do bloco
+  const storyResumo = extrairPrimeiroParagrafo(artigo) || (news.summary ? news.summary.replace(/(<([^>]+)>)/gi, '').slice(0, 200) : null);
+
+  // Calcular altura total do conteúdo (título + source + resumo) para centralizar
   const displayed = lines.slice(0, maxLines);
   const totalTitleH = displayed.length * lineH;
-  const contentMidY = (SAFE_TOP + SAFE_BOTTOM) / 2;
-  const titleStartY = contentMidY - totalTitleH / 2;
+  const sourceBlockH = 90; // source chip height + spacing
+  const resumoBlockH = storyResumo ? 160 : 0; // ~3 linhas de 28px + espaçamento
+  const totalContentH = totalTitleH + sourceBlockH + resumoBlockH;
+
+  const contentMidY = (SAFE_TOP + 170 + SAFE_BOTTOM - 130) / 2; // entre header e CTA
+  const titleStartY = contentMidY - totalContentH / 2;
   displayed.forEach((l, i) => ctx.fillText(l, CX, titleStartY + i * lineH));
 
-  const afterTitle = titleStartY + totalTitleH + 40;
+  const afterTitle = titleStartY + totalTitleH + 30;
 
   // Divider below title
   ctx.fillStyle = 'rgba(255,255,255,0.15)';
@@ -320,6 +327,14 @@ async function gerarStory(news, artigo) {
   ctx.fill();
   ctx.fillStyle = SUBTITLE_COLOR;
   ctx.fillText(sourceLabel, CX, afterTitle + 57);
+
+  // Resumo editorial abaixo do source chip
+  if (storyResumo) {
+    ctx.fillStyle = SUBTITLE_COLOR;
+    ctx.font = '28px DejaVu Sans';
+    ctx.textAlign = 'center';
+    wrapText(ctx, storyResumo, CX, afterTitle + 110, maxW, 40, 3);
+  }
 
   // CTA — just inside safe zone (bottom)
   const ctaY = SAFE_BOTTOM - 110;
