@@ -202,13 +202,12 @@ async function generateImage(news, artigo) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(60, 180, WIDTH - 120, 2);
 
-  // Texto principal: primeira frase do artigo ou título como fallback
-  const primeiraSentenca = extrairPrimeiraSentenca(artigo);
-  const textoImagem = primeiraSentenca || (news.title.length > 120 ? news.title.slice(0, 117) + '...' : news.title);
+  // Texto principal: título da notícia (manchete real, mais chamativa)
+  const textoImagem = news.title;
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 52px DejaVu Sans';
+  ctx.font = 'bold 46px DejaVu Sans';
   ctx.textAlign = 'left';
-  const lastY = wrapText(ctx, textoImagem, 60, 280, WIDTH - 120, 68, 3);
+  const lastY = wrapText(ctx, textoImagem, 60, 270, WIDTH - 120, 62, 4);
 
   // Source chip — dynamic width
   const sourceLabel = `📰  ${news.source}`;
@@ -274,16 +273,16 @@ async function gerarStory(news, artigo) {
   ctx.fillStyle = 'rgba(255,255,255,0.2)';
   ctx.fillRect(80, SAFE_TOP + 170, STORY_WIDTH - 160, 2);
 
-  // Texto principal: primeira frase do artigo ou título como fallback
-  const primeiraSentencaStory = extrairPrimeiraSentenca(artigo);
-  const title = primeiraSentencaStory || (news.title.length > 130 ? news.title.slice(0, 127) + '...' : news.title);
+  // Texto principal: título da notícia (manchete real, mais chamativa)
+  const title = news.title;
   ctx.fillStyle = TEXT_COLOR;
-  ctx.font = 'bold 62px DejaVu Sans';
+  ctx.font = 'bold 54px DejaVu Sans';
   ctx.textAlign = 'center';
 
-  const words = title.split(' ');
   const maxW = STORY_WIDTH - 120;
-  const lineH = 86;
+  const lineH = 74;
+  const maxLines = 4;
+  const words = title.split(' ');
   const lines = [];
   let line = '';
   for (const word of words) {
@@ -297,10 +296,12 @@ async function gerarStory(news, artigo) {
   }
   if (line.trim()) lines.push(line.trim());
 
-  const totalTitleH = lines.length * lineH;
+  // Limitar a 4 linhas sem "..."
+  const displayed = lines.slice(0, maxLines);
+  const totalTitleH = displayed.length * lineH;
   const contentMidY = (SAFE_TOP + SAFE_BOTTOM) / 2;
   const titleStartY = contentMidY - totalTitleH / 2;
-  lines.forEach((l, i) => ctx.fillText(l, CX, titleStartY + i * lineH));
+  displayed.forEach((l, i) => ctx.fillText(l, CX, titleStartY + i * lineH));
 
   const afterTitle = titleStartY + totalTitleH + 40;
 
