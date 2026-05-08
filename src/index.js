@@ -167,6 +167,12 @@ async function runPost() {
     console.log(`[runPost] GitHub: feed=${feedGithubUrl}`);
   } catch (err) {
     console.error('[runPost] Erro ao subir imagens para GitHub:', err.message);
+    return;
+  }
+
+  if (!feedGithubUrl || !storyGithubUrl) {
+    console.error('[runPost] URL da imagem não obtida — abortando...');
+    return;
   }
 
   // 5. Salvar no Supabase com imagem_github já definida
