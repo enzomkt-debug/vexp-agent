@@ -19,7 +19,7 @@ function gerarSlug(titulo) {
     .replace(/-$/, '');                // remove hífen final
 }
 
-async function salvarNoticia({ titulo, fonte, url_original, imagem_url, imagem_github, legenda_instagram, artigo_completo }) {
+async function salvarNoticia({ titulo, fonte, url_original, imagem_url, imagem_github, legenda_instagram, legenda_linkedin, artigo_completo }) {
   const slug = gerarSlug(titulo);
 
   const { data, error } = await supabase.from('noticias').insert([{
@@ -30,6 +30,7 @@ async function salvarNoticia({ titulo, fonte, url_original, imagem_url, imagem_g
     imagem_url:         imagem_url || null,
     imagem_github:      imagem_github || null,
     legenda_instagram:  legenda_instagram || null,
+    legenda_linkedin:   legenda_linkedin || null,
     artigo_completo:    artigo_completo || null,
     publicado_em:       new Date().toISOString(),
     postado_instagram:  false,

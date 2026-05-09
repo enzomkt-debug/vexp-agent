@@ -71,6 +71,7 @@ const { subirImagemGithub } = require('./utils');
 const { runTrendIntelligence } = require('./trendIntelligence');
 const { execFile } = require('child_process');
 const path = require('path');
+const { generateLinkedinCaption } = require('./generateLinkedinCaption');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
 const { runShopping } = require('./shopping/index');
@@ -144,12 +145,18 @@ async function runPost() {
     artigo = null;
   }
 
-  // 3. Gerar imagem feed + story em paralelo
-  let imageResult, storyResult;
+  // 3. Gerar imagem feed + story + legenda LinkedIn em paralelo
+  let imageResult, storyResult, legendaLinkedin;
   try {
-    [imageResult, storyResult] = await Promise.all([
+    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
       generateImage(news, artigo),
       gerarStory(news, artigo),
+      generateLinkedinCaption({
+        titulo: news.title,
+        fonte: news.source,
+        url_fonte: news.link,
+        artigo_completo: artigo,
+      }),
     ]);
     console.log(`[runPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -186,6 +193,7 @@ async function runPost() {
         imagem_url:        null,
         imagem_github:     feedGithubUrl || null,
         legenda_instagram: caption,
+        legenda_linkedin:  legendaLinkedin,
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
@@ -236,12 +244,18 @@ async function runVarejoPost() {
   const { news, caption, artigo, categoria } = varejoResult;
   console.log(`[runVarejoPost] Categoria: "${categoria.label}"`);
 
-  // 2. Gerar imagens com template exclusivo de varejo
-  let imageResult, storyResult;
+  // 2. Gerar imagens com template exclusivo de varejo + legenda LinkedIn em paralelo
+  let imageResult, storyResult, legendaLinkedin;
   try {
-    [imageResult, storyResult] = await Promise.all([
+    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
       generateVarejoFeedImage(varejoResult.trendData, varejoResult.news.title),
       generateVarejoStoryImage(varejoResult.trendData, varejoResult.news.title),
+      generateLinkedinCaption({
+        titulo: news.title,
+        fonte: news.source,
+        url_fonte: news.link,
+        artigo_completo: artigo,
+      }),
     ]);
     console.log(`[runVarejoPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -278,6 +292,7 @@ async function runVarejoPost() {
         imagem_url:        null,
         imagem_github:     feedGithubUrlV || null,
         legenda_instagram: caption,
+        legenda_linkedin:  legendaLinkedin,
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
@@ -327,12 +342,18 @@ async function runShoppingPost() {
   const { news, caption, artigo, categoria } = shoppingResult;
   console.log(`[runShoppingPost] Categoria: "${categoria.label}"`);
 
-  // 2. Gerar imagens com template exclusivo de shopping
-  let imageResult, storyResult;
+  // 2. Gerar imagens com template exclusivo de shopping + legenda LinkedIn em paralelo
+  let imageResult, storyResult, legendaLinkedin;
   try {
-    [imageResult, storyResult] = await Promise.all([
+    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
       generateShoppingFeedImage(shoppingResult.shoppingData, shoppingResult.news.title),
       generateShoppingStoryImage(shoppingResult.shoppingData, shoppingResult.news.title),
+      generateLinkedinCaption({
+        titulo: news.title,
+        fonte: news.source,
+        url_fonte: news.link,
+        artigo_completo: artigo,
+      }),
     ]);
     console.log(`[runShoppingPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -357,6 +378,7 @@ async function runShoppingPost() {
         imagem_url:        null,
         imagem_github:     feedGithubUrlS || null,
         legenda_instagram: caption,
+        legenda_linkedin:  legendaLinkedin,
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
@@ -479,12 +501,18 @@ async function runTrendPost() {
     caption = `📈 ${trendResult.trendTerm}\n\n#vendaexponencial #ecommerce`;
   }
 
-  // 3. Gerar imagens feed + story
-  let imageResult, storyResult;
+  // 3. Gerar imagens feed + story + legenda LinkedIn em paralelo
+  let imageResult, storyResult, legendaLinkedin;
   try {
-    [imageResult, storyResult] = await Promise.all([
+    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
       generateImage(news, artigo),
       gerarStory(news, artigo),
+      generateLinkedinCaption({
+        titulo: news.title,
+        fonte: news.source,
+        url_fonte: news.link,
+        artigo_completo: artigo,
+      }),
     ]);
     console.log(`[runTrendPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -515,6 +543,7 @@ async function runTrendPost() {
         imagem_url:        null,
         imagem_github:     feedGithubUrlT || null,
         legenda_instagram: caption,
+        legenda_linkedin:  legendaLinkedin,
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
@@ -605,11 +634,17 @@ async function runManualPost(tema, url = null) {
     artigo = null;
   }
 
-  let imageResult, storyResult;
+  let imageResult, storyResult, legendaLinkedin;
   try {
-    [imageResult, storyResult] = await Promise.all([
+    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
       generateImage(news, artigo),
       gerarStory(news, artigo),
+      generateLinkedinCaption({
+        titulo: news.title,
+        fonte: news.source,
+        url_fonte: news.link,
+        artigo_completo: artigo,
+      }),
     ]);
     console.log(`[runManualPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
   } catch (err) {
@@ -638,6 +673,7 @@ async function runManualPost(tema, url = null) {
         imagem_url:        null,
         imagem_github:     feedGithubUrl || null,
         legenda_instagram: caption,
+        legenda_linkedin:  legendaLinkedin,
         artigo_completo:   artigo,
       });
       if (registro?.id) await marcarPostado(registro.id);
