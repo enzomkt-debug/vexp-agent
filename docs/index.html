@@ -462,7 +462,7 @@
   }
 
   function artigoHref(n) {
-    return n.slug ? `artigo.html?slug=${n.slug}` : `artigo.html?id=${n.id}`;
+    return n.slug ? `artigos/${n.slug}.html` : `artigo.html?id=${n.id}`;
   }
 
   function cardHTML(n) {

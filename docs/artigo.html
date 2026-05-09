@@ -280,6 +280,12 @@
     const id     = params.get('id');
     const content = document.getElementById('content');
 
+    // Redirect to static page if slug is available
+    if (slug) {
+      window.location.replace(`/artigos/${slug}.html`);
+      return;
+    }
+
     if (!slug && !id) {
       content.innerHTML = `<div class="state"><p style="font-size:2rem">⚠️</p><p style="margin-top:12px">Artigo não encontrado.</p><a href="index.html" style="color:#FFD700;display:block;margin-top:16px">← Voltar</a></div>`;
       return;

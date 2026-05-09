@@ -38,7 +38,7 @@ async function generateSitemap() {
     ...(data || []).map(n => {
       const lastmod = n.publicado_em ? n.publicado_em.split('T')[0] : today;
       return `  <url>
-    <loc>${BASE_URL}/artigo/${n.slug}</loc>
+    <loc>${BASE_URL}/artigos/${n.slug}.html</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

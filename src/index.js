@@ -76,6 +76,8 @@ const { runVarejo }                                    = require('./varejo/index
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
 const { runShopping } = require('./shopping/index');
 const { generateShoppingFeedImage, generateShoppingStoryImage } = require('./shopping/generateShoppingImage');
+const { publishStaticPage } = require('./generateStaticPage');
+const { gerarSlug } = require('./supabaseClient');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
@@ -203,9 +205,23 @@ async function runPost() {
     }
   }
 
-  // 6. Publicar post no feed (imagem já no GitHub, sem re-upload)
-  const artigoId = registro?.id;
-  const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  // 6. Publicar página estática do artigo
+  const slugPost = registro?.slug || gerarSlug(news.title);
+  const linkUrl = `${PORTAL_BASE}/artigos/${slugPost}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title,
+        slug: slugPost,
+        fonte: news.source,
+        artigo_completo: artigo,
+        imagem_github: feedGithubUrl,
+        publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runPost] Erro ao publicar página estática:', err.message); }
+  }
+
+  // 7. Publicar post no feed (imagem já no GitHub, sem re-upload)
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl, linkedinCaption: legendaLinkedin });
@@ -214,7 +230,7 @@ async function runPost() {
     console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 7. Publicar story com link para o artigo
+  // 8. Publicar story com link para o artigo
   try {
     const storyPost = await publicarStory(null, linkUrl, storyGithubUrl);
     if (!TEST_MODE) console.log(`[runPost] Story publicado! ID: ${storyPost.postId}`);
@@ -302,9 +318,20 @@ async function runVarejoPost() {
     }
   }
 
-  // 5. Publicar feed (imagem já no GitHub, sem re-upload)
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  // 5. Publicar página estática
+  const slugVarejo = registro?.slug || gerarSlug(news.title);
+  const linkUrl  = `${PORTAL_BASE}/artigos/${slugVarejo}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title, slug: slugVarejo, fonte: news.source,
+        artigo_completo: artigo, imagem_github: feedGithubUrlV,
+        publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runVarejoPost] Erro ao publicar página estática:', err.message); }
+  }
+
+  // 6. Publicar feed (imagem já no GitHub, sem re-upload)
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlV, caption, linkUrl, linkedinCaption: legendaLinkedin });
@@ -313,7 +340,7 @@ async function runVarejoPost() {
     console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 6. Publicar story
+  // 7. Publicar story
   try {
     const storyPost = await publicarStory(null, linkUrl, storyGithubUrlV);
     if (!TEST_MODE) console.log(`[runVarejoPost] Story publicado! ID: ${storyPost.postId}`);
@@ -388,9 +415,20 @@ async function runShoppingPost() {
     }
   }
 
-  // 5. Publicar feed (imagem já no GitHub, sem re-upload)
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  // 5. Publicar página estática
+  const slugShopping = registro?.slug || gerarSlug(news.title);
+  const linkUrl  = `${PORTAL_BASE}/artigos/${slugShopping}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title, slug: slugShopping, fonte: news.source,
+        artigo_completo: artigo, imagem_github: feedGithubUrlS,
+        publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runShoppingPost] Erro ao publicar página estática:', err.message); }
+  }
+
+  // 6. Publicar feed (imagem já no GitHub, sem re-upload)
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl, linkedinCaption: legendaLinkedin });
@@ -399,7 +437,7 @@ async function runShoppingPost() {
     console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 6. Publicar story
+  // 7. Publicar story
   try {
     const storyPost = await publicarStory(null, linkUrl, storyGithubUrlS);
     if (!TEST_MODE) console.log(`[runShoppingPost] Story publicado! ID: ${storyPost.postId}`);
@@ -553,9 +591,20 @@ async function runTrendPost() {
     }
   }
 
-  // 6. Publicar feed (imagem já no GitHub, sem re-upload)
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  // 6. Publicar página estática
+  const slugTrend = registro?.slug || gerarSlug(news.title);
+  const linkUrl  = `${PORTAL_BASE}/artigos/${slugTrend}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title, slug: slugTrend, fonte: news.source,
+        artigo_completo: artigo, imagem_github: feedGithubUrlT,
+        publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runTrendPost] Erro ao publicar página estática:', err.message); }
+  }
+
+  // 7. Publicar feed (imagem já no GitHub, sem re-upload)
   let postResult;
   try {
     postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl, linkedinCaption: legendaLinkedin });
@@ -564,7 +613,7 @@ async function runTrendPost() {
     console.error('[runTrendPost] Erro ao publicar feed (site não afetado):', err.message);
   }
 
-  // 7. Publicar story
+  // 8. Publicar story
   try {
     const storyPost = await publicarStory(null, linkUrl, storyGithubUrlT);
     if (!TEST_MODE) console.log(`[runTrendPost] Story publicado! ID: ${storyPost.postId}`);
@@ -683,8 +732,19 @@ async function runManualPost(tema, url = null) {
     }
   }
 
-  const artigoId = registro?.id;
-  const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
+  // Publicar página estática
+  const slugManual = registro?.slug || gerarSlug(news.title);
+  const linkUrl  = `${PORTAL_BASE}/artigos/${slugManual}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title, slug: slugManual, fonte: news.source,
+        artigo_completo: artigo, imagem_github: feedGithubUrl,
+        publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runManualPost] Erro ao publicar página estática:', err.message); }
+  }
+
   process.stdout.write(`[runManualPost] Iniciando feed post. feedGithubUrl=${feedGithubUrl}\n`);
   try {
     const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl, linkedinCaption: legendaLinkedin });

@@ -32,7 +32,7 @@ async function generateSitemap() {
   ];
 
   const articlePages = (artigos || []).map(a => ({
-    loc:        a.slug ? `${BASE_URL}/artigo.html?slug=${a.slug}` : `${BASE_URL}/artigo.html?id=${a.id}`,
+    loc:        a.slug ? `${BASE_URL}/artigos/${a.slug}.html` : `${BASE_URL}/artigo.html?id=${a.id}`,
     lastmod:    formatDate(a.publicado_em),
     changefreq: 'never',
     priority:   '0.8',
