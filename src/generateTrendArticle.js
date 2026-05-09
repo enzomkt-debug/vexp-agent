@@ -36,18 +36,24 @@ async function generateTrendArticle(crossRefResult) {
         `Notícia ${i + 1}:\nTítulo: ${n.title}\nFonte: ${n.source}\nResumo: ${n.summary?.slice(0, 300) || '(sem resumo)'}`
       ).join('\n\n');
 
-  const prompt = `Você é um jornalista experiente de negócios conversando com um empreendedor brasileiro. Escreve para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais.
+  const prompt = `Você é um analista de dados de busca escrevendo uma coluna editorial sobre comportamento do consumidor brasileiro. Seu tom é o de um colunista do Valor Econômico ou Brazil Journal: analítico, direto, baseado em dados, sem tom promocional.
 
-Com base nos dados de tendência e notícias abaixo, escreva um artigo em português brasileiro com 650 a 850 palavras.
+Com base nos dados do Google Trends e notícias abaixo, escreva um artigo em português brasileiro com 650 a 850 palavras.
 
 ${STYLE_RULES}
 
 ESTRUTURA (aplique com naturalidade, sem rigidez):
-- Abertura com o dado de tendência mais impactante (use os números: interesse ${trendScore}/100, pico ${peakScore}/100 em abril de 2025 no Brasil)
-- Por que esse tema está crescendo agora (use as notícias como evidência, se disponíveis)
-- O que esse comportamento de busca revela sobre o consumidor e o mercado
-- Oportunidade concreta: o que lojistas, afiliados e empreendedores digitais podem fazer nos próximos 30 dias
-- Encerramento com chamada para seguir @vendaexponencial
+- Abertura com o dado de tendência mais impactante (use os números: interesse ${trendScore}/100, pico ${peakScore}/100 no Brasil)
+- O que explica esse crescimento de buscas agora (use as notícias como evidência, se disponíveis)
+- O que esse comportamento de busca revela sobre o consumidor e o mercado brasileiro
+- Implicações práticas para quem opera no ecommerce e varejo digital
+- Encerramento com uma reflexão analítica, sem chamada para ação nem menção a perfis ou marcas
+
+REGRAS EDITORIAIS:
+- NÃO mencione @vendaexponencial, "siga-nos", "acompanhe" ou qualquer chamada para ação promocional
+- NÃO use tom de conselho motivacional ("aproveite essa oportunidade", "não fique de fora")
+- FOQUE em interpretar os dados: o que os números de busca dizem sobre o mercado, não em vender algo
+- Trate o leitor como um profissional de mercado que quer entender tendências, não como alguém a ser convencido
 
 Use subtítulos em negrito (**Subtítulo**) para separar blocos de texto. Retorne SOMENTE o artigo pronto, sem comentários.
 

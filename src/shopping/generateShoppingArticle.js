@@ -22,13 +22,11 @@ async function generateShoppingArticle(shoppingData) {
     `#${i + 1} ${p.title}${p.price ? ` | ${p.price}` : ''}${p.source ? ` | Loja: ${p.source}` : ''}${p.rating ? ` | Avaliação: ${p.rating}` : ''}${p.reviews ? ` (${p.reviews} avaliações)` : ''}`
   );
 
-  const prompt = `Você é um analista de mercado e jornalista de negócios escrevendo para o blog do @vendaexponencial, que cobre ecommerce e vendas digitais para empreendedores brasileiros.
+  const prompt = `Você é um analista de mercado escrevendo uma coluna editorial sobre comportamento de consumo no Brasil. Seu tom é o de um colunista do Valor Econômico ou Brazil Journal: analítico, baseado em dados concretos, sem tom promocional.
 
 Com base nos dados de produtos mais vendidos no Google Shopping abaixo, escreva um artigo em português brasileiro com 600 a 800 palavras sobre o que está sendo comprado agora na categoria "${categoria.label}".
 
-FOCO PRINCIPAL: O que esses produtos revelam sobre o comportamento do consumidor hoje. Quais produtos lideram, por qual preço, em quais lojas, e o que isso diz sobre as preferências do comprador brasileiro neste momento.
-
-O tom deve ser: analista que leu os dados de vendas e descobriu padrões que a maioria dos lojistas não percebeu.
+FOCO PRINCIPAL: O que esses dados de vendas revelam sobre o comportamento do consumidor brasileiro. Quais produtos lideram, por qual preço, em quais lojas, e o que isso diz sobre tendências de consumo e dinâmica competitiva do mercado.
 
 ${STYLE_RULES}
 
@@ -37,8 +35,13 @@ DIRETRIZES EDITORIAIS:
 - Citar ao menos 3 produtos específicos com preços e lojas
 - Analisar o que a faixa de preço dos líderes revela sobre o mercado
 - Identificar padrões: marcas dominantes, faixas de preço recorrentes, lojas mais frequentes
-- Incluir ação concreta para lojistas ou afiliados
-- Encerrar com chamada para seguir @vendaexponencial
+- Encerrar com uma reflexão analítica sobre o que esses dados sinalizam para o mercado
+
+REGRAS EDITORIAIS:
+- NÃO mencione @vendaexponencial, "siga-nos", "acompanhe" ou qualquer chamada para ação promocional
+- NÃO use tom de conselho motivacional ("aproveite essa oportunidade", "não fique de fora")
+- FOQUE em interpretar os dados: o que os números de vendas dizem sobre o mercado, não em vender algo
+- Trate o leitor como um profissional de mercado que quer entender tendências de consumo
 
 Use subtítulos em negrito (**Subtítulo**) para separar blocos. Retorne SOMENTE o artigo, sem comentários.
 
