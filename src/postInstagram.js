@@ -72,7 +72,7 @@ async function createPost(accounts, networks, state = 'scheduled') {
   return jobId;
 }
 
-async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, linkUrl }) {
+async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, linkUrl, linkedinCaption }) {
   const imageUrl = imageUrlParam || (await subirImagemGithub(imagePath));
 
   if (process.env.TEST_MODE === 'true') {
@@ -94,6 +94,9 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
   }
 
   const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
+  const linkedinText = linkedinCaption
+    ? (linkUrl ? `${linkedinCaption}\n\nFonte original: ${linkUrl}` : linkedinCaption)
+    : contentWithLink;
   const media = [{ id: mediaId, type: 'image' }];
 
   const accounts = [{ id: process.env.PUBLER_INSTAGRAM_ACCOUNT_ID }];
@@ -105,7 +108,7 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
     instagram: { type: 'photo', text: contentWithLink, media },
   };
   if (process.env.PUBLER_LINKEDIN_ACCOUNT_ID) {
-    networks.linkedin = { type: 'photo', text: contentWithLink, media };
+    networks.linkedin = { type: 'photo', text: linkedinText, media };
   }
 
   let jobId;

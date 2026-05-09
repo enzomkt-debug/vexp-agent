@@ -208,7 +208,7 @@ async function runPost() {
   const linkUrl = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
+    postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl, linkedinCaption: legendaLinkedin });
     if (!TEST_MODE) console.log(`[runPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runPost] Erro ao publicar feed (site não afetado):', err.message);
@@ -307,7 +307,7 @@ async function runVarejoPost() {
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imageUrl: feedGithubUrlV, caption, linkUrl });
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlV, caption, linkUrl, linkedinCaption: legendaLinkedin });
     if (!TEST_MODE) console.log(`[runVarejoPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runVarejoPost] Erro ao publicar feed (site não afetado):', err.message);
@@ -393,7 +393,7 @@ async function runShoppingPost() {
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl });
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl, linkedinCaption: legendaLinkedin });
     if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
@@ -558,7 +558,7 @@ async function runTrendPost() {
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   let postResult;
   try {
-    postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl });
+    postResult = await postToInstagram({ imageUrl: feedGithubUrlT, caption, linkUrl, linkedinCaption: legendaLinkedin });
     if (!TEST_MODE) console.log(`[runTrendPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runTrendPost] Erro ao publicar feed (site não afetado):', err.message);
@@ -687,7 +687,7 @@ async function runManualPost(tema, url = null) {
   const linkUrl  = artigoId ? `${PORTAL_BASE}/artigo.html?id=${artigoId}` : null;
   process.stdout.write(`[runManualPost] Iniciando feed post. feedGithubUrl=${feedGithubUrl}\n`);
   try {
-    const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl });
+    const postResult = await postToInstagram({ imageUrl: feedGithubUrl, caption, linkUrl, linkedinCaption: legendaLinkedin });
     if (!TEST_MODE) console.log(`[runManualPost] Feed publicado! ID: ${postResult.postId}`);
   } catch (err) {
     console.error('[runManualPost] Erro ao publicar feed:', err.message);
