@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-11</lastmod>
+    <lastmod>2026-05-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-11</lastmod>
+    <lastmod>2026-05-12</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/galaxy-s25-ultra-256-gb-volta-a-cair-54-com-cupom-no-mercado-livre.html</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/consumer-spending-is-healthy-but-gas-prices-remain-a-risk.html</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-acusa-temu-de-violacao-em-escala-industrial-e-escancara-guerra-do-varejo-c.html</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/compras-impulsivas-e-falsas-promocoes-elevam-riscos-de-golpes-no-tiktok-shop-tec.html</loc>
+    <lastmod>2026-05-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/novo-projeto-da-shopee-no-brasil-vai-criar-300-empregos-e-entregas-mais-rapidas.html</loc>
