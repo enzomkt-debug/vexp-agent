@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-16</lastmod>
+    <lastmod>2026-05-17</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/com-52-mil-m-e-previsto-para-funcionar-24-horas-por-dia-novo-centro-de-distribui.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/department-stores-losing-market-share-to-resale.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/whatsapp-responde-por-62-das-compras-online-de-medicamentos-sem-prescricao.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shopee-e-mercado-livre-sao-os-sites-internacionais-mais-usados-no-brasil.html</loc>
+    <lastmod>2026-05-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/analise-economica-e-de-viabilidade-deve-ser-feita-antes-de-optar-pelo-mercado-li.html</loc>
