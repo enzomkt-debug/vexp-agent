@@ -8,6 +8,14 @@ const PRIORITY_FEEDS = [
   'https://mercadoeconsumo.com.br/feed/',
 ];
 
+// Monta a URL de uma busca do Google News em pt-BR.
+// O operador `when:7d` limita aos últimos 7 dias (notícia fresca);
+// parênteses agrupam os OR para a precedência booleana ficar correta.
+function googleNewsFeed(query) {
+  const q = encodeURIComponent(`${query} when:7d`);
+  return `https://news.google.com/rss/search?q=${q}&hl=pt-BR&gl=BR&ceid=BR:pt`;
+}
+
 const OTHER_FEEDS = [
   // Portais de notícias gerais com cobertura de varejo
   'https://www.abcomm.org.br/feed/',
@@ -19,11 +27,19 @@ const OTHER_FEEDS = [
   'https://techcrunch.com/category/commerce/feed/',
   'https://www.retaildive.com/feeds/news/',
   'https://www.modernretail.co/feed/',
-  // Google News — queries específicas para notícias de impacto
-  'https://news.google.com/rss/search?q="Mercado+Livre"+OR+"Shopee"+OR+"Amazon+Brasil"+OR+"Magazine+Luiza"&hl=pt-BR&gl=BR&ceid=BR:pt',
-  'https://news.google.com/rss/search?q="Shein"+OR+"Temu"+OR+"TikTok+Shop"+OR+"imposto+importação"&hl=pt-BR&gl=BR&ceid=BR:pt',
-  'https://news.google.com/rss/search?q="ecommerce"+faturamento+OR+resultado+OR+crescimento+OR+queda&hl=pt-BR&gl=BR&ceid=BR:pt',
-  'https://news.google.com/rss/search?q="varejo+digital"+OR+"vendas+online"+recorde+OR+crise+OR+alta+OR+bilhão&hl=pt-BR&gl=BR&ceid=BR:pt',
+  // Google News — eixos temáticos (últimos 7 dias, OR agrupados)
+  // Marketplaces e plataformas de ecommerce
+  googleNewsFeed('("Mercado Livre" OR Shopee OR "Amazon Brasil" OR AliExpress OR Nuvemshop OR VTEX OR Shopify)'),
+  // Grandes varejistas e redes
+  googleNewsFeed('("Magazine Luiza" OR Magalu OR Americanas OR "Casas Bahia" OR Renner OR "Mercado Pago")'),
+  // Cross-border / importação
+  googleNewsFeed('(Shein OR Temu OR "TikTok Shop") (Brasil OR importação OR taxação OR "remessa conforme")'),
+  // Resultados e desempenho de mercado
+  googleNewsFeed('ecommerce (faturamento OR resultado OR crescimento OR vendas OR investimento)'),
+  // Logística e pagamentos
+  googleNewsFeed('(ecommerce OR "varejo digital") (logística OR "última milha" OR frete OR fulfillment OR Pix OR checkout)'),
+  // Regulação e tendências
+  googleNewsFeed('(ecommerce OR "varejo digital") (regulação OR tributação OR "inteligência artificial" OR "live commerce" OR "social commerce")'),
 ];
 
 const RELEVANCE_KEYWORDS = [
