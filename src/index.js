@@ -72,6 +72,7 @@ const { runTrendIntelligence } = require('./trendIntelligence');
 const { execFile } = require('child_process');
 const path = require('path');
 const { generateLinkedinCaption } = require('./generateLinkedinCaption');
+const { translateTitle } = require('./translateTitle');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
 const { runShopping } = require('./shopping/index');
@@ -136,6 +137,14 @@ async function runPost() {
   }
 
   console.log(`[runPost] Notícia selecionada: "${news.title}"`);
+
+  // Garantir título em português do Brasil (fontes internacionais publicam em inglês)
+  try {
+    news.title = await translateTitle(news.title);
+    console.log(`[runPost] Título em pt-BR: "${news.title}"`);
+  } catch (err) {
+    console.error('[runPost] Erro ao traduzir título:', err.message);
+  }
 
   // 2. Gerar artigo completo
   let artigo;
@@ -523,6 +532,13 @@ async function runTrendPost() {
   };
   const artigo = trendResult.article;
 
+  // Garantir título em português do Brasil (matchedNews pode vir de fonte internacional)
+  try {
+    news.title = await translateTitle(news.title);
+  } catch (err) {
+    console.error('[runTrendPost] Erro ao traduzir título:', err.message);
+  }
+
   // 2. Gerar legenda
   let caption;
   try {
@@ -664,6 +680,13 @@ async function runManualPost(tema, url = null) {
     link:    url || '',
     pubDate: new Date().toISOString(),
   };
+
+  // Garantir título em português do Brasil (título extraído de URL pode estar em inglês)
+  try {
+    news.title = await translateTitle(news.title);
+  } catch (err) {
+    console.error('[runManualPost] Erro ao traduzir título:', err.message);
+  }
 
   let caption;
   try {
