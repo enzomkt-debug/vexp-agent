@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-17</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-17</lastmod>
+    <lastmod>2026-05-18</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/pix-responde-por-mais-de-40-do-valor-transacionado-no-comercio-eletronico.html</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/varejo-digital-cresceu-21-em-2025.html</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/ministerio-do-empreendedorismo-e-shopee-firmam-parceria-para-impulsionar-a-digit.html</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/bed-bath-beyonds-first-co-branded-store-with-the-container-store-will-open-satur.html</loc>
+    <lastmod>2026-05-17</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/com-52-mil-m-e-previsto-para-funcionar-24-horas-por-dia-novo-centro-de-distribui.html</loc>
