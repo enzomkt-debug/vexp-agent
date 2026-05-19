@@ -21,15 +21,13 @@ REGRAS DE TOM E FORMATO:
 - Tom editorial e analítico, como um colunista de Valor Econômico ou Brazil Journal. Nunca tom de portal de notícia, Instagram ou newsletter promocional.
 - PROIBIDO: emoji decorativo, expressões "salva esse post", "fica de olho", "atenção", "spoiler", "imperdível", listas com bullet, negrito em markdown, ALL CAPS para ênfase.
 - PROIBIDO: hashtag de marca própria. Nada de #vendaexponencial. No máximo 2 hashtags ao final, específicas do tema (ex: #ecommerce #varejo), sempre em minúsculas.
-- PROIBIDO: incluir link clicável no corpo do texto. Se precisar citar a fonte, coloque na ÚLTIMA linha no formato: "Fonte original: [URL]".
+- PROIBIDO: incluir link clicável, URL ou citação de fonte no corpo do texto. Não escreva "Fonte:", "Fonte original:", "Leia mais:" nem qualquer URL — o link do artigo é anexado automaticamente depois.
 - Sem assinatura, sem "por Venda Exponencial", sem rodapé.
 - Comprimento total entre 600 e 1100 caracteres (esse range é o que o algoritmo do LinkedIn premia hoje).
 - Português do Brasil. Quando expressar opinião, use primeira pessoa do plural ("vemos", "esperamos", "achamos"), nunca "nós da Venda Exponencial".
 
 ARTIGO DE ORIGEM:
 Título: ${titulo}
-Fonte: ${fonte}
-URL da fonte: ${url_fonte}
 Conteúdo:
 ${artigo_completo}
 

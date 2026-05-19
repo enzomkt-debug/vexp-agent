@@ -95,7 +95,7 @@ async function postToInstagram({ imagePath, imageUrl: imageUrlParam, caption, li
 
   const contentWithLink = linkUrl ? `${caption}\n\n🔗 ${linkUrl}` : caption;
   const linkedinText = linkedinCaption
-    ? (linkUrl ? `${linkedinCaption}\n\nFonte original: ${linkUrl}` : linkedinCaption)
+    ? (linkUrl ? `${linkedinCaption}\n\nLeia a análise completa: ${linkUrl}` : linkedinCaption)
     : contentWithLink;
   const media = [{ id: mediaId, type: 'image' }];
 
