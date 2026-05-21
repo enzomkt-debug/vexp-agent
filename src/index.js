@@ -83,9 +83,9 @@ const { gerarSlug } = require('./supabaseClient');
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
 
-// Horários de postagem: 09:00, 13:00, 18:00 (fuso Brasília = UTC-3)
-// No Railway (UTC), os horários ficam: 12:00, 16:00, 21:00
-const SCHEDULE_TIMES = ['0 12 * * *', '0 16 * * *', '0 21 * * *'];
+// Horários de postagem: 09:00, 13:00, 18:00, 19:00 (fuso Brasília = UTC-3)
+// No Railway (UTC), os horários ficam: 12:00, 16:00, 21:00, 22:00
+const SCHEDULE_TIMES = ['0 12 * * *', '0 16 * * *', '0 21 * * *', '0 22 * * *'];
 
 async function runPost() {
   console.log(`\n[${new Date().toISOString()}] Iniciando ciclo de postagem... TEST_MODE=${TEST_MODE}`);
@@ -485,12 +485,7 @@ const SHOPPING_SCHEDULE = '0 20 * * *';
 cron.schedule(SHOPPING_SCHEDULE, () => runShoppingPost().catch(err => console.error(`[cron] Erro em runShoppingPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 
-// Post diário de trends: 22:00 UTC = 19:00 BRT
-const TREND_SCHEDULE = '0 22 * * *';
-cron.schedule(TREND_SCHEDULE, () => runTrendPost().catch(err => console.error(`[cron] Erro em runTrendPost:`, err.message)), { timezone: 'UTC' });
-console.log(`[cron] Agendado (trend): ${TREND_SCHEDULE} UTC`);
-
-console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h e 18h BRT + varejo 15h BRT + shopping 17h BRT + trend 19h BRT)...`);
+console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h, 18h e 19h BRT + varejo 15h BRT + shopping 17h BRT)...`);
 
 if (process.env.RUN_ON_START === 'true') {
   runPost().catch(err => console.error('[on-start] Erro em runPost:', err.message));
@@ -504,11 +499,6 @@ if (process.env.RUN_VAREJO_ON_START === 'true') {
 if (process.env.RUN_SHOPPING_ON_START === 'true') {
   console.log('[on-start] RUN_SHOPPING_ON_START ativo — disparando runShoppingPost...');
   runShoppingPost().catch(err => console.error('[on-start] Erro em runShoppingPost:', err.message));
-}
-
-if (process.env.RUN_TREND_ON_START === 'true') {
-  console.log('[on-start] RUN_TREND_ON_START ativo — disparando runTrendPost...');
-  runTrendPost().catch(err => console.error('[on-start] Erro em runTrendPost:', err.message));
 }
 
 async function runTrendPost() {
