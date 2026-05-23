@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-22</lastmod>
+    <lastmod>2026-05-23</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-no-es-cresce-44-apos-faturar-r-44-bi.html</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-compra-marca-americana-everlane-em-acordo-de-cerca-de-us-100-milhoes.html</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/exclusivo-farm-rio-acelera-expansao-internacional-com-lojas-de-verao-na-europa.html</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/nao-precisamos-ir-para-a-guerra-dos-bancos-digitais-diz-ceo-da-midway-conheca-a.html</loc>
+    <lastmod>2026-05-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/ia-nao-resolve-dados-baguncados-as-licoes-de-mercado-livre-e-nvidia-para-o-agro.html</loc>
