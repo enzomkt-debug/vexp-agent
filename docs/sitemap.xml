@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-23</lastmod>
+    <lastmod>2026-05-24</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/do-clique-ao-estoque-como-dados-em-tempo-real-redefinem-a-competitividade-no-var.html</loc>
+    <lastmod>2026-05-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-e-commerce-no-varejo-alimentar-ja-movimenta-bilhoes-e-esta-transformando-as-es.html</loc>
+    <lastmod>2026-05-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/em-breve-voce-vai-poder-reservar-seu-hotel-ou-passeio-sem-precisar-sair-do-tikto.html</loc>
+    <lastmod>2026-05-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/acertos-e-erros-da-temporada-de-resultados-do-q1.html</loc>
+    <lastmod>2026-05-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/e-commerce-no-es-cresce-44-apos-faturar-r-44-bi.html</loc>
