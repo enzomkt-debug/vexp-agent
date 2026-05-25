@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-24</lastmod>
+    <lastmod>2026-05-25</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-oficial-shein-vai-adquirir-everlane.html</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/cubbo-desembarca-em-manaus-e-acelera-entregas-do-e-commerce-na-regiao.html</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/ifood-e-rappi-podem-levar-multa-de-r-14-mi-por-nao-mostrarem-quanto-pagam-a-entr.html</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/ibs-e-cbs-impactam-a-renda-passiva-com-imoveis-conheca-forma-pratica-de-investir.html</loc>
+    <lastmod>2026-05-24</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/do-clique-ao-estoque-como-dados-em-tempo-real-redefinem-a-competitividade-no-var.html</loc>
