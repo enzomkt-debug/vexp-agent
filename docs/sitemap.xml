@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-26</lastmod>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-26</lastmod>
+    <lastmod>2026-05-27</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/apos-venda-da-shein-fundador-da-everlane-lanca-nova-marca-still-radical.html</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/copa-do-mundo-pode-beneficiar-791-mil-pequenos-negocios-em-sp-diz-sebrae.html</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/google-lanca-carrinho-universal-entre-varejistas.html</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/como-2-startups-dtc-muito-diferentes-equilibram-marketing-pago-e-organico.html</loc>
+    <lastmod>2026-05-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/spotify-e-universal-music-anunciam-acordo-para-covers-e-remixes-com-ia-feitos-po.html</loc>
