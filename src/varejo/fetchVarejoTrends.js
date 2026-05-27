@@ -141,7 +141,12 @@ async function fetchVarejoTrends(categoria) {
   // Ex: "tênis" rising → ["New Balance 574", "tênis samba adidas", "tênis chunky plataforma"]
   const risingTerms = (relatedQueries.rising || [])
     .filter((q) => q.keyword && q.keyword.toLowerCase() !== mainKeyword.toLowerCase())
-    .sort((a, b) => b.value - a.value)
+    .sort((a, b) => {
+      // Breakout (9999) representa crescimento infinito → deve vir antes de qualquer valor numérico
+      const aVal = a.value === 9999 ? Infinity : (a.value || 0);
+      const bVal = b.value === 9999 ? Infinity : (b.value || 0);
+      return bVal - aVal;
+    })
     .slice(0, 5);
 
   const topTerms = (relatedQueries.top || [])
