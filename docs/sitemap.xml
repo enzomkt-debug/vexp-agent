@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-05-27</lastmod>
+    <lastmod>2026-05-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-05-27</lastmod>
+    <lastmod>2026-05-28</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/hp-tem-resultado-acima-do-esperado-com-demanda-puxada-por-ia-e-windows-11.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/a-saga-everlane-shein-continua-e-o-que-esta-impulsionando-os-segundos-atos-dos-f.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/papelaria-e-escritorio-os-produtos-mais-buscados-nos-ultimos-90-dias.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/logistica-vira-arma-de-vendas-na-estrategia-da-total-express.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/a-marca-mais-vendida-da-jcpenney-e-uma-marca-propria.html</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/apos-venda-da-shein-fundador-da-everlane-lanca-nova-marca-still-radical.html</loc>
