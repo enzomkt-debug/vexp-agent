@@ -1,5 +1,4 @@
-const { createCanvas, loadImage, registerFont } = require('canvas');
-const axios = require('axios');
+const { createCanvas, registerFont } = require('canvas');
 const path = require('path');
 const fs = require('fs');
 
@@ -24,42 +23,6 @@ const H = 1350; // 4:5
 const HEAD = (px) => `bold ${px}px "VX Cond"`;   // títulos/números
 const BODY = (px) => `${px}px "VX Sans"`;        // corpo
 const BODYB = (px) => `bold ${px}px "VX Sans"`;  // labels
-
-const STOPWORDS = new Set(['de','da','do','dos','das','no','na','e','com','para','que','em','um','uma','o','a','os','as','por','se']);
-
-function extrairKeywords(titulo) {
-  const palavras = (titulo || '')
-    .toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9\s]/g, ' ').split(/\s+/)
-    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
-  return palavras.slice(0, 3).join(' ') || 'ecommerce business digital';
-}
-
-async function buscarImagemUnsplash(titulo) {
-  const key = process.env.UNSPLASH_ACCESS_KEY;
-  if (!key) return null;
-  const query = `${extrairKeywords(titulo)} business minimal`;
-  try {
-    const { data } = await axios.get('https://api.unsplash.com/photos/random', {
-      params: { query, orientation: 'portrait', client_id: key }, timeout: 8000,
-    });
-    return data?.urls?.regular || null;
-  } catch {
-    return null;
-  }
-}
-
-async function loadBackground(url) {
-  try {
-    const res = await axios.get(url, {
-      responseType: 'arraybuffer', timeout: 10000,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; vexp-agent/1.0)' },
-    });
-    return await loadImage(Buffer.from(res.data));
-  } catch {
-    return null;
-  }
-}
 
 function wrapLines(ctx, text, maxWidth) {
   const words = (text || '').split(' ');
@@ -102,22 +65,10 @@ function rodape(ctx, dark, esquerda, direita) {
   if (direita) { ctx.textAlign = 'right'; ctx.fillText(direita, W - 60, H - 60); }
 }
 
-async function drawCover(content) {
+function drawCover(content) {
   const canvas = createCanvas(W, H);
   const ctx = canvas.getContext('2d');
-
-  // Fundo claro com faixa de foto sutil embaixo (opcional)
   ctx.fillStyle = PAPER; ctx.fillRect(0, 0, W, H);
-  const url = await buscarImagemUnsplash(content.capa.titulo);
-  const img = url ? await loadBackground(url) : null;
-  if (img) {
-    const bandH = 360;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(0, H - bandH, W, bandH); ctx.clip();
-    ctx.drawImage(img, 0, H - bandH, W, bandH);
-    ctx.fillStyle = 'rgba(22,20,15,0.45)'; ctx.fillRect(0, H - bandH, W, bandH);
-    ctx.restore();
-  }
 
   marca(ctx, false);
 
@@ -126,25 +77,25 @@ async function drawCover(content) {
   const badge = content.categoria;
   const bw = ctx.measureText(badge).width + 44;
   ctx.strokeStyle = GOLD; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.roundRect(60, 150, bw, 50, 25); ctx.stroke();
-  ctx.fillStyle = GOLD; ctx.fillText(badge, 82, 182);
+  ctx.beginPath(); ctx.roundRect(60, 170, bw, 50, 25); ctx.stroke();
+  ctx.fillStyle = GOLD; ctx.fillText(badge, 82, 202);
 
-  // Headline grande condensado
-  ctx.fillStyle = INK; ctx.font = HEAD(94); ctx.textAlign = 'left';
-  const yEnd = drawWrapped(ctx, content.capa.titulo, 60, 360, W - 120, 100, 5);
+  // Headline grande condensado (protagonista da capa)
+  ctx.fillStyle = INK; ctx.font = HEAD(98); ctx.textAlign = 'left';
+  const yEnd = drawWrapped(ctx, content.capa.titulo, 60, 400, W - 120, 104, 6);
 
   // Régua dourada
-  ctx.fillStyle = GOLD; ctx.fillRect(60, yEnd + 16, 160, 10);
+  ctx.fillStyle = GOLD; ctx.fillRect(60, yEnd + 24, 160, 10);
 
   // Gancho
   if (content.capa.gancho) {
-    ctx.fillStyle = GRAY; ctx.font = BODY(36);
-    drawWrapped(ctx, content.capa.gancho, 60, yEnd + 80, W - 140, 48, 3);
+    ctx.fillStyle = GRAY; ctx.font = BODY(38);
+    drawWrapped(ctx, content.capa.gancho, 60, yEnd + 96, W - 140, 50, 4);
   }
 
-  // Indicador de arraste (acima da foto, se houver)
-  ctx.fillStyle = img ? PAPER : INK; ctx.font = BODYB(26); ctx.textAlign = 'right';
-  ctx.fillText('arraste  →', W - 60, img ? H - 60 : H - 70);
+  // Indicador de arraste
+  ctx.fillStyle = INK; ctx.font = BODYB(26); ctx.textAlign = 'right';
+  ctx.fillText('arraste  →', W - 60, H - 70);
   return canvas;
 }
 
