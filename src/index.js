@@ -79,6 +79,9 @@ const { runShopping } = require('./shopping/index');
 const { generateShoppingFeedImage, generateShoppingStoryImage } = require('./shopping/generateShoppingImage');
 const { publishStaticPage } = require('./generateStaticPage');
 const { gerarSlug } = require('./supabaseClient');
+const { runLinkedinCarousel } = require('./linkedin/index');
+const { generateCarouselImages } = require('./linkedin/generateCarouselImages');
+const { postLinkedinCarousel } = require('./postLinkedinCarousel');
 
 const TEST_MODE = process.env.TEST_MODE === 'true';
 const PORTAL_BASE = 'https://vendaexponencial.com.br';
@@ -485,7 +488,12 @@ const SHOPPING_SCHEDULE = '0 20 * * *';
 cron.schedule(SHOPPING_SCHEDULE, () => runShoppingPost().catch(err => console.error(`[cron] Erro em runShoppingPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
 
-console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h, 18h e 19h BRT + varejo 15h BRT + shopping 17h BRT)...`);
+// Carrossel de LinkedIn: 21:00 UTC = 18:00 BRT, dias úteis (seg-sex)
+const LINKEDIN_CAROUSEL_SCHEDULE = '0 21 * * 1-5';
+cron.schedule(LINKEDIN_CAROUSEL_SCHEDULE, () => runLinkedinCarouselPost().catch(err => console.error(`[cron] Erro em runLinkedinCarouselPost:`, err.message)), { timezone: 'UTC' });
+console.log(`[cron] Agendado (carrossel LinkedIn): ${LINKEDIN_CAROUSEL_SCHEDULE} UTC`);
+
+console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h, 18h e 19h BRT + varejo 15h BRT + shopping 17h BRT + carrossel LinkedIn 18h BRT dias úteis)...`);
 
 if (process.env.RUN_ON_START === 'true') {
   runPost().catch(err => console.error('[on-start] Erro em runPost:', err.message));
@@ -499,6 +507,11 @@ if (process.env.RUN_VAREJO_ON_START === 'true') {
 if (process.env.RUN_SHOPPING_ON_START === 'true') {
   console.log('[on-start] RUN_SHOPPING_ON_START ativo — disparando runShoppingPost...');
   runShoppingPost().catch(err => console.error('[on-start] Erro em runShoppingPost:', err.message));
+}
+
+if (process.env.RUN_LINKEDIN_CAROUSEL_ON_START === 'true') {
+  console.log('[on-start] RUN_LINKEDIN_CAROUSEL_ON_START ativo — disparando runLinkedinCarouselPost...');
+  runLinkedinCarouselPost().catch(err => console.error('[on-start] Erro em runLinkedinCarouselPost:', err.message));
 }
 
 async function runTrendPost() {
@@ -780,4 +793,99 @@ async function runManualPost(tema, url = null) {
   console.log('[runManualPost] Post manual concluído.');
 }
 
-module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost, runManualPost };
+async function runLinkedinCarouselPost() {
+  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo CARROSSEL LINKEDIN... TEST_MODE=${TEST_MODE}`);
+
+  // 1. Seleciona tema forte (filtro nota >= 7), gera artigo e conteúdo dos slides
+  let resultado;
+  try {
+    resultado = await runLinkedinCarousel();
+  } catch (err) {
+    console.error('[runLinkedinCarouselPost] Erro na seleção/conteúdo:', err.message);
+    return;
+  }
+  if (!resultado) {
+    console.log('[runLinkedinCarouselPost] Nenhum tema forte hoje — ciclo pulado.');
+    return;
+  }
+  const { news, artigo, content } = resultado;
+  console.log(`[runLinkedinCarouselPost] Tema: "${news.title}" | slides: ${content.slides.length + 2}`);
+
+  // 2. Renderiza os slides
+  let imagens;
+  try {
+    imagens = await generateCarouselImages(content);
+    console.log(`[runLinkedinCarouselPost] ${imagens.length} slides renderizados.`);
+  } catch (err) {
+    console.error('[runLinkedinCarouselPost] Erro ao renderizar slides:', err.message);
+    return;
+  }
+
+  // 3. Upload de todos os slides para o GitHub (SEQUENCIAL — uploads paralelos
+  //    geram commits concorrentes e disparam 409 no contents API)
+  let urls = [];
+  try {
+    for (const img of imagens) {
+      urls.push(await subirImagemGithub(img.filepath));
+    }
+  } catch (err) {
+    console.error('[runLinkedinCarouselPost] Erro ao subir slides para GitHub:', err.message);
+    return;
+  }
+  if (urls.some((u) => !u)) {
+    console.error('[runLinkedinCarouselPost] Algum slide sem URL — abortando.');
+    return;
+  }
+
+  // 4. Persistir registro (reusa schema existente: legenda_linkedin + capa como imagem_github)
+  let registro;
+  if (!TEST_MODE) {
+    try {
+      registro = await salvarNoticia({
+        titulo:            news.title,
+        fonte:             news.source,
+        url_original:      news.link || null,
+        imagem_url:        null,
+        imagem_github:     urls[0] || null,
+        legenda_instagram: null,
+        legenda_linkedin:  content.legenda,
+        artigo_completo:   artigo,
+      });
+      console.log(`[runLinkedinCarouselPost] Salvo no Supabase. ID: ${registro?.id}`);
+    } catch (err) {
+      console.error('[runLinkedinCarouselPost] Erro ao salvar no Supabase:', err.message);
+    }
+  }
+
+  // 5. Página estática para dar destino ao link do carrossel
+  const slug = registro?.slug || gerarSlug(news.title);
+  const linkUrl = `${PORTAL_BASE}/artigos/${slug}.html`;
+  if (registro) {
+    try {
+      await publishStaticPage({
+        titulo: news.title, slug, fonte: news.source, artigo_completo: artigo,
+        imagem_github: urls[0], publicado_em: registro.publicado_em || new Date().toISOString(),
+      });
+    } catch (err) { console.error('[runLinkedinCarouselPost] Erro na página estática:', err.message); }
+  }
+
+  // 6. Publicar carrossel no LinkedIn
+  try {
+    const r = await postLinkedinCarousel({
+      imageUrls: urls,
+      caption: content.legenda || news.title,
+      title: content.capa.titulo,
+      linkUrl,
+    });
+    if (!TEST_MODE) console.log(`[runLinkedinCarouselPost] Carrossel publicado! ID: ${r.postId}`);
+  } catch (err) {
+    console.error('[runLinkedinCarouselPost] Erro ao publicar carrossel:', err.message);
+  }
+
+  // 7. Limpeza dos arquivos locais
+  for (const img of imagens) { try { fs.unlinkSync(img.filepath); } catch (_) {} }
+
+  console.log('[runLinkedinCarouselPost] Ciclo de carrossel concluído.');
+}
+
+module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost, runManualPost, runLinkedinCarouselPost };
