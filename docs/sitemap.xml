@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-04</lastmod>
+    <lastmod>2026-06-05</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-que-e-o-zelle-defendido-por-eduardo-bolsonaro-para-negociacao-entre-brasil-e-e.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/marketplace-briefing-como-rhino-usa-esta-construindo-uma-fabrica-de-conteudo-de.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/pix-por-que-os-eua-estao-investigando-o-meio-de-pagamento-brasileiro.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/varejistas-recorrem-a-ia-para-produtividade-e-compras-personalizadas.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/por-dentro-da-ofensiva-do-chewy-para-construir-uma-rede-de-midia-de-varejo-focad.html</loc>
+    <lastmod>2026-06-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/estrategia-focada-em-alimentos-da-target-inclui-melhorias-na-cadeia-de-supriment.html</loc>
