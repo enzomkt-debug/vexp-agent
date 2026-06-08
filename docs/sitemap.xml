@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-07</lastmod>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-07</lastmod>
+    <lastmod>2026-06-08</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/empreendedores-do-amapa-terao-linha-de-credito-de-ate-r-20-mil-para-vendas-onlin.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-fatura-mais-de-r-380-milhoes-com-camisas-da-selecao-entre-marco-e-jun.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shopee-divulga-ofertas-para-6-do-6-com-celular-eletronicos-e-cupons-especiais.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/quanto-valeria-o-pix-se-fosse-empresa-exercicio-aponta-valor-trilionario.html</loc>
+    <lastmod>2026-06-07</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/o-fechamento-da-semana-o-ajuste-de-contas-da-nike-os-recordes-de-lucro-da-gamest.html</loc>
