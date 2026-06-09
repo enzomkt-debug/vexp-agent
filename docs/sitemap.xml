@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-08</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-08</lastmod>
+    <lastmod>2026-06-09</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-lanca-gerador-de-imagens-com-ia-para-refinar-buscas.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/comercio-por-agentes-ia-agora-e-a-primeira-parada-do-consumidor-aparecer-e-apena.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-abre-3-centros-de-distribuicao-por-semana-no-brasil-e-acelera-entregas.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-agora-permite-que-voce-crie-produtos-personalizados-usando-ia.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/uniao-de-gigantes-magalu-e-amazon-viram-parceiras-nas-vendas-e-na-logistica.html</loc>
+    <lastmod>2026-06-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/empreendedores-do-amapa-terao-linha-de-credito-de-ate-r-20-mil-para-vendas-onlin.html</loc>
