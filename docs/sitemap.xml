@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-09</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/mercado-livre-golpe-causa-prejuizo-de-r-263-mil-09062026-economia.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/quatro-anos-antes-de-o-brasil-lancar-o-pix-a-india-ja-tinha-de-pe-a-upi-um-siste.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/por-que-a-variacao-no-preco-da-energia-tem-quebrado-o-mercado-livre.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/governo-prepara-novo-plano-bilionario-agora-para-entregadores.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/alibaba-e-baidu-contestam-inclusao-em-lista-do-pentagono-de-empresas-com-vinculo.html</loc>
+    <lastmod>2026-06-09</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/amazon-lanca-gerador-de-imagens-com-ia-para-refinar-buscas.html</loc>
