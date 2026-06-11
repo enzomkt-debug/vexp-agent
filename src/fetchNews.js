@@ -6,6 +6,7 @@ const PRIORITY_FEEDS = [
   'https://www.ecommercebrasil.com.br/feed/',
   'https://portalnovarejo.com.br/feed/',
   'https://mercadoeconsumo.com.br/feed/',
+  'https://www.ecommercenews.com.br/feed/',
 ];
 
 // Monta a URL de uma busca do Google News em pt-BR.
@@ -22,6 +23,9 @@ const OTHER_FEEDS = [
   // e atraíam público do setor financeiro em vez do gestor comercial).
   'https://www.abcomm.org.br/feed/',
   'https://exame.com/feed/',
+  'https://www.consumidormoderno.com.br/feed/',
+  // Imprensa de marketing/publicidade (filtrada p/ recortar só o que é varejo/ecommerce)
+  'https://www.meioemensagem.com.br/feed/',
   // Fontes internacionais de varejo/commerce (trade press especializada)
   'https://techcrunch.com/category/commerce/feed/',
   'https://www.retaildive.com/feeds/news/',
