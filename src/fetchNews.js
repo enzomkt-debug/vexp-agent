@@ -17,13 +17,12 @@ function googleNewsFeed(query) {
 }
 
 const OTHER_FEEDS = [
-  // Portais de notícias gerais com cobertura de varejo
+  // Imprensa de negócios/varejo (evita-se portais puramente de mercado de
+  // capitais como InfoMoney/MoneyTimes/UOL Economia, que traziam pauta macro
+  // e atraíam público do setor financeiro em vez do gestor comercial).
   'https://www.abcomm.org.br/feed/',
-  'https://www.infomoney.com.br/feed/',
   'https://exame.com/feed/',
-  'https://economia.uol.com.br/rss.xml',
-  'https://www.moneytimes.com.br/feed/',
-  // Fontes internacionais (grandes movimentos de mercado)
+  // Fontes internacionais de varejo/commerce (trade press especializada)
   'https://techcrunch.com/category/commerce/feed/',
   'https://www.retaildive.com/feeds/news/',
   'https://www.modernretail.co/feed/',
@@ -34,22 +33,38 @@ const OTHER_FEEDS = [
   googleNewsFeed('("Magazine Luiza" OR Magalu OR Americanas OR "Casas Bahia" OR Renner OR "Mercado Pago")'),
   // Cross-border / importação
   googleNewsFeed('(Shein OR Temu OR "TikTok Shop") (Brasil OR importação OR taxação OR "remessa conforme")'),
-  // Resultados e desempenho de mercado
-  googleNewsFeed('ecommerce (faturamento OR resultado OR crescimento OR vendas OR investimento)'),
+  // Marketing digital e performance
+  googleNewsFeed('("marketing digital" OR "performance marketing" OR "mídia paga" OR "tráfego pago" OR CRM OR "social commerce" OR influenciadores) (ecommerce OR varejo OR loja OR marca)'),
+  // Inteligência artificial aplicada ao varejo/ecommerce
+  googleNewsFeed('("inteligência artificial" OR "IA generativa" OR automação OR chatbot OR "agentes de IA") (ecommerce OR varejo OR marketing OR atendimento OR vendas)'),
+  // Pricing e margem
+  googleNewsFeed('(precificação OR pricing OR "preço dinâmico" OR margem OR promoção OR descontos) (ecommerce OR varejo OR marketplace)'),
+  // Gestão e operação de ecommerce
+  googleNewsFeed('("gestão de varejo" OR "operação de ecommerce" OR estoque OR sortimento OR conversão OR "experiência do cliente" OR CX) (ecommerce OR "varejo digital" OR "loja virtual")'),
   // Logística e pagamentos
   googleNewsFeed('(ecommerce OR "varejo digital") (logística OR "última milha" OR frete OR fulfillment OR Pix OR checkout)'),
   // Regulação e tendências
-  googleNewsFeed('(ecommerce OR "varejo digital") (regulação OR tributação OR "inteligência artificial" OR "live commerce" OR "social commerce")'),
+  googleNewsFeed('(ecommerce OR "varejo digital") (regulação OR tributação OR "live commerce" OR "social commerce")'),
 ];
 
 const RELEVANCE_KEYWORDS = [
+  // Ecommerce, marketplaces e plataformas
   'ecommerce', 'e-commerce', 'loja virtual', 'loja online',
   'marketplace', 'mercado livre', 'shopee', 'amazon', 'magazine luiza', 'magalu',
   'shein', 'temu', 'tiktok shop', 'alibaba',
   'varejo digital', 'varejo online', 'vendas online',
-  'faturamento', 'receita', 'pix', 'checkout',
-  'fulfillment', 'logística', 'entrega', 'frete',
-  'retail', 'commerce', 'shopify', 'direct-to-consumer', 'dtc',
+  'vtex', 'nuvemshop', 'shopify', 'direct-to-consumer', 'dtc',
+  'retail', 'commerce',
+  // Marketing digital
+  'marketing digital', 'mídia paga', 'tráfego pago', 'performance marketing',
+  'crm', 'social commerce', 'live commerce', 'influenciador', 'creator',
+  // Inteligência artificial aplicada
+  'inteligência artificial', 'ia generativa', 'automação', 'chatbot', 'agentes de ia',
+  // Pricing e gestão comercial
+  'precificação', 'pricing', 'preço', 'margem', 'conversão', 'ticket médio',
+  'sortimento', 'estoque', 'experiência do cliente', 'gestão de varejo',
+  // Logística e pagamentos
+  'fulfillment', 'logística', 'última milha', 'entrega', 'frete', 'pix', 'checkout',
 ];
 
 const BLOCKED_DOMAINS = [
