@@ -29,7 +29,11 @@ function extrairJson(texto) {
 async function generateCarouselContent({ titulo, fonte, url_fonte, artigo_completo }) {
   if (!artigo_completo) return null;
 
-  const prompt = `Você é um estrategista de conteúdo escrevendo um CARROSSEL de LinkedIn para a página Venda Exponencial, voltada a profissionais de e-commerce, varejo e marketplaces no Brasil.
+  const prompt = `Você é um estrategista de conteúdo escrevendo um CARROSSEL de LinkedIn para a página Venda Exponencial, voltada a quem TOMA DECISÃO COMERCIAL no varejo digital brasileiro: gestores comerciais, de marketing e de e-commerce, lojistas e operadores de marketplace.
+
+PÚBLICO-ALVO E ÂNGULO (regra mais importante):
+- Escreva de OPERADOR para OPERADOR. Cada slide deve responder "o que isso muda na PRÁTICA do meu negócio?": vendas, conversão, ticket, margem operacional, CAC, sortimento, precificação, canais de venda, logística e relação com marketplaces.
+- NÃO escreva para o público do mercado financeiro. Evite enquadramento de investidor (valuation, múltiplos, ações/bolsa, juros, macroeconomia) a menos que se traduza diretamente numa decisão de quem opera a loja.
 
 A partir do artigo abaixo, produza um carrossel com ${MIN_SLIDES} a ${MAX_SLIDES} slides de conteúdo (além da capa e do slide final de chamada). O carrossel deve ser ANALÍTICO, com dados concretos, e desenhado para alta retenção (cada slide entrega uma ideia que puxa o próximo).
 
@@ -51,7 +55,7 @@ Responda APENAS com um objeto JSON válido, sem comentários, sem markdown, sem 
     "titulo": "<chamada final curta, máx 45 caracteres>",
     "texto": "<convite para comentar/seguir, máx 120 caracteres>"
   },
-  "legenda": "<texto NATIVO do post de LinkedIn, 600 a 1100 caracteres, tom editorial e analítico (estilo colunista do Valor/Brazil Journal). Primeira linha é uma tese forte que funciona sozinha. Termina com uma pergunta específica que convide à resposta. No máximo 2 hashtags minúsculas e específicas no fim. PROIBIDO: emoji decorativo, 'salva esse post', 'fica de olho', negrito markdown, ALL CAPS, link, URL, 'Fonte:', hashtag de marca.>"
+  "legenda": "<texto NATIVO do post de LinkedIn, 600 a 1100 caracteres, tom editorial e analítico de OPERADOR para OPERADOR (como um head de e-commerce ou consultor de varejo falando com colegas de gestão). NÃO use registro de jornalismo econômico/mercado financeiro (Valor, Brazil Journal, mercado de capitais), que atrai o público errado. Primeira linha é uma tese forte que funciona sozinha. Termina com uma pergunta específica ancorada numa decisão comercial/operacional. No máximo 2 hashtags minúsculas e específicas no fim. PROIBIDO: emoji decorativo, 'salva esse post', 'fica de olho', negrito markdown, ALL CAPS, link, URL, 'Fonte:', hashtag de marca.>"
 }
 
 REGRAS DE CONTEÚDO:
@@ -59,6 +63,7 @@ REGRAS DE CONTEÚDO:
 - Cada slide deve ter densidade: priorize números, percentuais, prazos e comparações que estejam no artigo.
 - Não invente dados que não estejam no artigo. Se faltar número, use a análise qualitativa.
 - Os títulos dos slides não podem se repetir nem ser genéricos ("Introdução", "Conclusão").
+- Sempre que possível, traduza o dado numa implicação operacional concreta para quem opera a loja (o que fazer com preço, canal, sortimento, estoque ou margem).
 - A "legenda" é o texto que acompanha o carrossel; não descreva os slides nela, escreva um post próprio.
 
 ARTIGO DE ORIGEM:
