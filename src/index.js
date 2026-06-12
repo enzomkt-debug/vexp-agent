@@ -75,8 +75,6 @@ const { generateLinkedinCaption } = require('./generateLinkedinCaption');
 const { translateTitle } = require('./translateTitle');
 const { runVarejo }                                    = require('./varejo/index');
 const { generateVarejoFeedImage, generateVarejoStoryImage } = require('./varejo/generateVarejoImage');
-const { runShopping } = require('./shopping/index');
-const { generateShoppingFeedImage, generateShoppingStoryImage } = require('./shopping/generateShoppingImage');
 const { publishStaticPage } = require('./generateStaticPage');
 const { gerarSlug } = require('./supabaseClient');
 const { runLinkedinCarousel } = require('./linkedin/index');
@@ -366,103 +364,6 @@ async function runVarejoPost() {
   console.log('[runVarejoPost] Ciclo de varejo concluído.');
 }
 
-async function runShoppingPost() {
-  console.log(`\n[${new Date().toISOString()}] Iniciando ciclo SHOPPING... TEST_MODE=${TEST_MODE}`);
-
-  // 1. Lógica de shopping: escolhe categoria, busca produtos, gera artigo + caption
-  let shoppingResult;
-  try {
-    shoppingResult = await runShopping();
-  } catch (err) {
-    console.error('[runShoppingPost] Erro ao executar shopping:', err.message);
-    return;
-  }
-
-  const { news, caption, artigo, categoria } = shoppingResult;
-  console.log(`[runShoppingPost] Categoria: "${categoria.label}"`);
-
-  // 2. Gerar imagens com template exclusivo de shopping + legenda LinkedIn em paralelo
-  let imageResult, storyResult, legendaLinkedin;
-  try {
-    [imageResult, storyResult, legendaLinkedin] = await Promise.all([
-      generateShoppingFeedImage(shoppingResult.shoppingData, shoppingResult.news.title),
-      generateShoppingStoryImage(shoppingResult.shoppingData, shoppingResult.news.title),
-      generateLinkedinCaption({
-        titulo: news.title,
-        fonte: news.source,
-        url_fonte: news.link,
-        artigo_completo: artigo,
-      }),
-    ]);
-    console.log(`[runShoppingPost] Feed: ${imageResult.filename} | Story: ${storyResult.filename}`);
-  } catch (err) {
-    console.error('[runShoppingPost] Erro ao gerar imagens:', err.message);
-    return;
-  }
-
-  // 3. URLs do GitHub já obtidas dentro de generateShoppingFeedImage/StoryImage
-  //    Evita double upload que causaria 409 garantido
-  const feedGithubUrlS  = imageResult.githubUrl;
-  const storyGithubUrlS = storyResult.githubUrl;
-  console.log(`[runShoppingPost] GitHub: feed=${feedGithubUrlS} | story=${storyGithubUrlS}`);
-
-  // 4. Salvar no Supabase com imagem_github já definida
-  let registro;
-  if (!TEST_MODE) {
-    try {
-      registro = await salvarNoticia({
-        titulo:            news.title,
-        fonte:             news.source,
-        url_original:      news.link,
-        imagem_url:        null,
-        imagem_github:     feedGithubUrlS || null,
-        legenda_instagram: caption,
-        legenda_linkedin:  legendaLinkedin,
-        artigo_completo:   artigo,
-      });
-      if (registro?.id) await marcarPostado(registro.id);
-      console.log(`[runShoppingPost] Salvo no Supabase. ID: ${registro?.id}`);
-    } catch (err) {
-      console.error('[runShoppingPost] Erro ao salvar no Supabase:', err.message);
-    }
-  }
-
-  // 5. Publicar página estática
-  const slugShopping = registro?.slug || gerarSlug(news.title);
-  const linkUrl  = `${PORTAL_BASE}/artigos/${slugShopping}.html`;
-  if (registro) {
-    try {
-      await publishStaticPage({
-        titulo: news.title, slug: slugShopping, fonte: news.source,
-        artigo_completo: artigo, imagem_github: feedGithubUrlS,
-        publicado_em: registro.publicado_em || new Date().toISOString(),
-      });
-    } catch (err) { console.error('[runShoppingPost] Erro ao publicar página estática:', err.message); }
-  }
-
-  // 6. Publicar feed (imagem já no GitHub, sem re-upload)
-  let postResult;
-  try {
-    postResult = await postToInstagram({ imageUrl: feedGithubUrlS, caption, linkUrl, linkedinCaption: legendaLinkedin });
-    if (!TEST_MODE) console.log(`[runShoppingPost] Feed publicado! ID: ${postResult.postId}`);
-  } catch (err) {
-    console.error('[runShoppingPost] Erro ao publicar feed (site não afetado):', err.message);
-  }
-
-  // 7. Publicar story
-  try {
-    const storyPost = await publicarStory(null, linkUrl, storyGithubUrlS);
-    if (!TEST_MODE) console.log(`[runShoppingPost] Story publicado! ID: ${storyPost.postId}`);
-  } catch (err) {
-    console.error('[runShoppingPost] Erro ao publicar story:', err.message);
-  }
-
-  try { fs.unlinkSync(imageResult.filepath); } catch (_) {}
-  try { fs.unlinkSync(storyResult.filepath); } catch (_) {}
-
-  console.log('[runShoppingPost] Ciclo de shopping concluído.');
-}
-
 // Register cron jobs — pipeline principal
 for (const schedule of SCHEDULE_TIMES) {
   cron.schedule(schedule, () => runPost().catch(err => console.error(`[cron] Erro em runPost:`, err.message)), { timezone: 'UTC' });
@@ -483,17 +384,12 @@ const VAREJO_SCHEDULE = '0 18 * * *';
 cron.schedule(VAREJO_SCHEDULE, () => runVarejoPost().catch(err => console.error(`[cron] Erro em runVarejoPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (varejo): ${VAREJO_SCHEDULE} UTC`);
 
-// Post diário de shopping: 20:00 UTC = 17:00 BRT
-const SHOPPING_SCHEDULE = '0 20 * * *';
-cron.schedule(SHOPPING_SCHEDULE, () => runShoppingPost().catch(err => console.error(`[cron] Erro em runShoppingPost:`, err.message)), { timezone: 'UTC' });
-console.log(`[cron] Agendado (shopping): ${SHOPPING_SCHEDULE} UTC`);
-
 // Carrossel de LinkedIn: 21:00 UTC = 18:00 BRT, dias úteis (seg-sex)
 const LINKEDIN_CAROUSEL_SCHEDULE = '0 21 * * 1-5';
 cron.schedule(LINKEDIN_CAROUSEL_SCHEDULE, () => runLinkedinCarouselPost().catch(err => console.error(`[cron] Erro em runLinkedinCarouselPost:`, err.message)), { timezone: 'UTC' });
 console.log(`[cron] Agendado (carrossel LinkedIn): ${LINKEDIN_CAROUSEL_SCHEDULE} UTC`);
 
-console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h, 18h e 19h BRT + varejo 15h BRT + shopping 17h BRT + carrossel LinkedIn 18h BRT dias úteis)...`);
+console.log(`✅ vexp-agent iniciado. TEST_MODE=${TEST_MODE}. Aguardando horários agendados (09h, 13h, 18h e 19h BRT + varejo 15h BRT + carrossel LinkedIn 18h BRT dias úteis)...`);
 
 if (process.env.RUN_ON_START === 'true') {
   runPost().catch(err => console.error('[on-start] Erro em runPost:', err.message));
@@ -502,11 +398,6 @@ if (process.env.RUN_ON_START === 'true') {
 if (process.env.RUN_VAREJO_ON_START === 'true') {
   console.log('[on-start] RUN_VAREJO_ON_START ativo — disparando runVarejoPost...');
   runVarejoPost().catch(err => console.error('[on-start] Erro em runVarejoPost:', err.message));
-}
-
-if (process.env.RUN_SHOPPING_ON_START === 'true') {
-  console.log('[on-start] RUN_SHOPPING_ON_START ativo — disparando runShoppingPost...');
-  runShoppingPost().catch(err => console.error('[on-start] Erro em runShoppingPost:', err.message));
 }
 
 if (process.env.RUN_LINKEDIN_CAROUSEL_ON_START === 'true') {
@@ -888,4 +779,4 @@ async function runLinkedinCarouselPost() {
   console.log('[runLinkedinCarouselPost] Ciclo de carrossel concluído.');
 }
 
-module.exports = { runPost, runTrendPost, runVarejoPost, runShoppingPost, runManualPost, runLinkedinCarouselPost };
+module.exports = { runPost, runTrendPost, runVarejoPost, runManualPost, runLinkedinCarouselPost };
