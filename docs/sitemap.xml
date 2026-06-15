@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-14</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-14</lastmod>
+    <lastmod>2026-06-15</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/producao-industrial-avanca-09-em-fevereiro-e-acumula-alta-de-3-no-ano.html</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-shopee-e-aliexpress-o-governo-mudou-as-regras-e-a-maioria-dos-brasileiros.html</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/entenda-a-crise-entre-governo-trump-amazon-e-anthropic-sobre-ia.html</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/ataque-ao-magalupay-bloqueia-pix-e-prende-dinheiro-de-clientes.html</loc>
+    <lastmod>2026-06-14</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/setor-de-servicos-bate-recorde-em-2025-e-fatura-r-995-bi-na-capital-paulista.html</loc>
