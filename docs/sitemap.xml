@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-16</lastmod>
+    <lastmod>2026-06-17</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/crescimento-do-parcelamento-fora-do-cartao-muda-estrategias-de-vendas-online-seg.html</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/marketplaces-asiaticos-concentram-78-do-volume-de-buscas-no-brasil.html</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/plenaria-marketplace-canais-de-venda-debate-o-novo-mapa-da-venda-digital-no-foru.html</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/investidores-da-victorias-secret-apoiam-conselho-completo-apos-disputa-por-procu.html</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/ia-forca-varejistas-e-marcas-a-repensarem-suas-paginas-de-produtos.html</loc>
+    <lastmod>2026-06-16</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/amazon-anuncia-investimento-de-ate-us-10-bilhoes-em-novo-complexo-de-data-center.html</loc>
