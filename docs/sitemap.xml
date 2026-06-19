@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-18</lastmod>
+    <lastmod>2026-06-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-18</lastmod>
+    <lastmod>2026-06-19</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/marketplace-briefing-shopify-lanca-ferramentas-para-ajudar-comerciantes-a-rastre.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/compras-de-ate-us-50-na-shein-e-aliexpress-terao-nova-taxa-a-partir-de-2027.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/subadquirente-usa-ia-para-reduzir-fraudes-no-e-commerce.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/farm-rio-aumenta-vendas-em-67-com-ia-mostrando-a-forca-do-whatsapp-no-varejo-dig.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/faire-abre-seu-marketplace-para-hoteis-escritorios-e-clientes-nao-varejistas.html</loc>
+    <lastmod>2026-06-18</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/receita-pagara-a-partir-de-15-de-julho-restituicao-do-tipo-cashback.html</loc>
