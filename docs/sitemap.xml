@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-21</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-20</lastmod>
+    <lastmod>2026-06-21</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/frio-aquece-o-e-commerce-moda-registra-disparada-nas-vendas-e-bate-recorde-de-ga.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-fecha-loja-em-paris-e-amplia-pressao-da-franca-sobre-a-marca.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/quanto-custa-um-hamburguer-premium-em-sao-paulo-veja-os-lanches-que-chegam-a-r-1.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/fulfillment-deixa-de-ser-diferencial-e-se-torna-peca-estrategica-para-e-commerce.html</loc>
+    <lastmod>2026-06-20</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/influencer-que-promover-bet-ilegal-sera-cobrado-a-pagar-imposto.html</loc>
