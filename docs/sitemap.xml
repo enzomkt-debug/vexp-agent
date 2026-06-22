@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-21</lastmod>
+    <lastmod>2026-06-22</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/coca-cola-e-receita-federal-dos-eua-travam-batalha-judicial-com-us-20-bi-em-jogo.html</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/tiktok-shop-completa-um-ano-no-brasil-e-expoe-choque-entre-social-commerce-e-var.html</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/conta-da-ia-chega-as-empresas-e-forca-limites-para-funcionarios.html</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/esta-empresa-de-entregas-vai-faturar-r-200-milhoes-ao-parar-de-disputar-entregad.html</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/frio-aquece-o-e-commerce-moda-registra-disparada-nas-vendas-e-bate-recorde-de-ga.html</loc>
