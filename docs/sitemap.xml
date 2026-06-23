@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-22</lastmod>
+    <lastmod>2026-06-23</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/mercado-livre-movimenta-mais-de-55-mil-entregas-por-dia-em-jundiai-e-amplia-dial.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/liquidacao-prime-day-da-amazon-pode-impulsionar-263b-em-e-commerce-nos-eua.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/portfolio-da-shopee-fica-disponivel-no-chatgpt.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-amzn-inicia-prime-day-com-previsao-de-us-26-bilhoes-em-vendas-online.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-que-uma-loja-de-doces-de-1937-descobriu-sobre-omnichannel-que-a-maioria-dos-va.html</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/coca-cola-e-receita-federal-dos-eua-travam-batalha-judicial-com-us-20-bi-em-jogo.html</loc>
