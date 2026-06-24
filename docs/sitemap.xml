@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-23</lastmod>
+    <lastmod>2026-06-24</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/receita-ameaca-de-exclusao-meis-e-pequenas-empresas-que-nao-regularizarem-divida.html</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-supera-lojas-fisicas-e-fatura-53-das-vendas-de-tecnologia-no-brasil-a.html</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/alibaba-processa-eua-apos-ser-relacionada-a-exercito-chines.html</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/gap-inc-planeja-modernizacao-de-marketing-liderada-por-ia.html</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/casal-quebrou-tres-vezes-e-vendeu-ate-a-casa-hoje-plataforma-gerencia-r-12-biano.html</loc>
+    <lastmod>2026-06-23</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/mercado-livre-movimenta-mais-de-55-mil-entregas-por-dia-em-jundiai-e-amplia-dial.html</loc>
