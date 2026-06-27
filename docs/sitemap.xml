@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-26</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-26</lastmod>
+    <lastmod>2026-06-27</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/skeelo-e-mercado-livre-anunciam-parceria-para-distribuir-livros-digitais.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-entra-na-era-da-compra-pulverizada.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/jc-penney-e-aeropostale-unem-programas-de-fidelidade.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-pedido-de-ipo-da-reformation-mostra-que-dtc-lucrativo-e-possivel.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/mercado-libre-y-gut-ganan-grand-prix-en-outdoor-con-cesped-que-se-convirtio-en-c.html</loc>
+    <lastmod>2026-06-26</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/galipolo-diz-que-bc-fornece-informacoes-sobre-pix-em-investigacao-dos-eua.html</loc>
