@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-27</lastmod>
+    <lastmod>2026-06-28</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/social-commerce-revoluciona-as-vendas-online-ao-transformar-redes-sociais-em-can.html</loc>
+    <lastmod>2026-06-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/cazetv-diz-cumprir-recomendacoes-do-conar-e-adota-novo-padrao-para-anuncios-de-b.html</loc>
+    <lastmod>2026-06-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/reforma-tributaria-exigencia-de-cnpj-para-prestadores-e-produtores-rurais-tem-no.html</loc>
+    <lastmod>2026-06-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-e-contencioso-de-massa-onde-o-varejo-digital-perde-dinheiro.html</loc>
+    <lastmod>2026-06-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/skeelo-e-mercado-livre-anunciam-parceria-para-distribuir-livros-digitais.html</loc>
