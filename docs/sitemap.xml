@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-06-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-28</lastmod>
+    <lastmod>2026-06-29</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/faturamento-das-plataformas-de-apostas-online-cresceu-273-em-marco-em-sao-paulo.html</loc>
+    <lastmod>2026-06-28</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/contra-a-onda-de-marketplaces-esta-empresa-quer-fortalecer-marcas-independentes.html</loc>
+    <lastmod>2026-06-28</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/empresa-brasileira-aposta-em-agua-premium-captada-na-amazonia-para-atender-merca.html</loc>
+    <lastmod>2026-06-28</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-encerramento-da-semana-adidas-entra-no-mercado-de-epi-five-below-completa-sua.html</loc>
+    <lastmod>2026-06-28</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/social-commerce-revoluciona-as-vendas-online-ao-transformar-redes-sociais-em-can.html</loc>
