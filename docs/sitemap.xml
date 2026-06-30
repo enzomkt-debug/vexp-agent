@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-06-30</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-29</lastmod>
+    <lastmod>2026-06-30</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/faturamento-de-ate-r-140-mil-e-dois-funcionarios-o-que-pode-mudar-para-meis.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-fim-do-clique-ia-acelera-nova-era-de-compras-por-conversa-no-varejo-digital.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/servicos-digitais-os-produtos-mais-buscados-nos-ultimos-90-dias.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/logistica-com-ia-orienta-escolha-de-parceiros-no-e-commerce-aponta-pesquisa.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/modernizando-a-borda-do-varejoum-imperativo-competitivo.html</loc>
+    <lastmod>2026-06-29</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/faturamento-das-plataformas-de-apostas-online-cresceu-273-em-marco-em-sao-paulo.html</loc>
