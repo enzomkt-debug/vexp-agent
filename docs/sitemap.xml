@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-06-30</lastmod>
+    <lastmod>2026-07-01</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/grupo-rodonaves-lanca-transportadora-100-digital-e-mira-faturamento-de-r-500-mil.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/food-to-save-transformou-comida-que-iria-ao-lixo-em-um-negocio-de-r-220-milhoes.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/cama-mesa-e-banho-os-produtos-mais-buscados-nos-ultimos-90-dias.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-jc-penney-oferecem-promocoes-relacionadas-a-gas-antes-do-4-de-julho.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/imposto-de-renda-receita-paga-maior-lote-de-restituicao-da-historia-nesta-terca.html</loc>
+    <lastmod>2026-06-30</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/faturamento-de-ate-r-140-mil-e-dois-funcionarios-o-que-pode-mudar-para-meis.html</loc>
