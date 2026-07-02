@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-01</lastmod>
+    <lastmod>2026-07-02</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/inteligencia-de-dados-impulsiona-social-commerce-no-brasil.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/europa-cria-sua-taxa-das-blusinhas-para-conter-avanco-de-shein-temu-e-aliexpress.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/mercado-libre-meli34-xp-corta-preco-alvo-e-coloca-acao-como-tese-de-show-me-hora.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/xp-mercado-livre-sai-na-frente-em-corrida-do-e-commerce-mas-competicao-segue-for.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/bogg-a-caminho-de-vendas-recorde-expande-para-urban-outfitters-e-anthropologie.html</loc>
+    <lastmod>2026-07-01</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/grupo-rodonaves-lanca-transportadora-100-digital-e-mira-faturamento-de-r-500-mil.html</loc>
