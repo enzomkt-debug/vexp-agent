@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-02</lastmod>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-02</lastmod>
+    <lastmod>2026-07-03</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/agora-voce-pode-comprar-na-shopee-pelo-instagram-saiba-como.html</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-marketing-tem-um-problema-de-mensuracao-que-a-maioria-das-marcas-esta-ignorand.html</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/como-o-brasil-se-tornou-referencia-global-em-logistica-reversa-no-agronegocio.html</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/target-expande-marketplace-com-adicoes-de-forever-21-e-marca-clarks.html</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/estes-dois-ex-analistas-estao-ajudando-industrias-a-vender-no-mercado-livre.html</loc>
+    <lastmod>2026-07-02</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/inteligencia-de-dados-impulsiona-social-commerce-no-brasil.html</loc>
