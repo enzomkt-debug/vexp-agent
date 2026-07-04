@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-04</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-03</lastmod>
+    <lastmod>2026-07-04</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/painel-sa-faturamento-de-lojas-virtuais-de-vestuario-cresce-49-no-inicio-do-inve.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-publico-do-varejo-e-humano-ou-robo.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/natura-e-avon-entram-na-shopee-e-ampliam-presenca-no-varejo-digital.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/a-temporada-de-volta-as-aulas-virou-um-evento-de-todo-o-verao-gracas-a-um-prime.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/franca-aprova-lei-contra-moda-ultrarrapida-e-impoe-multas-a-shein-e-temu-entenda.html</loc>
+    <lastmod>2026-07-03</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/agora-voce-pode-comprar-na-shopee-pelo-instagram-saiba-como.html</loc>
