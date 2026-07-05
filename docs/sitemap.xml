@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-04</lastmod>
+    <lastmod>2026-07-05</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-04</lastmod>
+    <lastmod>2026-07-05</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/buscas-por-mercado-livre-superam-shopee-e-amazon-no-1-semestre.html</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/loja-oficial-da-natura-na-shopee-amplia-estrategia-para-acelerar-vendas-digitais.html</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/micron-inicia-expansao-de-us-93-bilhoes-no-japao-para-produzir-chips-de-ia.html</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/durigan-rebate-argumentos-dos-eua-contra-pix-e-diz-esperar-que-novas-tarifas-nao.html</loc>
+    <lastmod>2026-07-04</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/painel-sa-faturamento-de-lojas-virtuais-de-vestuario-cresce-49-no-inicio-do-inve.html</loc>
