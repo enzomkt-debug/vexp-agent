@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-05</lastmod>
+    <lastmod>2026-07-06</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-lanca-concurso-e-premia-torcedores-com-vouchers-de-r-1000-em-compras-gkpb.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/mercado-libre-vende-ozempic-no-mexico-enquanto-brasil-discute-regras-para-venda.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/amazon-acelera-logistica-no-nordeste-e-pressiona-varejo-na-paraiba.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/industria-de-suplementos-do-parana-investe-r-67-milhoes-em-fabrica-e-novo-centro.html</loc>
+    <lastmod>2026-07-05</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/buscas-por-mercado-livre-superam-shopee-e-amazon-no-1-semestre.html</loc>
