@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-08</lastmod>
+    <lastmod>2026-07-09</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/senado-aprova-mp-que-destina-parte-da-arrecadacao-das-bets-a-policia-federal.html</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shopee-muda-regras-para-lojas-e-tiktok-shop-reajusta-taxa-em-50.html</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/seo-autoridade-e-ia-a-nova-vantagem-competitiva-do-varejo-digital.html</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/varejistas-planejam-investir-mais-em-ia-e-seguranca-cibernetica-este-ano.html</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/natura-natu3-preve-queda-de-ate-10-na-receita-do-2-tri-pressionada-por-brasil.html</loc>
+    <lastmod>2026-07-08</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/senado-aprova-criacao-do-pix-pensao-para-pagamento-automatico-de-pensao-alimenti.html</loc>
