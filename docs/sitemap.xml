@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-11</lastmod>
+    <lastmod>2026-07-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-11</lastmod>
+    <lastmod>2026-07-12</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/compradores-hispanicos-e-clientes-profissionais-sao-fundamentais-para-a-estrateg.html</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/e-commerce-em-cajamar-abrira-mais-55-mil-vagas-ate-o-fim-do-ano.html</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/empresas-do-sp-500-reportarao-maior-crescimento-de-lucros-em-5-anos-no-2t26-proj.html</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/governo-publica-portaria-que-restringe-publicidade-de-bets-a-partir-de-17-de-jul.html</loc>
+    <lastmod>2026-07-11</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/tarifaco-de-trump-empresarios-do-brasil-e-dos-eua-pressionam-governos-por-negoci.html</loc>
