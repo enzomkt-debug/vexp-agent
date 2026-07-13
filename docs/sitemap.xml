@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-12</lastmod>
+    <lastmod>2026-07-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-12</lastmod>
+    <lastmod>2026-07-13</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/live-commerce-entregas-rapidas-e-a-nova-logica-dos-marketplaces.html</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/economist-ve-riscos-a-supremacia-financeira-dos-eua-e-destaca-papel-do-pix-no-de.html</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/rodada-de-negocios-forum-2026-mira-em-conexoes-que-podem-virar-oportunidade.html</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/corrida-por-ia-faz-emissoes-de-microsoft-google-e-amazon-crescerem-ate-25.html</loc>
+    <lastmod>2026-07-12</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/compradores-hispanicos-e-clientes-profissionais-sao-fundamentais-para-a-estrateg.html</loc>
