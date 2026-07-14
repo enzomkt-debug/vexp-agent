@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-07-13</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-07-13</lastmod>
+    <lastmod>2026-07-14</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/o-que-o-ipo-da-shein-significa-para-o-brasil-segundo-a-faria-lima.html</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/fretes-maritimos-voltam-a-subir-e-reacendem-o-debate-sobre-a-logistica-entre-chi.html</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/varejistas-se-abastecem-antes-de-mudancas-tarifarias-esperadas.html</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/novo-pix-o-plano-do-inter-intr-para-dominar-mercado-bilionario-de-pagamentos-int.html</loc>
+    <lastmod>2026-07-13</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/live-commerce-entregas-rapidas-e-a-nova-logica-dos-marketplaces.html</loc>
