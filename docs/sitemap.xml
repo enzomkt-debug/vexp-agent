@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-11-21</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-11-21</lastmod>
+    <lastmod>2026-11-22</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/trump-ameaca-taxar-empresas-dos-eua-que-construirem-data-centers-fora-do-pais.html</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/2026-marcou-um-ponto-de-virada-para-a-remocao-de-corantes-artificiais-dos-alimen.html</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/norte-lidera-participacao-de-bebidas-alcoolicas-nos-mercados-autonomos.html</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/vendas-online-de-1111-crescem-205-antes-da-black-friday.html</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/de-olho-em-mercado-de-r-2-bilhoes-swift-estreia-na-culinaria-japonesa.html</loc>
