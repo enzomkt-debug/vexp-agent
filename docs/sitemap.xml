@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-11-22</lastmod>
+    <lastmod>2026-11-23</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/tiktok-shop-instala-base-de-apoio-no-bras-para-impulsionar-vendas-ao-vivo-de-loj.html</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/agentes-de-ia-entram-no-radar-dos-bancos-e-devem-mudar-pagamentos.html</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/roldao-aposta-em-low-cost-para-renovar-loja-na-grande-sao-paulo.html</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/novo-teto-do-mei-pode-gerar-economia-de-r-95-mil-por-ano-entenda-mudancas.html</loc>
+    <lastmod>2026-11-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/trump-ameaca-taxar-empresas-dos-eua-que-construirem-data-centers-fora-do-pais.html</loc>
