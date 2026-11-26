@@ -2,15 +2,39 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-11-25</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-11-25</lastmod>
+    <lastmod>2026-11-26</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/eua-estendem-ate-marco-tarifas-reduzidas-para-carros-do-mexico-e-canada.html</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/shein-vai-pagar-us-100-milhoes-em-acordo-com-ftc-por-acusacoes-de-praticas-engan.html</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/livro-bege-do-fed-empresarios-preveem-que-alta-de-precos-nos-eua-siga-no-curto-p.html</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/lopes-supermercados-adota-caixas-de-autoatendimento-em-todas-as-unidades.html</loc>
+    <lastmod>2026-11-25</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/depois-da-k-beauty-a-china-entra-na-disputa-pela-beleza-global.html</loc>
