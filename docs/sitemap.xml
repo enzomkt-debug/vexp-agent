@@ -2,15 +2,45 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://vendaexponencial.com.br/</loc>
-    <lastmod>2026-11-27</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigo.html</loc>
-    <lastmod>2026-11-27</lastmod>
+    <lastmod>2026-11-28</lastmod>
     <changefreq>never</changefreq>
     <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/exclusivo-cnbc-presidente-da-shopify-afirma-que-inteligencia-artificial-esta-tor.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/black-friday-papel-higienico-lidera-entre-os-mais-vendidos-no-mercado-livre-e-pa.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/receita-apreende-r-18-mi-em-produtos-chineses-sob-suspeita-de-falsificacao-no-ri.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/brasileiros-estao-gastando-mais-com-alimentacao-e-saude-aponta-ibge.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vendaexponencial.com.br/artigos/google-brasil-ia-e-protagonista-da-black-friday-2026-pesquisas-indicam-como-sera.html</loc>
+    <lastmod>2026-11-27</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vendaexponencial.com.br/artigos/amazon-que-investiu-r-75-bi-no-brasil-ve-o-pais-com-potencial-quase-ilimitado-di.html</loc>
